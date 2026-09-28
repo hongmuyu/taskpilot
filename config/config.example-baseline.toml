@@ -1,0 +1,19 @@
+# Copy to config/config.toml (gitignored) and fill in your provider settings.
+# Baseline reads TOML directly; ${ENV_VAR} interpolation is NOT supported.
+[llm]
+model = "YOUR_CHAT_COMPLETIONS_MODEL"
+base_url = "https://YOUR_PROVIDER_HOST/v1"
+api_key = "YOUR_API_KEY"
+max_tokens = 1024
+temperature = 0.0
+api_type = "openai"
+
+[sandbox]
+use_sandbox = false
+
+# Required by baseline Config even when Daytona is unused. Not a real credential.
+[daytona]
+daytona_api_key = "unused-local-baseline"
+
+# Also export OPENMANUS_DISABLE_BROWSER_USE=1 and leave config/mcp.json absent.
+# The environment switch disables automatic Browser Use, not configured servers.

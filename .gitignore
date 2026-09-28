@@ -2,6 +2,10 @@
 # Logs
 logs/
 
+# Local provider credentials and MCP server configuration
+config/config.toml
+config/mcp.json
+
 # Data
 data/
 
