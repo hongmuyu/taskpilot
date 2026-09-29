@@ -82,7 +82,7 @@ async def test_local_agent_rejects_non_object_before_tool_dispatch():
 
     result = await agent.execute_tool(tool_call(tool.name, ["wrong shape"]))
 
-    assert "validation" in result.lower()
+    assert "json object" in result.lower()
     assert tool.calls == []
 
 
@@ -107,7 +107,7 @@ async def test_mcp_schema_path_rejects_non_object_before_remote_dispatch():
 
     result = await agent.execute_tool(tool_call("mcp_fixture_remote_probe", [1]))
 
-    assert "validation" in result.lower()
+    assert "json object" in result.lower()
     assert session.calls == []
 
 

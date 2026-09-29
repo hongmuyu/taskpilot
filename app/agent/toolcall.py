@@ -15,6 +15,10 @@ from app.tool import CreateChatCompletion, Terminate, ToolCollection
 TOOL_CALL_REQUIRED = "Tool calls required but none provided"
 
 
+def _reject_non_json_constant(value: str):
+    raise ValueError(f"Invalid JSON constant: {value}")
+
+
 class ToolCallAgent(ReActAgent):
     """Base agent class for handling tool/function calls with enhanced abstraction"""
 
@@ -181,10 +185,17 @@ class ToolCallAgent(ReActAgent):
             return f"Error: Unknown tool '{name}'"
 
         try:
-            # Parse arguments
-            args = json.loads(command.function.arguments or "{}")
+            args = json.loads(
+                command.function.arguments, parse_constant=_reject_non_json_constant
+            )
+        except ValueError:
+            logger.warning(f"Invalid JSON arguments for tool '{name}'")
+            return f"Error: Error parsing arguments for {name}: Invalid JSON format"
 
-            # Execute the tool
+        if not isinstance(args, dict):
+            return f"Error: Arguments for {name} must be a JSON object"
+
+        try:
             logger.info(f"🔧 Activating tool: '{name}'...")
             result = await self.available_tools.execute(name=name, tool_input=args)
 
@@ -204,12 +215,6 @@ class ToolCallAgent(ReActAgent):
             )
 
             return observation
-        except json.JSONDecodeError:
-            error_msg = f"Error parsing arguments for {name}: Invalid JSON format"
-            logger.error(
-                f"📝 Oops! The arguments for '{name}' don't make sense - invalid JSON, arguments:{command.function.arguments}"
-            )
-            return f"Error: {error_msg}"
         except Exception as e:
             error_msg = f"⚠️ Tool '{name}' encountered a problem: {str(e)}"
             logger.exception(error_msg)
