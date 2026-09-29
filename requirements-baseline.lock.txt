@@ -153,7 +153,7 @@ faker==40.39.0
     # via browsergym-workarena
 farama-notifications==0.0.6
     # via gymnasium
-fastapi==0.115.14
+fastapi==0.141.1
     # via -r requirements.txt
 filelock==4.0.4
     # via
@@ -320,7 +320,7 @@ numpy==2.5.3
     #   transformers
     #   weblinx
     #   weblinx-browsergym
-openai==1.66.5
+openai==3.19.2
     # via
     #   -r requirements.txt
     #   libvisualwebarena
@@ -376,7 +376,7 @@ pyarrow==25.0.1
     # via datasets
 pycparser==3.0
     # via cffi
-pydantic==2.10.6
+pydantic==2.13.5
     # via
     #   -r requirements.txt
     #   crawl4ai
@@ -386,7 +386,7 @@ pydantic==2.10.6
     #   openai
     #   pydantic-settings
     #   text-generation
-pydantic-core==2.27.2
+pydantic-core==2.49.0
     # via
     #   -r requirements.txt
     #   pydantic
@@ -503,7 +503,7 @@ tf-playwright-stealth==1.2.0
     # via crawl4ai
 tifffile==2026.9.20
     # via scikit-image
-tiktoken==0.9.0
+tiktoken==0.14.0
     # via
     #   -r requirements.txt
     #   browsergym-experiments
