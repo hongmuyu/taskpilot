@@ -12,6 +12,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+
 os.environ["OPENMANUS_DISABLE_BROWSER_USE"] = "1"
 
 from app.agent.manus import Manus
@@ -55,10 +56,14 @@ def snapshot(agent):
 
 async def run(case, disable_thinking=False):
     if config.mcp_config.servers or config.sandbox.use_sandbox:
-        raise RuntimeError("Baseline smoke requires no configured MCP and use_sandbox=false")
+        raise RuntimeError(
+            "Baseline smoke requires no configured MCP and use_sandbox=false"
+        )
     llm_config = config.llm["default"]
     if not llm_config.api_key or llm_config.api_key == "YOUR_API_KEY":
-        raise RuntimeError("Fill in the ignored config/config.toml locally before live runs")
+        raise RuntimeError(
+            "Fill in the ignored config/config.toml locally before live runs"
+        )
 
     logger.remove()
     logger.add(sys.stderr, level="INFO", diagnose=False, backtrace=False)
@@ -98,7 +103,9 @@ async def run(case, disable_thinking=False):
             evidence["runs"].append(record)
             try:
                 # Limit only this smoke command's duration, not production runtime.
-                record["run_return"] = await asyncio.wait_for(agent.run(task), timeout=240)
+                record["run_return"] = await asyncio.wait_for(
+                    agent.run(task), timeout=240
+                )
             except Exception as exc:
                 failed = True
                 # Never serialize exception frames, provider configuration, or keys.
@@ -127,4 +134,6 @@ if __name__ == "__main__":
         help="Use DeepSeek's supported non-thinking Chat Completions mode",
     )
     args = parser.parse_args()
-    raise SystemExit(asyncio.run(run(args.case, disable_thinking=args.disable_thinking)))
+    raise SystemExit(
+        asyncio.run(run(args.case, disable_thinking=args.disable_thinking))
+    )
