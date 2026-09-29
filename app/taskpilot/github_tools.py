@@ -133,8 +133,14 @@ class GitHubReadOnlyTool(BaseTool):
 
 class GitHubRepositoryInfo(GitHubReadOnlyTool):
     name: str = "github_repository_info"
-    description: str = "Read metadata and description for the configured GitHub repository."
-    parameters: dict = {"type": "object", "properties": {}, "additionalProperties": False}
+    description: str = (
+        "Read metadata and description for the configured GitHub repository."
+    )
+    parameters: dict = {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": False,
+    }
 
     async def execute(self, **kwargs):
         result = await self.get(self.context.api_path, {})
@@ -142,8 +148,16 @@ class GitHubRepositoryInfo(GitHubReadOnlyTool):
             return result
         data = json.loads(result.output)
         fields = (
-            "name", "full_name", "description", "default_branch", "language",
-            "stargazers_count", "open_issues_count", "html_url", "updated_at", "topics",
+            "name",
+            "full_name",
+            "description",
+            "default_branch",
+            "language",
+            "stargazers_count",
+            "open_issues_count",
+            "html_url",
+            "updated_at",
+            "topics",
         )
         return self.success_response({key: data.get(key) for key in fields})
 
@@ -154,8 +168,14 @@ class GitHubIssueSearch(GitHubReadOnlyTool):
     parameters: dict = {
         "type": "object",
         "properties": {
-            "query": {"type": "string", "description": "Issue keywords or search qualifiers."},
-            "per_page": {"type": "integer", "description": "Maximum results, from 1 to 30."},
+            "query": {
+                "type": "string",
+                "description": "Issue keywords or search qualifiers.",
+            },
+            "per_page": {
+                "type": "integer",
+                "description": "Maximum results, from 1 to 30.",
+            },
         },
         "required": ["query"],
         "additionalProperties": False,
@@ -192,23 +212,36 @@ class GitHubIssueSearch(GitHubReadOnlyTool):
             }
             for item in data.get("items", [])
         ]
-        return self.success_response({"total_count": data.get("total_count", 0), "items": issues})
+        return self.success_response(
+            {"total_count": data.get("total_count", 0), "items": issues}
+        )
 
 
 class GitHubIssueDetail(GitHubReadOnlyTool):
     name: str = "github_issue_detail"
-    description: str = "Read an issue and up to ten comments from the configured repository."
+    description: str = (
+        "Read an issue and up to ten comments from the configured repository."
+    )
     parameters: dict = {
         "type": "object",
-        "properties": {"issue_number": {"type": "integer", "description": "Issue number."}},
+        "properties": {
+            "issue_number": {"type": "integer", "description": "Issue number."}
+        },
         "required": ["issue_number"],
         "additionalProperties": False,
     }
 
     async def execute(self, issue_number: int):
-        if isinstance(issue_number, bool) or not isinstance(issue_number, int) or issue_number < 1:
+        if (
+            isinstance(issue_number, bool)
+            or not isinstance(issue_number, int)
+            or issue_number < 1
+        ):
             return self.fail_response("Issue number must be a positive integer")
-        issue = await self.get(f"{self.context.api_path}/issues/{issue_number}", {"issue_number": issue_number})
+        issue = await self.get(
+            f"{self.context.api_path}/issues/{issue_number}",
+            {"issue_number": issue_number},
+        )
         if issue.error:
             return issue
         comments = await self.get(
@@ -224,11 +257,19 @@ class GitHubIssueDetail(GitHubReadOnlyTool):
         except (TypeError, json.JSONDecodeError) as exc:
             return self.fail_response(f"Unexpected GitHub issue response: {exc}")
         issue_fields = (
-            "number", "title", "state", "created_at", "updated_at", "html_url",
-            "labels", "body",
+            "number",
+            "title",
+            "state",
+            "created_at",
+            "updated_at",
+            "html_url",
+            "labels",
+            "body",
         )
         issue_data = {key: issue_data.get(key) for key in issue_fields}
-        issue_data["labels"] = [label.get("name") for label in issue_data.get("labels", [])]
+        issue_data["labels"] = [
+            label.get("name") for label in issue_data.get("labels", [])
+        ]
         issue_data["body"] = _trim(issue_data.get("body"), 4000)
         comments = [
             {
@@ -247,7 +288,9 @@ class GitHubCodeSearch(GitHubReadOnlyTool):
     description: str = "Search source code in the configured repository. GitHub requires GITHUB_TOKEN for code search."
     parameters: dict = {
         "type": "object",
-        "properties": {"query": {"type": "string", "description": "Code search terms."}},
+        "properties": {
+            "query": {"type": "string", "description": "Code search terms."}
+        },
         "required": ["query"],
         "additionalProperties": False,
     }
@@ -256,7 +299,10 @@ class GitHubCodeSearch(GitHubReadOnlyTool):
         query = _without_repository_qualifier(query)
         if not query:
             return self.fail_response("Code search query must not be empty")
-        params = {"q": f"{query} repo:{self.context.owner}/{self.context.repo}", "per_page": 10}
+        params = {
+            "q": f"{query} repo:{self.context.owner}/{self.context.repo}",
+            "per_page": 10,
+        }
         result = await self.get("/search/code", {"query": query}, params)
         if result.error:
             return result
@@ -269,7 +315,9 @@ class GitHubCodeSearch(GitHubReadOnlyTool):
             }
             for item in data.get("items", [])
         ]
-        return self.success_response({"total_count": data.get("total_count", 0), "items": matches})
+        return self.success_response(
+            {"total_count": data.get("total_count", 0), "items": matches}
+        )
 
 
 class GitHubReadFile(GitHubReadOnlyTool):
@@ -277,7 +325,9 @@ class GitHubReadFile(GitHubReadOnlyTool):
     description: str = "Read a text file from the configured repository at the selected ref or default branch."
     parameters: dict = {
         "type": "object",
-        "properties": {"path": {"type": "string", "description": "Repository-relative file path."}},
+        "properties": {
+            "path": {"type": "string", "description": "Repository-relative file path."}
+        },
         "required": ["path"],
         "additionalProperties": False,
     }
@@ -285,7 +335,9 @@ class GitHubReadFile(GitHubReadOnlyTool):
     async def execute(self, path: str):
         path = path.strip().strip("/")
         if not path or any(part == ".." for part in path.split("/")):
-            return self.fail_response("File path must be a repository-relative path without '..' segments")
+            return self.fail_response(
+                "File path must be a repository-relative path without '..' segments"
+            )
         params = {"ref": self.context.ref} if self.context.ref else None
         result = await self.get(
             f"{self.context.api_path}/contents/{quote(path, safe='/')}",
@@ -298,10 +350,18 @@ class GitHubReadFile(GitHubReadOnlyTool):
             data = json.loads(result.output)
             content = base64.b64decode(data["content"]).decode("utf-8")
         except (KeyError, TypeError, ValueError, UnicodeDecodeError) as exc:
-            return self.fail_response(f"GitHub did not return a readable text file: {exc}")
+            return self.fail_response(
+                f"GitHub did not return a readable text file: {exc}"
+            )
         if len(content) > 12000:
             content = content[:12000] + "\n... [truncated at 12000 characters]"
-        return self.success_response({"path": data.get("path", path), "html_url": data.get("html_url"), "content": content})
+        return self.success_response(
+            {
+                "path": data.get("path", path),
+                "html_url": data.get("html_url"),
+                "content": content,
+            }
+        )
 
 
 def _trim(value: Optional[str], limit: int) -> Optional[str]:

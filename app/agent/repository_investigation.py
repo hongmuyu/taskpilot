@@ -20,7 +20,9 @@ class RepositoryInvestigationAgent(ToolCallAgent):
     """Single-agent, read-only GitHub repository investigation entry point."""
 
     name: str = "TaskPilotRepositoryInvestigation"
-    description: str = "Investigates one explicitly selected GitHub repository using read-only tools."
+    description: str = (
+        "Investigates one explicitly selected GitHub repository using read-only tools."
+    )
     system_prompt: Optional[str] = None
     next_step_prompt: str = NEXT_STEP_PROMPT
     repository_context: RepositoryContext
