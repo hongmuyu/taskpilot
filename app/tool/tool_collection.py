@@ -23,11 +23,28 @@ class ToolCollection:
         return [tool.to_param() for tool in self.tools]
 
     async def execute(
-        self, *, name: str, tool_input: Dict[str, Any] = None
+        self, *, name: str, tool_input: Any = None
     ) -> ToolResult:
         tool = self.tool_map.get(name)
         if not tool:
             return ToolFailure(error=f"Tool {name} is invalid")
+        if (
+            not isinstance(tool.parameters, dict)
+            or tool.parameters.get("type") != "object"
+        ):
+            return ToolFailure(
+                error=(
+                    f"Tool '{name}' validation failed: unsupported parameter schema "
+                    "(expected object)"
+                )
+            )
+        if not isinstance(tool_input, dict):
+            return ToolFailure(
+                error=(
+                    f"Tool '{name}' validation failed: arguments must be "
+                    "a JSON object"
+                )
+            )
         try:
             result = await tool(**tool_input)
             return result

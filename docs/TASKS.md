@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 2 — Reliable Parameter Execution
-- Current PR: PR-03 — Parameter Validation and Clarification（计划，尚未开始）
-- Next Task: T013 — Tool Schema Validator — execution boundary
+- Current PR: PR-03 — Parameter Validation and Clarification（进行中，仅 T013 完成）
+- Next Task: T014 — Required / basic type / enum validation（未启动）
 - Total Tasks: 73
-- Completed: 12
-- TODO: 60
+- Completed: 13
+- TODO: 59
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 41
+- Remaining P0: 40
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
 - State verified: 2026-09-29；功能基线 main `7ca8a9b02fea07a8de476fdf68ed45e919ba1e28`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。本次仅做 Core MVP Scope Calibration，保留完整工程化路线图，不实施任何 TODO，也不启动 PR-03。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 目前仅实施 T013，T014–T021 尚未启动。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 12 + 60 + 1 + 0 + 0 = 73；剩余 41 + 19 + 1 = 61。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 13 + 59 + 1 + 0 + 0 = 73；剩余 40 + 19 + 1 = 60。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -42,7 +42,7 @@
 
 **Stretch — P2**：有时间再做，例如更丰富 UI 和高级 trace visualization；不影响当前 Core 出口。
 
-Phase 编号和 PR 标识保留完整路线图，不代表必须逐阶段串行交付。Core 可按 PR-03 → PR-04 → PR-05 的 P0 → PR-08 的 P0 → PR-09 完成，跳过 Phase 5/6；T065 在 T028 后即可逐步准备和冻结，不等待部署。具体执行以依赖图为准，下一任务仍为 T013 / PR-03。
+Phase 编号和 PR 标识保留完整路线图，不代表必须逐阶段串行交付。Core 可按 PR-03 → PR-04 → PR-05 的 P0 → PR-08 的 P0 → PR-09 完成，跳过 Phase 5/6；T065 在 T028 后即可逐步准备和冻结，不等待部署。具体执行以依赖图为准，下一任务为 T014 / PR-03，尚未启动。
 
 Core 保持 read-only：不启用写工具即可延期整套写入增强。若后续启用任何副作用能力，Validation、Risk Check、Human Confirmation、路径边界和去重要求仍完整生效，不能以降级 P1 为由跳过。只读服务仍需保留现有工具范围、参数校验、凭据保护和任务资源边界；公网专项安全 T061 仅在公开部署前验收。
 
@@ -63,7 +63,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 .venv/bin/python -m pytest tests/taskpilot/test_github_tools.py tests/baseline/test_runtime.py tests/tools/test_browser_use_mcp.py -q
 ```
 
-边界：PR-01 已证明 non-thinking 模式的主链路；默认 thinking-mode 多轮 tool-call 仍 NOT VERIFIED。PR-02 的真实 GitHub REST 闭环不证明真实 MCP 生命周期；真实 MCP lifecycle/参数 E2E 由 T035/T038 补验，T020 仅覆盖隔离 schema compatibility。当前通用参数校验/澄清、Semantic Router、统一可靠性、受控写、多轮安全窗口、完整 Trace/API/UI、TaskPilot Docker/部署和正式 Benchmark 均未完成。
+边界：PR-01 已证明 non-thinking 模式的主链路；默认 thinking-mode 多轮 tool-call 仍 NOT VERIFIED。PR-02 的真实 GitHub REST 闭环不证明真实 MCP 生命周期；真实 MCP lifecycle/参数 E2E 由 T035/T038 补验，T020 仅覆盖隔离 schema compatibility。当前完整字段级参数校验/澄清、Semantic Router、统一可靠性、受控写、多轮安全窗口、完整 Trace/API/UI、TaskPilot Docker/部署和正式 Benchmark 均未完成。
 
 工程发现：GitHub 原始 Issue Search Observation 曾使模型上下文超过 **100k tokens**；Observation Normalization 后相关后续模型输入约为 **1.9k tokens**。这是已观察到的 context reduction，不能写成正式 Benchmark 的整体性能提升，也不能据此生成简历提升百分比。
 
@@ -71,7 +71,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 
 - Phase 0：T001–T003，Foundation，PR-00 / PR-01，DONE。
 - Phase 1：T004–T012，Real Business Loop，PR-02，DONE。
-- Phase 2：T013–T021，Reliable Parameter Execution，PR-03，下一阶段。
+- Phase 2：T013–T021，Reliable Parameter Execution，PR-03，进行中（仅 T013 完成）。
 - Phase 3：T022–T030，Tool Routing，PR-04。
 - Phase 4：T031–T038，Reliability，PR-05。
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
@@ -271,7 +271,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 
 ## Phase 2 — Reliable Parameter Execution
 
-下一开发阶段，尚未开始。目标：`LLM Tool Call → Validate → Clarify if required → Revalidate → Execute`。关键仓库、路径和操作目标只能来自用户明确输入或可信的已确认 Context，不能由模型无依据猜测。
+当前开发阶段，仅 T013 完成。目标：`LLM Tool Call → Validate → Clarify if required → Revalidate → Execute`。关键仓库、路径和操作目标只能来自用户明确输入或可信的已确认 Context，不能由模型无依据猜测。
 
 ### T013 — Tool Schema Validator — execution boundary
 
@@ -279,14 +279,14 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - **Title:** Tool Schema Validator — execution boundary
 - **Phase:** Phase 2
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T012
 - **Target PR:** PR-03
 - **Goal:** 在真实 dispatch 前建立统一校验入口，复用原 schema。
 - **Acceptance Criteria:** Local/MCP 均不能绕过校验；校验失败时执行计数为零；保留工具已有语义校验。
 - **Tests:** spy 验证失败不 dispatch、合法参数只执行一次；现有只读 Agent 回归。
 - **Out of Scope:** 新 Tool Registry、重写 Agent Loop、开启写能力。
-- **Notes:** 下一 Task；核对 ToolCallAgent.execute_tool 与 ToolCollection.execute，只在批准 PR-03 后实现。
+- **Notes:** `ToolCallAgent.execute_tool` JSON parse 后经 `ToolCollection.execute` 统一检查工具已有 `parameters` 的 object 根 schema 与参数容器；失败返回 ToolFailure，真实工具零执行；Local 与 MCP `inputSchema` 映射 fixture 的合法输入均恰好执行一次，现有 GitHub 语义校验仍生效。T013 测试 `tests/taskpilot/test_tool_schema_boundary.py` 为 6 passed；现有只读回归 `tests/taskpilot/test_github_tools.py tests/baseline/test_runtime.py tests/tools/test_browser_use_mcp.py` 为 26 passed（2026-09-29）。required/type/enum 等字段级规则属于 T014，完整 invalid JSON 反馈属于 T015；真实 MCP 网络执行本轮 NOT VERIFIED。全量 `pytest` 在无关 sandbox 测试中出现 Python 版本断言失败 2 例、`apt` 网络超时 1 例并中断，完整全量结果 NOT VERIFIED。
 
 ### T014 — Required / basic type / enum validation
 
