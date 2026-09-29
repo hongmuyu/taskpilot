@@ -1,0 +1,22 @@
+{
+  "dataset": "repository_investigation_v0",
+  "repository_default": "FoundationAgents/OpenManus",
+  "tasks": [
+    {"task": "What does this repository do, and what language is it primarily written in?", "repository": "FoundationAgents/OpenManus", "expected_capability": "repository_information", "evidence_requirement": "Repository description and language metadata returned by GitHub."},
+    {"task": "Summarize the repository's main purpose and link to its GitHub page.", "repository": "FoundationAgents/OpenManus", "expected_capability": "repository_information", "evidence_requirement": "Repository metadata with a source URL."},
+    {"task": "How active is this repository, based on its open issue count and latest update?", "repository": "FoundationAgents/OpenManus", "expected_capability": "repository_information", "evidence_requirement": "Current repository metadata returned from GitHub."},
+    {"task": "Find recent issues mentioning MCP.", "repository": "FoundationAgents/OpenManus", "expected_capability": "issue_search", "evidence_requirement": "GitHub issue search results with issue numbers and URLs."},
+    {"task": "Find open issues related to timeout failures.", "repository": "FoundationAgents/OpenManus", "expected_capability": "issue_search", "evidence_requirement": "Repository-scoped issue search results."},
+    {"task": "Search issues about Browser Use connection failures.", "repository": "FoundationAgents/OpenManus", "expected_capability": "issue_search", "evidence_requirement": "Matching issue titles, numbers, and URLs from GitHub."},
+    {"task": "Find issues discussing tool calls that fail or return errors.", "repository": "FoundationAgents/OpenManus", "expected_capability": "issue_search", "evidence_requirement": "Issue search results, including an explicit empty result when none match."},
+    {"task": "Read issue #1427 and summarize the problem and discussion.", "repository": "FoundationAgents/OpenManus", "expected_capability": "issue_detail", "evidence_requirement": "Issue body, up to ten comments, and issue URL retrieved from GitHub."},
+    {"task": "Inspect the current status and labels of issue #1427.", "repository": "FoundationAgents/OpenManus", "expected_capability": "issue_detail", "evidence_requirement": "Issue state, labels, and source URL from the issue detail response."},
+    {"task": "Search repository code for the MCP client connection lifecycle.", "repository": "FoundationAgents/OpenManus", "expected_capability": "code_search", "evidence_requirement": "GitHub code-search results with file paths and URLs."},
+    {"task": "Find code that handles tool execution errors.", "repository": "FoundationAgents/OpenManus", "expected_capability": "code_search", "evidence_requirement": "Matching source paths from GitHub code search."},
+    {"task": "Search for timeout handling in the repository.", "repository": "FoundationAgents/OpenManus", "expected_capability": "code_search", "evidence_requirement": "Relevant code-search matches and links."},
+    {"task": "Read app/tool/mcp.py and explain how MCP tools are dispatched.", "repository": "FoundationAgents/OpenManus", "expected_capability": "file_read", "evidence_requirement": "File content read from GitHub with a file URL."},
+    {"task": "Read app/agent/toolcall.py and locate how tool-call responses are executed.", "repository": "FoundationAgents/OpenManus", "expected_capability": "file_read", "evidence_requirement": "Source excerpt and corresponding GitHub file URL."},
+    {"task": "Find an MCP-related issue and trace the reported behavior to likely implementation code.", "repository": "FoundationAgents/OpenManus", "expected_capability": "cross_source_investigation", "evidence_requirement": "At least one real issue result followed by code-search or file-read evidence, with linked issue and source paths."},
+    {"task": "Investigate an issue about tool failure, inspect its details, then identify the code handling that failure.", "repository": "FoundationAgents/OpenManus", "expected_capability": "cross_source_investigation", "evidence_requirement": "Issue detail plus relevant source evidence retrieved from GitHub."}
+  ]
+}
