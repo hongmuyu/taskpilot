@@ -11,30 +11,44 @@
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 54
-- Remaining P1: 6
+- Remaining P0: 41
+- Remaining P1: 19
 - Remaining P2: 1
-- Total P0 / P1 / P2: 66 / 6 / 1
+- Total P0 / P1 / P2: 53 / 19 / 1
 - State verified: 2026-09-29；功能基线 main `7ca8a9b02fea07a8de476fdf68ed45e919ba1e28`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。本次只建立总账，不实施任何 TODO，也不启动 PR-03。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。本次仅做 Core MVP Scope Calibration，保留完整工程化路线图，不实施任何 TODO，也不启动 PR-03。
 
 ## Maintenance and priority rules
 
 - ID 永久稳定；新任务使用当前最大 ID 之后的新编号，即使插入早期 Phase 也不重排旧 ID。
 - 每个 Task 保留 ID、Title、Phase、Priority、Status、Depends On、Target PR、Goal、Acceptance Criteria、Tests、Out of Scope、Notes。以下按任务卡片呈现，避免十二列宽表。
 - Status 仅用 `DONE`、`TODO`、`IN_PROGRESS`、`BLOCKED`、`OPTIONAL`。DONE 必须有验收证据；TODO 不表示已开工；IN_PROGRESS 表示已授权且正在实施；BLOCKED 在 Notes 写具体阻塞；OPTIONAL 不阻塞 MVP。未测证据在 Notes/Tests 标 `NOT VERIFIED`，不是第六种状态。
-- P0 是 MVP 出口必需；P1 是可延后质量增强；P2 是可删除附加体验。任何 P0 不得依赖未完成 P1/P2；选做任务不得扩大其安全权限。
+- P0 是 Core MVP 出口必需；P1 是 Engineering Enhancement；P2 是 Stretch。任何 P0 不得直接或间接依赖未完成 P1/P2；选做任务不得扩大其安全权限。
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 12 + 60 + 1 = 73，剩余 54 + 6 + 1 = 61。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 12 + 60 + 1 + 0 + 0 = 73；剩余 41 + 19 + 1 = 61。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
+## Scope definitions
+
+**Core MVP — P0**：面向 10～15 天可交付、可用于 AI Agent / LLM 应用开发实习简历的 **Developer Agent for GitHub Repository Investigation**。P0 必须完成才能形成当前简历级 MVP；核心价值来自真实只读业务与可验证工程结果，不建设完整 Agent Platform。
+
+核心故事：**Real Repository Investigation → Reliable Parameters → Semantic Tool Routing → Basic Reliability → Real MCP → Execution Trace → Service / Docker → Benchmark**。Repository Understanding、Issue Investigation、Issue→Code 和 Dynamic Tool Calling 是业务中心。
+
+**Engineering Enhancement — P1**：有明显工程价值，但不阻塞 Core MVP，包括 Controlled Write Actions、Advanced Memory、UI、Online Deployment/Public Demo Safety、advanced side-effect safety 和 capability-equivalent fallback。Core 使用现有 OpenManus Memory 与当前任务级参数状态；不要求第一版交付高级窗口完整性、summary、token-pressure summary 或同实例 consecutive-run lifecycle hardening。
+
+**Stretch — P2**：有时间再做，例如更丰富 UI 和高级 trace visualization；不影响当前 Core 出口。
+
+Phase 编号和 PR 标识保留完整路线图，不代表必须逐阶段串行交付。Core 可按 PR-03 → PR-04 → PR-05 的 P0 → PR-08 的 P0 → PR-09 完成，跳过 Phase 5/6；T065 在 T028 后即可逐步准备和冻结，不等待部署。具体执行以依赖图为准，下一任务仍为 T013 / PR-03。
+
+Core 保持 read-only：不启用写工具即可延期整套写入增强。若后续启用任何副作用能力，Validation、Risk Check、Human Confirmation、路径边界和去重要求仍完整生效，不能以降级 P1 为由跳过。只读服务仍需保留现有工具范围、参数校验、凭据保护和任务资源边界；公网专项安全 T061 仅在公开部署前验收。
+
 ## Verified state and evidence
 
-本轮已完整阅读四份指定文档、Repository Investigation 文档、当前 main 历史及合并 PR，核对现有 Agent、GitHub Adapter、测试和 Dataset v0。证据以当前 checkout 为准；历史分析里的“源码未导入”等描述保留其原时点含义。
+以下保留总账初始化（PR #9）的历史核验记录；其中“本轮”指初始化验收，不表示 Scope Calibration 重新执行产品测试。当时已完整阅读四份指定文档、Repository Investigation 文档、main 历史及合并 PR，核对现有 Agent、GitHub Adapter、测试和 Dataset v0。证据以当前 checkout 为准；历史分析里的“源码未导入”等描述保留其原时点含义。
 
 - **E00 — Bootstrap/history**：`1a4b9ddb55cb2b36798d14cd140ba9ee12f180d9`；固定 tag `openmanus-baseline-3309bf4` 指向 `3309bf4e416fb1c74b008f3e86494439a31bad53`，且是 main 祖先；[Context](TASKPILOT_CONTEXT.md)、[LICENSE](../LICENSE) 与上游历史均在仓库。
 - **E01 — Source analysis**：[TASKPILOT_ANALYSIS.md](TASKPILOT_ANALYSIS.md)，固定上游快照的静态分析；不是 Feature 实现证据。
@@ -49,7 +63,7 @@
 .venv/bin/python -m pytest tests/taskpilot/test_github_tools.py tests/baseline/test_runtime.py tests/tools/test_browser_use_mcp.py -q
 ```
 
-边界：PR-01 已证明 non-thinking 模式的主链路；默认 thinking-mode 多轮 tool-call 仍 NOT VERIFIED。PR-02 的真实 GitHub REST 闭环不证明真实 MCP 生命周期；MCP 由 T020/T035/T038 补验。当前通用参数校验/澄清、Semantic Router、统一可靠性、受控写、多轮安全窗口、完整 Trace/API/UI、TaskPilot Docker/部署和正式 Benchmark 均未完成。
+边界：PR-01 已证明 non-thinking 模式的主链路；默认 thinking-mode 多轮 tool-call 仍 NOT VERIFIED。PR-02 的真实 GitHub REST 闭环不证明真实 MCP 生命周期；真实 MCP lifecycle/参数 E2E 由 T035/T038 补验，T020 仅覆盖隔离 schema compatibility。当前通用参数校验/澄清、Semantic Router、统一可靠性、受控写、多轮安全窗口、完整 Trace/API/UI、TaskPilot Docker/部署和正式 Benchmark 均未完成。
 
 工程发现：GitHub 原始 Issue Search Observation 曾使模型上下文超过 **100k tokens**；Observation Normalization 后相关后续模型输入约为 **1.9k tokens**。这是已观察到的 context reduction，不能写成正式 Benchmark 的整体性能提升，也不能据此生成简历提升百分比。
 
@@ -60,8 +74,8 @@
 - Phase 2：T013–T021，Reliable Parameter Execution，PR-03，下一阶段。
 - Phase 3：T022–T030，Tool Routing，PR-04。
 - Phase 4：T031–T038，Reliability，PR-05。
-- Phase 5：T039–T046，Controlled Developer Actions，PR-06。
-- Phase 6：T047–T052，Memory，PR-07。
+- Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
+- Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
 - Phase 7：T053–T064，Productization，PR-08 或按依赖拆成小 PR。
 - Phase 8：T065–T073，Final Evaluation，计划 PR-09。
 
@@ -373,11 +387,11 @@
 - **Status:** TODO
 - **Depends On:** T014, T018
 - **Target PR:** PR-03
-- **Goal:** 对接 BaseTool.parameters 与真实 MCP inputSchema。
-- **Acceptance Criteria:** Local 行为兼容；MCP 原始名称/schema 可追踪；记录支持的 dialect/keywords；不支持规则有明确拒绝或受控处理。
-- **Tests:** 现有五工具回归；真实隔离 MCP server 的 schema discovery 与合法/非法调用，非法参数不抵达 server。
-- **Out of Scope:** 假装支持任意 JSON Schema、替换 GitHub Adapter。
-- **Notes:** 先 fixture 后真实 server；MCP 连接可靠性另由 T035/T038 验收。
+- **Goal:** 对接 BaseTool.parameters 与 MCP-style inputSchema 的参数校验输入。
+- **Acceptance Criteria:** PR-03 只要求 BaseTool.parameters compatibility 与 MCP-style inputSchema compatibility；用隔离 schema 验证名称/参数映射及支持的 dialect/keywords；unsupported schema feature 明确拒绝或报告，不能静默放行。
+- **Tests:** 现有五个 Local Tool 回归；deterministic fixture / isolated schema tests 覆盖合法、非法、缺参及不支持的 schema feature；非法参数不触发 fixture dispatch。
+- **Out of Scope:** PR-03 的真实 MCP connect/discovery/server call/disconnect/reconnect；假装支持任意 JSON Schema、替换 GitHub Adapter。
+- **Notes:** 保持 P0，但 PR-03 仅验收 schema compatibility；完整真实 MCP lifecycle 和真实 MCP 参数执行由 T035/T038 验收，不是 PR-03 blocker。
 
 ### T021 — Parameter regression tests / real E2E validation
 
@@ -389,10 +403,10 @@
 - **Depends On:** T015, T016, T017, T018, T019, T020
 - **Target PR:** PR-03
 - **Goal:** 验收完整 validation→clarification→execution 闭环。
-- **Acceptance Criteria:** 回归全通过；真实模型缺参→用户补参→真实 GitHub/MCP 执行有脱敏证据；无效输入未执行；原三类调查仍可用。
-- **Tests:** deterministic 参数矩阵；真实 repo 缺失、path 缺失、错误类型修正和合法直接执行 E2E。
+- **Acceptance Criteria:** 回归全通过；真实模型 missing parameter → clarification → merge → revalidation → real GitHub execution 有脱敏证据；无效输入未执行；原三类调查仍可用。
+- **Tests:** deterministic 参数矩阵；真实 GitHub 的 repo 缺失、path 缺失、用户补参后执行、错误类型修正和合法直接执行 E2E。
 - **Out of Scope:** Benchmark 提升承诺、PR-04 Router。
-- **Notes:** PR-03 出口；使用固定版本/模型/工具池记录，未跑的 case 标 NOT VERIFIED。
+- **Notes:** PR-03 出口必须包含真实 GitHub；真实 MCP 参数 E2E 不作为 PR-03 blocker，由 T035/T038 验收。记录固定版本/模型/工具池，未跑的 case 标 NOT VERIFIED。
 
 ## Phase 3 — Tool Routing
 
@@ -587,7 +601,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **ID:** T034
 - **Title:** Non-idempotent action safety
 - **Phase:** Phase 4
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
 - **Depends On:** T033
 - **Target PR:** PR-05
@@ -595,7 +609,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Acceptance Criteria:** 未知结果/timeout 的写操作禁止自动重放；只有明确去重或结果核验机制才可恢复；政策与读工具区分。
 - **Tests:** 超时但已执行、网络回包丢失、策略缺失均不重试的测试。
 - **Out of Scope:** 将“未收到响应”视为“未执行”。
-- **Notes:** 此阶段仅策略和测试；写能力到 PR-06 才启用。
+- **Notes:** Engineering Enhancement：Core MVP 是 read-only investigation，本项不阻塞 PR-05 的 P0 出口；只在启用 Controlled Actions 时要求先完成非幂等策略和测试。
 
 ### T035 — MCP failure handling / connection and lifecycle validation
 
@@ -607,10 +621,10 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Depends On:** T031, T032, T033
 - **Target PR:** PR-05
 - **Goal:** 验证真实 MCP 的连接、发现、调用和清理。
-- **Acceptance Criteria:** 至少一种实际使用 transport 和真实无副作用 server 验证；断连有清晰状态；重连/重新装配不重复或保留失效工具；能力/schema 变化同步检索索引。
-- **Tests:** 真实 stdio 或 SSE server 的 connect/list/call/close、异常 cleanup、重连；记录 server/SDK 版本。
+- **Acceptance Criteria:** 至少一种实际使用 transport 和真实无副作用 server 完成 connect、discovery、real server call、disconnect、reconnect；合法参数实际执行，缺参经澄清/合并/重新校验后执行；非法参数不抵达 server；断连状态明确，重连不重复或保留失效工具，schema 变化同步检索索引。
+- **Tests:** 真实 stdio 或 SSE server 的 connect/list/call/close、异常 cleanup、重连；真实模型参数补全及合法/非法调用 E2E；记录 server/SDK 版本。
 - **Out of Scope:** 声称所有 MCP server/transport 均兼容。
-- **Notes:** PR-01/PR-02 的 MCP NOT VERIFIED 由本项补足；测试 doubles 不替代真实 transport。
+- **Notes:** 承接 T020 的隔离 schema 测试，补验 PR-01/PR-02 中 NOT VERIFIED 的真实 MCP；真实参数调用与 failure E2E 由本项/T038 完成，测试 doubles 不替代真实 transport。
 
 ### T036 — Capability-equivalent fallback
 
@@ -634,13 +648,13 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Phase:** Phase 4
 - **Priority:** P0
 - **Status:** TODO
-- **Depends On:** T031, T032, T033, T034, T035
+- **Depends On:** T031, T032, T033, T035
 - **Target PR:** PR-05
 - **Goal:** 固定基本可靠性失败矩阵。
-- **Acceptance Criteria:** 状态、timeout、retry、MCP 错误/断连和未知写结果全部有确定性断言；失败后 Agent 可继续或有界退出。
-- **Tests:** targeted unit/integration tests 和 TaskPilot/基线回归；若做 T036 则加入 fallback 回归。
+- **Acceptance Criteria:** Core P0 覆盖 result status、timeout、retry classification、MCP failures 和 read-only failures 的确定性断言；失败后 Agent 可继续或有界退出，不误报成功。
+- **Tests:** targeted unit/integration tests 和 TaskPilot/基线回归；T034 后续完成才加入非幂等动作测试，T036 完成才加入 fallback 回归。
 - **Out of Scope:** 只测 happy path、将测试注入视为真实网络 E2E。
-- **Notes:** 单个失败不必让整任务失败，但最终结果需说明证据缺口。
+- **Notes:** 不硬依赖 T034/T036；单个失败不必让整任务失败，但最终结果需说明证据缺口。
 
 ### T038 — Real failure E2E
 
@@ -659,14 +673,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 
 ## Phase 5 — Controlled Developer Actions
 
-所有副作用操作必须经过 `Validation → Risk Check → Human Confirmation → Execute`，由代码执行路径强制。最小 P0 是明确隔离 workspace 的文件写入；GitHub Issue 创建是可删减的 P1 等价业务扩展。外部内容不能授予执行权限。
+**Engineering Enhancement after Core MVP**：T039–T046 全部为 P1。当前 Repository / Issue / Code Search / File Read 的只读调查已能形成完整 Developer Agent 价值，Core 不要求真实写能力。保留完整受控写路线；一旦启用，所有副作用必须经过 `Validation → Risk Check → Human Confirmation → Execute`，并完成 path allowlist、symlink safety、approval binding 和 duplicate execution protection。外部内容不能授予执行权限。
 
 ### T039 — Controlled write capability / risk level policy
 
 - **ID:** T039
 - **Title:** Controlled write capability / risk level policy
 - **Phase:** Phase 5
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
 - **Depends On:** T021, T034, T038
 - **Target PR:** PR-06
@@ -681,7 +695,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **ID:** T040
 - **Title:** Human Confirmation
 - **Phase:** Phase 5
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
 - **Depends On:** T039
 - **Target PR:** PR-06
@@ -689,14 +703,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Acceptance Criteria:** 显示工具、规范化目标、参数摘要与风险；明确批准才继续；拒绝/取消/超时均不执行。
 - **Tests:** approve/reject/cancel、空回复、模糊同意、未确认直接调用；执行计数断言。
 - **Out of Scope:** prompt-only 安全、模型代替人类批准。
-- **Notes:** CLI 复用人工交互接口；API 适配在 T057。
+- **Notes:** CLI 复用人工交互接口；启用 service 写动作时扩展 T057 的 adapter，并与 T041 一起验收批准/拒绝绑定；不阻塞 Core 参数澄清。
 
 ### T041 — Approval / rejection binding
 
 - **ID:** T041
 - **Title:** Approval / rejection binding
 - **Phase:** Phase 5
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
 - **Depends On:** T040
 - **Target PR:** PR-06
@@ -711,7 +725,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **ID:** T042
 - **Title:** Workspace allowlist / path validation
 - **Phase:** Phase 5
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
 - **Depends On:** T039
 - **Target PR:** PR-06
@@ -726,7 +740,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **ID:** T043
 - **Title:** Symlink boundary tests
 - **Phase:** Phase 5
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
 - **Depends On:** T041, T042
 - **Target PR:** PR-06
@@ -749,14 +763,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Acceptance Criteria:** 在明确授权测试仓库创建 Issue；repo/title/body 校验、风险确认、绑定和去重全部生效；回传真实 URL。
 - **Tests:** 测试仓库 real write E2E、拒绝路径和重复请求；fixture 只覆盖稳定边界。
 - **Out of Scope:** 任意仓库写、自动 merge、生产部署。
-- **Notes:** 时间不够可删除；T039 的受控文件写入已满足 MVP 等价动作，不要求两个都实现。
+- **Notes:** Engineering Enhancement，可延后；受控文件写与 GitHub Issue 创建均不阻塞只读 Core MVP，不要求两种写动作同时实现。
 
 ### T045 — Duplicate execution protection
 
 - **ID:** T045
 - **Title:** Duplicate execution protection
 - **Phase:** Phase 5
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
 - **Depends On:** T034, T041, T042
 - **Target PR:** PR-06
@@ -771,7 +785,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **ID:** T046
 - **Title:** Real write E2E
 - **Phase:** Phase 5
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
 - **Depends On:** T039, T040, T041, T042, T043, T045
 - **Target PR:** PR-06
@@ -779,33 +793,33 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Acceptance Criteria:** 在隔离 workspace 真实写入一次；内容/目标与确认一致；拒绝、非法参数、越界和重复请求不产生额外写入。
 - **Tests:** 真实模型→校验→风险→人类批准→文件核验 E2E；保留脱敏 trace 和反例证据。
 - **Out of Scope:** 只用 Mock 写成功、在用户未授权位置写入。
-- **Notes:** PR-06 出口；若交付 T044 则额外核验真实 Issue URL；不以可选动作阻塞 P0。
+- **Notes:** PR-06 Enhancement 出口；若交付 T044 则额外核验真实 Issue URL；整个 Phase 5 均不阻塞 Core P0。
 
 ## Phase 6 — Memory
 
-复用现有 Memory；P0 只保证完整工具回合、关键上下文和连续运行。Conversation Summary 与 token-pressure trigger 为 P1。无真实需求不建设长期记忆。
+**Engineering Enhancement**：T047–T052 全部为 P1。Core 复用现有 OpenManus Memory 与当前任务级参数状态；完整工具回合窗口、裁剪后上下文保护、Conversation Summary、token-pressure trigger、多轮回归增强和 consecutive-run hardening 均可后续交付。真实 Core 多步调查与参数澄清仍由 T021/T068 验收，不以本 Phase 未完成阻塞。无真实需求不建设长期记忆。
 
 ### T047 — Tool-call round-safe window / prevent dangling tool result
 
 - **ID:** T047
 - **Title:** Tool-call round-safe window / prevent dangling tool result
 - **Phase:** Phase 6
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
-- **Depends On:** T046
+- **Depends On:** T021
 - **Target PR:** PR-07
 - **Goal:** 按完整工具回合裁剪现有窗口。
 - **Acceptance Criteria:** assistant tool_calls 与对应 tool results 成组保留/移除；多工具和图片消息关联有效；所有消息追加路径遵守窗口规则。
 - **Tests:** 窗口边界、批量 calls、缺失结果、图片和长 Observation 回归；请求消息协议检查。
 - **Out of Scope:** 新 Memory 平台、简单按消息条数截断调用对。
-- **Notes:** 核对 Memory.add_message/add_messages 与 think 的直接追加路径；不重写 Agent Loop。
+- **Notes:** Engineering Enhancement；核对 Memory.add_message/add_messages 与 think 的直接追加路径，不重写 Agent Loop；无需等待 Controlled Actions。
 
 ### T048 — Preserve task goal / critical parameters
 
 - **ID:** T048
 - **Title:** Preserve task goal / critical parameters
 - **Phase:** Phase 6
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
 - **Depends On:** T047, T019
 - **Target PR:** PR-07
@@ -850,7 +864,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **ID:** T051
 - **Title:** Multi-turn regression
 - **Phase:** Phase 6
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
 - **Depends On:** T047, T048
 - **Target PR:** PR-07
@@ -865,7 +879,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **ID:** T052
 - **Title:** Consecutive run lifecycle verification
 - **Phase:** Phase 6
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
 - **Depends On:** T035, T051
 - **Target PR:** PR-07
@@ -886,13 +900,13 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Phase:** Phase 7
 - **Priority:** P0
 - **Status:** TODO
-- **Depends On:** T027, T038, T046, T052
+- **Depends On:** T021, T030, T038
 - **Target PR:** PR-08a (Trace)
 - **Goal:** 将真实执行事件串成可审计任务记录。
-- **Acceptance Criteria:** 覆盖 task/step/routing/LLM/validation/clarification/approval/tool/retry/Observation/finish；准确区分失败、拒绝、未知和成功；输出前脱敏。
-- **Tests:** 三类调查、缺参、失败、受控写和取消的 trace 完整性；敏感值不落日志。
+- **Acceptance Criteria:** Core 覆盖 task/step/routing/LLM/validation/clarification/tool/retry/Observation/finish；准确区分失败、拒绝、未知和成功；输出前脱敏。启用 Controlled Actions 后才扩展 approval/write 事件。
+- **Tests:** 三类只读调查、缺参、失败和取消的 trace 完整性；敏感值不落日志；若 Phase 5 已交付，再增加受控写 trace 用例。
 - **Out of Scope:** 大型 observability、记录模型隐藏推理。
-- **Notes:** 复用现有日志；T027 routing 事件与 GitHub 日志已存在，补统一结构和全链路关联。
+- **Notes:** 复用 GitHub 日志及 T027 交付的 routing 事件，补统一结构和全链路关联；不依赖 T046/T052，Advanced Memory 未完成不阻塞 Trace。
 
 ### T054 — Stable task / step / tool IDs and trace event schema
 
@@ -919,8 +933,8 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Depends On:** T054
 - **Target PR:** PR-08a (Trace)
 - **Goal:** 按任务和调用归因成本。
-- **Acceptance Criteria:** provider usage 与估算分开；包含失败/重试/embedding/摘要；端到端、LLM、工具、人类等待分别计量；缺失 usage 标未知。
-- **Tests:** 多 attempt、连续 run、部分无 usage、等待/取消的计时和汇总一致性。
+- **Acceptance Criteria:** provider usage 与估算分开；包含失败/重试/embedding，若启用摘要则计入摘要成本；端到端、LLM、工具、人类等待分别计量；缺失 usage 标未知。
+- **Tests:** 多 attempt、多个独立任务、部分无 usage、等待/取消的计时和汇总一致性；同实例连续 run 的增强测试随 T052 加入。
 - **Out of Scope:** 用共享 LLM 累计差当可靠并发计数、编造缺失 token。
 - **Notes:** 不建设多租户统计；为最终 Benchmark 提供可核验原始数据。
 
@@ -931,13 +945,13 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Phase:** Phase 7
 - **Priority:** P0
 - **Status:** TODO
-- **Depends On:** T052, T054
+- **Depends On:** T021, T038, T054
 - **Target PR:** PR-08b (service/demo)
 - **Goal:** 提供薄任务服务，复用现有 Agent。
-- **Acceptance Criteria:** 支持启动、查询结果/状态、取消及生命周期清理；输入显式校验；最终成功按证据判断，不能照搬 terminate(success)。
+- **Acceptance Criteria:** 支持任务启动、查询结果/状态、取消及每个任务的资源清理；输入显式校验，Context 按任务隔离；最终成功按证据判断，不能照搬 terminate(success)。
 - **Tests:** API 生命周期、非法输入、异常/取消、隔离 Context 和真实只读任务 smoke。
 - **Out of Scope:** 重建 Runtime、多租户、Workflow Engine。
-- **Notes:** 保留 CLI；阻塞人机交互不得直接在事件循环调用，需 T057 一起验收。
+- **Notes:** 保留 CLI；Core 可为每个任务创建独立 Agent，复用现有 Memory 与任务级参数状态，不要求 T052 的同实例连续 run hardening；非阻塞澄清需 T057 一起验收。
 
 ### T057 — Non-blocking clarification / confirmation adapter
 
@@ -946,13 +960,13 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Phase:** Phase 7
 - **Priority:** P0
 - **Status:** TODO
-- **Depends On:** T018, T041, T056
+- **Depends On:** T018, T056
 - **Target PR:** PR-08b (service/demo)
-- **Goal:** 在 service 挂起/恢复人工交互。
-- **Acceptance Criteria:** 返回 pending 状态和操作绑定 ID；回复只恢复对应调用；拒绝/取消/迟到/重复回复安全；等待期间服务仍可响应其他请求。
-- **Tests:** 缺参和批准两条链路；多个 pending 请求隔离；取消、重复回复、超时及真实 E2E。
+- **Goal:** 在 service 非阻塞地挂起/恢复参数澄清，保留后续写入确认适配路线。
+- **Acceptance Criteria:** Core 要求返回 clarification pending 状态和调用绑定 ID；回复只恢复对应调用；取消/迟到/重复回复安全；等待期间服务仍可响应其他请求。写入批准仅在 Controlled Actions 启用后扩展并遵守 T040/T041。
+- **Tests:** 缺参→用户回复→merge→revalidation→真实 GitHub 执行；多个 pending 请求隔离、取消、重复回复、超时；T040/T041 交付后才加入批准/拒绝写入链路。
 - **Out of Scope:** 企业审批平台、将 AskHuman.input 直接包 HTTP。
-- **Notes:** 一个任务等待时不得发送含未闭合 tool call 的新模型请求。
+- **Notes:** P0 仅验收非阻塞参数澄清，不依赖 P1 的 T041；一个任务等待时不得发送含未闭合 tool call 的新模型请求。后续写入确认适配必须与 Controlled Actions 一起验收，不能复用已完成的 Core 验收冒充通过。
 
 ### T058 — Simple Demo UI
 
@@ -964,8 +978,8 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Depends On:** T055, T057
 - **Target PR:** PR-08b (service/demo)
 - **Goal:** 提供最小任务提交、结果和人工交互界面。
-- **Acceptance Criteria:** 可输入 repo/任务、查看来源与状态、补参、明确批准/拒绝具体操作；错误状态清晰。
-- **Tests:** 浏览器 smoke：调查、缺参、拒绝/批准与失败结果；确认目标和后端一致。
+- **Acceptance Criteria:** 可输入 repo/任务、查看来源与状态、补参；错误状态清晰。若启用 Controlled Actions，必须展示具体操作并支持明确批准/拒绝。
+- **Tests:** 浏览器 smoke：调查、缺参与失败结果；启用写动作后补充拒绝/批准测试并核对确认目标和后端一致。
 - **Out of Scope:** UI 框架重构、复杂仪表盘。
 - **Notes:** 时间不足可删除，P0 用 CLI/API 与可复现部署交付；若公开则必须通过 T061。
 
@@ -1004,15 +1018,15 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **ID:** T061
 - **Title:** Public demo safety restrictions
 - **Phase:** Phase 7
-- **Priority:** P0
+- **Priority:** P1
 - **Status:** TODO
-- **Depends On:** T046, T057, T059
+- **Depends On:** T062
 - **Target PR:** PR-08c (delivery)
-- **Goal:** 确保可部署 Demo 的暴露面受控。
-- **Acceptance Criteria:** 禁止任意 Shell/系统目录；仓库/workspace allowlist、凭据最小权限、输入/输出脱敏、资源预算及基础访问限制可验证；公网默认关闭写或限制到明确测试目标并逐次确认。
-- **Tests:** 外部内容诱导、越界、未确认写、任意工具调用、预算耗尽和泄密回归；部署配置核查。
+- **Goal:** 在真正公开公网 Demo 前验证暴露面与安全限制。
+- **Acceptance Criteria:** 禁止任意 Shell/系统目录；只读工具与仓库范围受控、凭据最小权限、输入/输出脱敏、资源预算及基础访问限制可验证；公网默认关闭写。若开放受限写，先验收 T034 与 Phase 5 完整安全链，限制测试目标、workspace allowlist 并逐次确认。
+- **Tests:** 只读公网配置的外部内容诱导、任意工具调用、预算耗尽和泄密回归；确认写能力关闭；只有启用写时才追加 T046 的越界/symlink/未确认/重复写测试。
 - **Out of Scope:** 企业 auth、多租户权限体系、公开任意代码执行。
-- **Notes:** 可使用现有托管访问控制或单实例简单限制；安全条件不满足则不公开该能力。
+- **Notes:** P1，仅公开公网时强制完成；依赖可复现部署，不要求先实现写能力。Core 的 local/server 受限部署不等待本项；安全条件不满足则不公开对应能力。
 
 ### T062 — Reproducible deployment
 
@@ -1021,13 +1035,13 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Phase:** Phase 7
 - **Priority:** P0
 - **Status:** TODO
-- **Depends On:** T059, T060, T061
+- **Depends On:** T059, T060
 - **Target PR:** PR-08c (delivery)
-- **Goal:** 交付可复现部署路径，满足 MVP 运行出口。
-- **Acceptance Criteria:** 有明确的构建/启动/配置/停机/清理命令和验证记录；第三方干净环境可运行；部署版本和限制可追踪。
-- **Tests:** 按文档在干净容器环境完整启动并完成调查/缺参/安全受控动作验收。
+- **Goal:** 交付 local/server reproducible deployment，满足 Core MVP 运行出口。
+- **Acceptance Criteria:** 有明确的构建/启动/配置/停机/清理命令和验证记录；第三方干净环境可运行；部署版本和限制可追踪。Core 为本地或受限访问的只读服务，不要求公网开放。
+- **Tests:** 按文档在干净容器环境完整启动并完成真实只读调查、缺参澄清和失败状态验收；不要求受控文件写。
 - **Out of Scope:** 生产级 SRE、多区域容灾、自动生产部署 Agent。
-- **Notes:** MVP 接受 online demo 或 reproducible deployment；此 P0 路径必须完成，不因未购买托管而阻塞。
+- **Notes:** P0 必须完成 reproducible deployment，不依赖 T061；公开上线才要求 T061/T063，不因未购买托管或未交付 P1 阻塞 Core。
 
 ### T063 — Online deployment
 
@@ -1036,7 +1050,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Phase:** Phase 7
 - **Priority:** P1
 - **Status:** TODO
-- **Depends On:** T062
+- **Depends On:** T061, T062
 - **Target PR:** PR-08c (delivery)
 - **Goal:** 将安全 Demo 部署到明确选择的托管环境。
 - **Acceptance Criteria:** 可访问 URL、部署版本、只读或受限写配置可核查；与可复现部署一致；费用/凭据由真实配置提供。
@@ -1070,13 +1084,13 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Phase:** Phase 8
 - **Priority:** P0
 - **Status:** TODO
-- **Depends On:** T028, T062
+- **Depends On:** T028
 - **Target PR:** PR-09 (evaluation/docs)
-- **Goal:** 冻结可复现、带标注的最终任务集。
-- **Acceptance Criteria:** 覆盖调查、缺参、错误参数、MCP、失败、受控动作和多轮；固定 repo/ref/Issue 快照或采集时间；明确期望证据、工具和 slot；与调参集分开。
-- **Tests:** 数据 schema/引用有效性检查、人工标注复核、预先冻结评分口径。
+- **Goal:** 在开发过程中逐步冻结可复现、带标注的 Core Benchmark 数据集。
+- **Acceptance Criteria:** Core 覆盖 Repository Understanding、Issue Investigation、Issue→Code、Missing Parameters、Invalid Parameters、Semantic Routing、Real MCP、Tool Failure/Timeout/Retry 和 multi-step investigation；固定 repo/ref/Issue 快照或采集时间，明确期望证据/工具/slot，与调参集分开。
+- **Tests:** 数据 schema/引用有效性检查、人工标注复核、预先冻结评分口径；按已完成的核心能力逐步补样本，最终 Core 数据集版本冻结。
 - **Out of Scope:** 仅重复三个 Demo case、事后剔除失败题。
-- **Notes:** 复用 v0 并补固定版本/标注；v0 DONE 不等于本项完成。
+- **Notes:** 主要依赖 T028，数据准备不等待 Docker/Deployment；复用 v0 并补版本/标注。Controlled Actions/Advanced Memory 仅在实际交付后增加独立 subset，未完成 P1 不阻塞 T065/T068/T073；v0 DONE 不等于本项完成。
 
 ### T066 — Original OpenManus baseline
 
@@ -1118,10 +1132,10 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Depends On:** T055, T065, T066, T067
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 运行最终版本并形成三组可比证据。
-- **Acceptance Criteria:** 固定 TaskPilot revision、K、索引/模型/工具版本和采样参数；保留所有尝试、失败和限流；人工等待策略一致并单列。
-- **Tests:** 真实 GitHub/MCP/受控文件系统集成；重复运行或明确样本/重复次数限制；审计 run manifest。
+- **Acceptance Criteria:** 固定 TaskPilot revision、K、索引/模型/工具版本和采样参数；Core 真实集成至少覆盖 GitHub REST、real MCP、parameter clarification、routing 和 reliability；保留所有尝试/失败/限流，人工等待策略一致并单列。
+- **Tests:** 真实 GitHub REST/MCP 与参数澄清、路由、可靠性、多步调查集成；重复运行或明确样本/重复次数限制；审计 run manifest。Phase 5 完成后才增加 Controlled Action subset，Advanced Memory 同理。
 - **Out of Scope:** Mock 产品能力、只挑最佳 run。
-- **Notes:** P1 未做则记录 disabled；所有对照统一相关配置，不能隐去成本。
+- **Notes:** 受控文件写和 Advanced Memory 不作为 P0 benchmark blocker；P1 未做记 disabled，选做 subset 单列且不改变 Core 分母；对照统一相关配置，不隐去成本。
 
 ### T069 — Tool Selection Accuracy / Task Success Rate
 
@@ -1148,7 +1162,7 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Depends On:** T055, T068
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 对比完整执行成本与耗时。
-- **Acceptance Criteria:** provider input/output、embedding、重试、摘要分别记账；缺失 usage 明示；报告端到端及分阶段延迟、人类等待、重复次数与聚合口径。
+- **Acceptance Criteria:** provider input/output、embedding、重试分别记账，摘要仅在启用时计入；缺失 usage 明示；报告端到端及分阶段延迟、人类等待、重复次数与聚合口径。
 - **Tests:** 汇总值与原始 usage/时间戳抽样核对；失败 attempts 计入；可重复运行计算。
 - **Out of Scope:** 只计最终成功请求、把估算混成实测。
 - **Notes:** 不将 PR-02 >100k→约1.9k 的单次观察当整体 Benchmark 提升。
@@ -1183,20 +1197,20 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Out of Scope:** 为补分扩大 Feature、未经授权升级上游。
 - **Notes:** 验收阻塞缺陷回原 Task 修复并重测；非 P0 改进仅记后续建议，不自动开工。
 
-### T073 — Final resume metrics / MVP exit review
+### T073 — Final resume metrics / Core MVP exit review
 
 - **ID:** T073
-- **Title:** Final resume metrics / MVP exit review
+- **Title:** Final resume metrics / Core MVP exit review
 - **Phase:** Phase 8
 - **Priority:** P0
 - **Status:** TODO
 - **Depends On:** T060, T062, T072
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 用真实结果完成最终交付并停止扩展。
-- **Acceptance Criteria:** README/最终报告/简历数字均能追溯 run 和计算口径；复核所有 P0 DONE、Exit Criteria 全满足；不夸大收益；冻结 MVP revision。
-- **Tests:** 核验数字和引用；运行当时全部 TaskPilot scope tests；按 Exit Criteria 核对真实 E2E、Docker、部署和文档证据。
+- **Acceptance Criteria:** README/最终报告/简历数字均能追溯真实 run 和计算口径；复核所有 Core P0 DONE、Core MVP Exit Criteria 全满足；不夸大收益；冻结 Core MVP revision；未实现 P1/P2 不阻塞交付。
+- **Tests:** 核验数字和引用；运行当时全部已交付 TaskPilot scope tests；按 Core MVP Exit Criteria 核对真实只读/GitHub/MCP E2E、Docker、可复现部署和文档证据；已交付 Enhancement subset 另附结果。
 - **Out of Scope:** 预写提升百分比、为了简历数字继续堆 Feature。
-- **Notes:** 若未优于 baseline 就如实报告绝对指标与失败分析；完成即停止新增 Feature。
+- **Notes:** 若未优于 baseline 就如实报告绝对指标与失败分析；Core P0 全完成即停止新增 Feature，Engineering Enhancements 留待后续独立授权。
 
 ## Explicit Deferred / Non-goals
 
@@ -1224,35 +1238,85 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 ## Time-budget cuts
 
-按以下顺序删减本次交付范围，保留 ID 和延期原因：
+按以下顺序延期本次交付范围，保留 Task ID、完整设计与延期原因：
 
-1. **P2：T064**，richer UI / advanced trace visualization。
-2. **P1：T063、T058**，online hosting 和 simple Demo UI；保留 P0 CLI/API、安全策略和可复现部署。
-3. **P1：T044、T036**，额外 GitHub Issue 写动作和 capability-equivalent fallback；保留最小受控文件写与明确失败。
-4. **P1：T049、T050**，Conversation Summary 与 token-pressure trigger；保留完整回合窗口、任务/关键参数和连续 run 验证。
+1. **T064 — P2**：richer UI / advanced trace visualization。
+2. **T063 — P1**：online deployment；不公开公网时也延期 T061 Public Demo Safety，保留 T062 可复现部署。
+3. **T058 — P1**：simple UI；Core 保留 CLI/API。
+4. **Phase 5 — P1（T039–T046）**：Controlled Actions 全部延期，相应 T034 非幂等写安全策略一起延期；Core 保持只读，不先上线缺少安全门禁的写工具。
+5. **Phase 6 — P1（T047–T052）**：Memory Enhancements 全部延期；Core 使用已有 Memory 和任务级参数状态。
+6. **T036 — P1**：capability-equivalent fallback；无等价能力就明确失败。
 
-上述六个 P1 和一个 P2 可整体延后；没有 P0 硬依赖它们。不得通过删验证、关安全门禁、跳过真实集成或伪造 Benchmark 来压缩 P0；若 P0 未通过，MVP 尚未完成。
+这覆盖全部 P1/P2；没有 Core P0 硬依赖它们。绝不能为了赶时间删除 Parameter Validation / Clarification、Semantic Router、Real MCP、Basic Reliability、Benchmark、Docker / reproducible startup、README / architecture 或可复现部署。不得删真实验证、伪造指标或绕过已启用能力的安全门禁；若 P0 未通过，Core MVP 尚未完成。
 
-## MVP Exit Criteria
+## Core MVP Exit Criteria
 
-以下全部满足并在 T073 附证据后，MVP 才可以停止开发：
+以下全部满足并在 T073 附证据后，Core MVP 才完成。所有检查针对真实只读业务闭环；P1/P2 不作为隐含前置条件。
 
-- [ ] **Real Repository Investigation works**：真实 Repository、Issue、Issue→Code 调查有来源和有效结果；T007–T012 历史验收在最终版本回归（T068/T073）。
-- [ ] **Parameter validation works**：required/type/enum/invalid JSON 不绕过 dispatch；T013–T015、T020、T021。
-- [ ] **Missing parameter clarification works**：缺关键参数询问、明确回复合并、重新校验后一次执行；T016–T019、T021。
-- [ ] **Semantic Tool Routing works**：真实 semantic retrieval、Top-K 和控制工具保留；K 来自实验；T022–T030。
-- [ ] **Real Tool/MCP execution works**：真实 GitHub Local Tool 和至少一种真实 MCP transport/server 的 discovery/call/cleanup 有证据；T020、T035、T038、T068。
-- [ ] **Basic reliability works**：isError 保留、明确结果状态、有界 timeout、分类重试与幂等读策略；T031–T035、T037–T038。
-- [ ] **Controlled action safety works**：至少一个真实受控动作通过 Validation → Risk Check → Human Confirmation → Execute；拒绝、越界、symlink、参数变更和重复提交不绕过；T039–T043、T045–T046。
-- [ ] **Memory essentials work**：完整回合、目标/关键参数保留，多轮与连续 run 生命周期通过；T047–T048、T051–T052。
-- [ ] **Tests pass for TaskPilot scope**：所有已交付 TaskPilot unit/integration/regression 检查通过，真实 E2E 另附记录；未运行项目明确 NOT VERIFIED；T073。
-- [ ] **Benchmark completed**：冻结数据集、原始 OpenManus 与同工具池 full-tool 两组参照、TaskPilot、真实指标、失败分析和复现方式齐备；T065–T072。
-- [ ] **README / architecture completed**：与最终功能和安全边界一致，命令和引用经过核查；T060、T073。
-- [ ] **Docker startup works**：干净镜像可启动并跑通真实任务，不依赖宿主环境；T059。
-- [ ] **Online demo or reproducible deployment exists**：至少 T062 的可复现部署通过，公开服务额外满足 T061；T063 在线托管可选。
-- [ ] **Resume metrics come from real benchmark**：每个简历数字能回溯数据、版本、运行与计算口径，没有预写提升；T073。
-- [ ] **All P0 are DONE**：Dashboard 重新计算 Remaining P0 = 0；无 P0 BLOCKED/IN_PROGRESS/TODO；所有 DONE 有相应验收证据。
+### Business
 
-**一旦 P0 全部完成且上述出口验收通过，停止继续增加 Feature。** P1/P2 未完成不阻止 MVP 停止；它们保留为延期记录。若最终 Benchmark 没有显示提升，如实报告绝对结果、权衡与失败，不因追求漂亮指标扩大 Scope。
+- [ ] Real Repository Investigation works：Repository Understanding、Issue Investigation、Issue→Code Investigation 均由真实证据支持，Dynamic Tool Calling 按 Observation 决定下一步；T007–T012 的历史验收在最终版本通过 T068/T073 回归。
 
-当前下一步仅是后续独立授权的 **T013 / PR-03: Parameter Validation and Clarification**；本次文档任务到总账合并即结束。
+### Reliable Execution
+
+- [ ] Parameter validation works：required/type/enum/invalid JSON 不绕过 dispatch；T013–T015、T020、T021。
+- [ ] Missing parameter clarification works：missing parameter → clarification → merge → revalidation → real GitHub execution，调用与结果关联正确；T016–T019、T021。
+
+### Routing
+
+- [ ] Semantic Tool Routing works：真实 semantic retrieval、候选选择和控制工具保留有效；T022–T028。
+- [ ] Top-K comes from experiments：多个 K 与同工具池全量对照已运行，K=3 仅是实验起点；T029–T030。
+
+### Integrations
+
+- [ ] Real GitHub Tool execution works：真实 GitHub REST 工具闭环通过；T021、T068。
+- [ ] At least one real MCP transport/server works：真实 connect/discovery/call/disconnect/reconnect 与参数调用有记录；T035/T038。T020 的 fixture 不能代替真实集成。
+
+### Reliability
+
+- [ ] Result status is correct：保留 MCP isError，业务失败不记成功；T031。
+- [ ] Timeout is bounded：per-tool/connection 预算有界，状态明确；T032。
+- [ ] Read retry classification works：幂等读取按类别有界重试，永久错误不重试；T033。
+- [ ] Real failure cases do not report false success：真实 GitHub/MCP 失败、超时或断连有证据；T035、T037–T038。不要求 T034 的写策略。
+
+### Productization
+
+- [ ] Structured execution trace works：task/step/tool/attempt 可关联，覆盖核心链路且脱敏，token/latency 可归因；T053–T055。
+- [ ] FastAPI / equivalent thin service works：任务启动/状态/取消、资源清理和非阻塞参数澄清通过；T056–T057。不要求写入确认或同实例连续 run hardening。
+- [ ] Docker startup works：干净镜像可启动并完成真实只读任务，不依赖宿主环境；T059。
+- [ ] README / architecture complete：与最终 Core 功能及边界一致，命令和引用核验通过；T060、T073。
+- [ ] Reproducible deployment exists：local/server 受限部署可按文档复现；T062。公网安全/上线 T061/T063 非 Core blocker。
+
+### Evaluation
+
+- [ ] Final benchmark dataset frozen：Core 场景、数据版本、标注和评分口径已冻结；T065。
+- [ ] Original OpenManus baseline run：固定上游参照已运行，unsupported/NOT VERIFIED 与分母明确；T066。
+- [ ] Same-tool-pool full-tool baseline run：同工具池全量对照已运行；T067。
+- [ ] TaskPilot comparison run：真实 GitHub REST、MCP、clarification、routing、reliability、多步调查已测；T068。
+- [ ] Tool Selection Accuracy measured；Task Success Rate measured，任务成功按证据判定而非 terminate(success)；T069。
+- [ ] Token Usage measured；Latency measured，失败/重试成本、人类等待和未知 usage 口径明确；T070。
+- [ ] Parameter / Slot metrics measured，字段标注与真实调用可核验；T071。
+- [ ] Failure analysis completed，原始记录、配置、命令与评分可复现；T072。
+- [ ] Resume metrics traceable to real runs：每个简历数字可回溯真实数据、版本与计算口径；T073。
+
+### Quality
+
+- [ ] All Core MVP P0 tasks DONE：Dashboard 重算 Remaining P0 = 0；无 P0 BLOCKED/IN_PROGRESS/TODO；DONE 均有相应验收证据。
+- [ ] TaskPilot scope tests pass：所有已交付范围的 unit/integration/regression 检查通过，真实 E2E 另附记录；未运行项明确 NOT VERIFIED；T073。
+- [ ] No fabricated metrics：无预写提升、无将 Mock 当产品集成、无用单次 context reduction 冒充整体 Benchmark。
+
+**一旦 Core P0 全部完成且上述出口验收通过，停止继续增加 Feature。** 即使 Benchmark 没有提升，也如实报告绝对结果、权衡与失败；不为追求漂亮指标扩大 Scope。
+
+## Engineering Enhancements
+
+以下继续保留在 Ledger，可在后续独立授权后形成 **TaskPilot Extended MVP**，但不阻塞当前 10～15 天 Core MVP：
+
+- Controlled Developer Actions、Risk Check / Human Confirmation、workspace write、approval binding、path allowlist、symlink hardening、duplicate write protection：T034、T039–T046。
+- Advanced Memory、round-safe window、Conversation Summary、token-pressure summary、多轮和 consecutive-run lifecycle hardening：T047–T052。
+- Simple / richer Demo UI 与 advanced trace visualization：T058、T064（Stretch）。
+- Public Demo Safety 与 public online deployment：T061、T063；公开上线前必须通过公网安全验收。
+- Capability-equivalent fallback：T036；无真实等价能力不制造万能 fallback。
+
+未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
+
+当前下一步仍为 **T013 / PR-03: Parameter Validation and Clarification**；Current Phase 保持 Phase 2 — Reliable Parameter Execution。本次 Scope Calibration 合并即结束，不开始 PR-03。
