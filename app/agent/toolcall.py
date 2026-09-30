@@ -10,6 +10,8 @@ from app.logger import logger
 from app.prompt.toolcall import NEXT_STEP_PROMPT, SYSTEM_PROMPT
 from app.schema import TOOL_CHOICE_TYPE, AgentState, Message, ToolCall, ToolChoice
 from app.tool import CreateChatCompletion, Terminate, ToolCollection
+from app.tool.ask_human import AskHuman
+from app.tool.tool_collection import MissingParameterFailure
 
 
 TOOL_CALL_REQUIRED = "Tool calls required but none provided"
@@ -198,6 +200,29 @@ class ToolCallAgent(ReActAgent):
         try:
             logger.info(f"🔧 Activating tool: '{name}'...")
             result = await self.available_tools.execute(name=name, tool_input=args)
+            if isinstance(result, MissingParameterFailure):
+                missing = [
+                    field
+                    for field in result.missing_fields
+                    if field not in self._trusted_required_fields()
+                ]
+                if missing:
+                    question = (
+                        f"Tool '{name}' needs required parameters: {', '.join(missing)}. "
+                        "Please provide them, or cancel."
+                    )
+                    try:
+                        await AskHuman().execute(inquire=question)
+                    except EOFError:
+                        pass
+                    return (
+                        f"Error: Tool '{name}' validation failed: required parameters missing. "
+                        "Clarification requested; original tool not executed."
+                    )
+                return (
+                    f"Error: Tool '{name}' validation failed: required parameters are "
+                    "available in trusted context; original tool not executed."
+                )
 
             # Handle special tools
             await self._handle_special_tool(name=name, result=result)
@@ -219,6 +244,9 @@ class ToolCallAgent(ReActAgent):
             error_msg = f"⚠️ Tool '{name}' encountered a problem: {str(e)}"
             logger.exception(error_msg)
             return f"Error: {error_msg}"
+
+    def _trusted_required_fields(self) -> set[str]:
+        return set()
 
     async def _handle_special_tool(self, name: str, result: Any, **kwargs):
         """Handle special tool execution and state changes"""

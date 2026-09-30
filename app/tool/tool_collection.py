@@ -26,6 +26,10 @@ _SUPPORTED_SCHEMA_KEYWORDS = {
 }
 
 
+class MissingParameterFailure(ToolFailure):
+    missing_fields: List[str]
+
+
 def _unsupported_schema_keyword(schema: Any) -> str | None:
     if not isinstance(schema, dict):
         return None
@@ -98,8 +102,23 @@ class ToolCollection:
             return ToolFailure(
                 error=f"Tool '{name}' has unsupported schema keyword: {unsupported}"
             )
-        error = next(Draft7Validator(tool.parameters).iter_errors(tool_input), None)
-        if error:
+        errors = list(Draft7Validator(tool.parameters).iter_errors(tool_input))
+        missing_fields = list(
+            dict.fromkeys(
+                ".".join([*(str(part) for part in error.absolute_path), field])
+                for error in errors
+                if error.validator == "required"
+                for field in error.validator_value
+                if field not in error.instance
+            )
+        )
+        if missing_fields:
+            return MissingParameterFailure(
+                error=f"Tool '{name}' validation failed: required parameters missing",
+                missing_fields=missing_fields,
+            )
+        if errors:
+            error = errors[0]
             path = "$" + "".join(f"[{part!r}]" for part in error.absolute_path)
             return ToolFailure(
                 error=f"Tool '{name}' validation failed at {path}: {error.validator}"

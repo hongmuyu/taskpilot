@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 2 — Reliable Parameter Execution
-- Current PR: PR-03 — Parameter Validation and Clarification（进行中，T013–T015 完成）
-- Next Task: T016 — Missing parameter detection / clarification trigger（未启动）
+- Current PR: PR-03 — Parameter Validation and Clarification（进行中，T013–T016 完成）
+- Next Task: T017 — Clarification response merge（未启动）
 - Total Tasks: 73
-- Completed: 15
-- TODO: 57
+- Completed: 16
+- TODO: 56
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 38
+- Remaining P0: 37
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-09-29；功能基线 main `7ca8a9b02fea07a8de476fdf68ed45e919ba1e28`
+- State verified: 2026-09-30；功能基线 main `7ca8a9b02fea07a8de476fdf68ed45e919ba1e28`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 目前已实施 T013–T015，T016–T021 尚未启动。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 目前已实施 T013–T016，T017–T021 尚未启动。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 15 + 57 + 1 + 0 + 0 = 73；剩余 38 + 19 + 1 = 58。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 16 + 56 + 1 + 0 + 0 = 73；剩余 37 + 19 + 1 = 57。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -42,7 +42,7 @@
 
 **Stretch — P2**：有时间再做，例如更丰富 UI 和高级 trace visualization；不影响当前 Core 出口。
 
-Phase 编号和 PR 标识保留完整路线图，不代表必须逐阶段串行交付。Core 可按 PR-03 → PR-04 → PR-05 的 P0 → PR-08 的 P0 → PR-09 完成，跳过 Phase 5/6；T065 在 T028 后即可逐步准备和冻结，不等待部署。具体执行以依赖图为准，下一任务为 T016 / PR-03，尚未启动。
+Phase 编号和 PR 标识保留完整路线图，不代表必须逐阶段串行交付。Core 可按 PR-03 → PR-04 → PR-05 的 P0 → PR-08 的 P0 → PR-09 完成，跳过 Phase 5/6；T065 在 T028 后即可逐步准备和冻结，不等待部署。具体执行以依赖图为准，下一任务为 T017 / PR-03，尚未启动。
 
 Core 保持 read-only：不启用写工具即可延期整套写入增强。若后续启用任何副作用能力，Validation、Risk Check、Human Confirmation、路径边界和去重要求仍完整生效，不能以降级 P1 为由跳过。只读服务仍需保留现有工具范围、参数校验、凭据保护和任务资源边界；公网专项安全 T061 仅在公开部署前验收。
 
@@ -71,7 +71,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 
 - Phase 0：T001–T003，Foundation，PR-00 / PR-01，DONE。
 - Phase 1：T004–T012，Real Business Loop，PR-02，DONE。
-- Phase 2：T013–T021，Reliable Parameter Execution，PR-03，进行中（T013–T015 完成）。
+- Phase 2：T013–T021，Reliable Parameter Execution，PR-03，进行中（T013–T016 完成）。
 - Phase 3：T022–T030，Tool Routing，PR-04。
 - Phase 4：T031–T038，Reliability，PR-05。
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
@@ -316,7 +316,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - **Acceptance Criteria:** 畸形 JSON、顶层 list/null/scalar 均不执行；错误关联原 call ID；合法空 object 依 schema 判断。
 - **Tests:** 畸形/截断 JSON、非 object、空参数及后续修正回归。
 - **Out of Scope:** 自动猜测或静默修复关键参数。
-- **Notes:** `ToolCallAgent.execute_tool` 严格解析原始 arguments；malformed/truncated/空字符串及非标准 `NaN`/`Infinity` 返回 invalid JSON，顶层 list/null/scalar 返回 JSON object 错误，均在 `ToolCollection.execute` 前结束。`{}` 原样交给 T013/T014 schema 判断；`act()` 用原 call ID 生成 tool message，修正后合法调用可在同一 Agent 上执行一次。`tests/taskpilot/test_invalid_tool_json.py` 13 passed，T013–T015 与现有只读回归合并 75 passed（2026-09-29）。全量 `pytest --maxfail=1` 在无关 sandbox 用例因容器 Python 3.12.14 与固定断言 3.10 不符而退出，完整全量结果 NOT VERIFIED。真实 provider 的修正回合本轮 NOT VERIFIED；缺参澄清属于 T016，T016–T021 未启动。
+- **Notes:** `ToolCallAgent.execute_tool` 严格解析原始 arguments；malformed/truncated/空字符串及非标准 `NaN`/`Infinity` 返回 invalid JSON，顶层 list/null/scalar 返回 JSON object 错误，均在 `ToolCollection.execute` 前结束。`{}` 原样交给 T013/T014 schema 判断；`act()` 用原 call ID 生成 tool message，修正后合法调用可在同一 Agent 上执行一次。`tests/taskpilot/test_invalid_tool_json.py` 13 passed，T013–T015 与现有只读回归合并 75 passed（2026-09-29）。全量 `pytest --maxfail=1` 在无关 sandbox 用例因容器 Python 3.12.14 与固定断言 3.10 不符而退出，完整全量结果 NOT VERIFIED。真实 provider 的修正回合本轮 NOT VERIFIED；缺参澄清由后续 T016 单独完成。
 
 ### T016 — Missing parameter detection / clarification trigger
 
@@ -324,7 +324,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - **Title:** Missing parameter detection / clarification trigger
 - **Phase:** Phase 2
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T014, T015
 - **Target PR:** PR-03
 - **Goal:** 缺关键参数时由执行器强制澄清。
@@ -332,6 +332,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - **Tests:** 不同缺参组合、缺仓库入口、取消、错误回复；断言不是靠模型主动选 AskHuman。
 - **Out of Scope:** 模型补猜仓库、目标路径或授权。
 - **Notes:** 复用 CLI AskHuman 交互；服务端非阻塞适配另见 T057。
+- **Evidence (2026-09-30):** `ToolCollection.execute` 从已有 Draft7 `required` 错误返回缺失字段，`ToolCallAgent.execute_tool` 在真实 Tool 执行前直接触发 CLI `AskHuman`，不依赖模型选择该工具。RepositoryInvestigationAgent 只对已绑定的可信 repository/owner/repo/ref 免问；不注入参数或恢复调用。单字段、多字段、无 context、可信 context、取消/空/无效回复、call ID 和 MCP 零远端调用由 `tests/taskpilot/test_missing_parameter_clarification.py` 覆盖。T013–T016 相关测试 60 passed，`tests/taskpilot` 73 passed；真实交互及 service/non-blocking 行为 NOT VERIFIED，参数 merge/resume 属 T017/T018。
 
 ### T017 — Clarification response merge
 

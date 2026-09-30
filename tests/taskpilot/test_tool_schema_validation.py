@@ -105,7 +105,8 @@ def call(name, arguments):
         ({"meta": {"owner": "octo", "extra": 1}}, None, "additionalProperties"),
     ],
 )
-async def test_invalid_fields_never_dispatch(updates, missing, keyword):
+async def test_invalid_fields_never_dispatch(monkeypatch, updates, missing, keyword):
+    monkeypatch.setattr("builtins.input", lambda prompt: "cancel")
     tool = SchemaProbe()
     agent = ToolCallAgent(available_tools=ToolCollection(tool))
     arguments = copy.deepcopy(VALID)

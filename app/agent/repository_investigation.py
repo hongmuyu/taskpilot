@@ -69,5 +69,11 @@ class RepositoryInvestigationAgent(ToolCallAgent):
             ),
         )
 
+    def _trusted_required_fields(self) -> set[str]:
+        fields = {"repository", "owner", "repo"}
+        if self.repository_context.ref:
+            fields.add("ref")
+        return fields
+
     async def cleanup(self) -> None:
         await self.github_client.aclose()

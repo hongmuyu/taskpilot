@@ -108,7 +108,10 @@ async def test_empty_object_reaches_schema_and_executes_when_allowed():
 
 
 @pytest.mark.asyncio
-async def test_empty_object_reaches_schema_and_stays_unexecuted_when_required():
+async def test_empty_object_reaches_schema_and_stays_unexecuted_when_required(
+    monkeypatch,
+):
+    monkeypatch.setattr("builtins.input", lambda prompt: "cancel")
     tool = CountingTool()
     collection = CountingCollection(tool)
     agent = ToolCallAgent(available_tools=collection)
