@@ -58,11 +58,11 @@ botocore==1.37.38
     #   s3transfer
 brotli==1.2.0
     # via crawl4ai
-browsergym==0.13.3
+browsergym==0.14.3
     # via -r requirements.txt
-browsergym-assistantbench==0.13.3
+browsergym-assistantbench==0.14.3
     # via browsergym
-browsergym-core==0.13.3
+browsergym-core==0.14.3
     # via
     #   browsergym
     #   browsergym-assistantbench
@@ -72,13 +72,13 @@ browsergym-core==0.13.3
     #   browsergym-webarena
     #   browsergym-workarena
     #   weblinx-browsergym
-browsergym-experiments==0.13.3
+browsergym-experiments==0.14.3
     # via browsergym
-browsergym-miniwob==0.13.3
+browsergym-miniwob==0.14.3
     # via browsergym
-browsergym-visualwebarena==0.13.3
+browsergym-visualwebarena==0.14.3
     # via browsergym
-browsergym-webarena==0.13.3
+browsergym-webarena==0.14.3
     # via
     #   browsergym
     #   browsergym-visualwebarena
@@ -351,7 +351,7 @@ pillow==10.4.0
     #   libwebarena
     #   scikit-image
     #   weblinx-browsergym
-playwright==1.51.0
+playwright==1.63.0
     # via
     #   -r requirements.txt
     #   browsergym-core
@@ -568,7 +568,7 @@ urllib3==2.8.0
     #   botocore
     #   docker
     #   requests
-uv==0.12.19
+uv==0.12.21
     # via -r requirements.txt
 uvicorn==0.34.3
     # via
