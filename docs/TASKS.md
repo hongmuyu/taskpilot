@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 2 — Reliable Parameter Execution
-- Current PR: PR-03 — Parameter Validation and Clarification（进行中，T013–T019 完成）
-- Next Task: T020 — Local Tool / MCP Tool schema compatibility（未启动）
+- Current PR: PR-03 — Parameter Validation and Clarification（进行中，T013–T020 完成）
+- Next Task: T021 — Parameter regression tests / real E2E validation（未启动）
 - Total Tasks: 73
-- Completed: 19
-- TODO: 53
+- Completed: 20
+- TODO: 52
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 34
+- Remaining P0: 33
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
 - State verified: 2026-10-04；功能基线 main `7ca8a9b02fea07a8de476fdf68ed45e919ba1e28`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 目前已实施 T013–T019，T020–T021 尚未启动。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 目前已实施 T013–T020，T021 尚未启动。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 19 + 53 + 1 + 0 + 0 = 73；剩余 34 + 19 + 1 = 54。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 20 + 52 + 1 + 0 + 0 = 73；剩余 33 + 19 + 1 = 53。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -42,7 +42,7 @@
 
 **Stretch — P2**：有时间再做，例如更丰富 UI 和高级 trace visualization；不影响当前 Core 出口。
 
-Phase 编号和 PR 标识保留完整路线图，不代表必须逐阶段串行交付。Core 可按 PR-03 → PR-04 → PR-05 的 P0 → PR-08 的 P0 → PR-09 完成，跳过 Phase 5/6；T065 在 T028 后即可逐步准备和冻结，不等待部署。具体执行以依赖图为准，下一任务为 T020 / PR-03，尚未启动。
+Phase 编号和 PR 标识保留完整路线图，不代表必须逐阶段串行交付。Core 可按 PR-03 → PR-04 → PR-05 的 P0 → PR-08 的 P0 → PR-09 完成，跳过 Phase 5/6；T065 在 T028 后即可逐步准备和冻结，不等待部署。具体执行以依赖图为准，下一任务为 T021 / PR-03，尚未启动。
 
 Core 保持 read-only：不启用写工具即可延期整套写入增强。若后续启用任何副作用能力，Validation、Risk Check、Human Confirmation、路径边界和去重要求仍完整生效，不能以降级 P1 为由跳过。只读服务仍需保留现有工具范围、参数校验、凭据保护和任务资源边界；公网专项安全 T061 仅在公开部署前验收。
 
@@ -71,7 +71,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 
 - Phase 0：T001–T003，Foundation，PR-00 / PR-01，DONE。
 - Phase 1：T004–T012，Real Business Loop，PR-02，DONE。
-- Phase 2：T013–T021，Reliable Parameter Execution，PR-03，进行中（T013–T019 完成）。
+- Phase 2：T013–T021，Reliable Parameter Execution，PR-03，进行中（T013–T020 完成）。
 - Phase 3：T022–T030，Tool Routing，PR-04。
 - Phase 4：T031–T038，Reliability，PR-05。
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
@@ -388,7 +388,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - **Title:** Local Tool / MCP Tool schema compatibility
 - **Phase:** Phase 2
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T014, T018
 - **Target PR:** PR-03
 - **Goal:** 对接 BaseTool.parameters 与 MCP-style inputSchema 的参数校验输入。
@@ -396,6 +396,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - **Tests:** 现有五个 Local Tool 回归；deterministic fixture / isolated schema tests 覆盖合法、非法、缺参及不支持的 schema feature；非法参数不触发 fixture dispatch。
 - **Out of Scope:** PR-03 的真实 MCP connect/discovery/server call/disconnect/reconnect；假装支持任意 JSON Schema、替换 GitHub Adapter。
 - **Notes:** 保持 P0，但 PR-03 仅验收 schema compatibility；完整真实 MCP lifecycle 和真实 MCP 参数执行由 T035/T038 验收，不是 PR-03 blocker。
+- **Evidence (2026-10-04):** 无生产校验代码变更。Local `BaseTool.parameters` 与隔离 MCP fixture 的 `inputSchema`（经 `MCPClients._initialize_and_list_tools` 映射为 `MCPClientTool.parameters`）均由现有 `ToolCollection.execute` 的 Draft 7 boundary 校验。`tests/taskpilot/test_local_mcp_schema_compatibility.py` 9 passed：验证公开工具名的 sanitize/prefix、原始 MCP call 名及 schema 映射；两条路径的 required、type（含 bool 不作为 integer）、enum、additionalProperties 非法输入均零 fixture dispatch，合法输入各执行一次。`pattern`、`oneOf`、`$schema` 等不支持的 feature 在 dispatch 前明确报告 unsupported；无静默放行或第二套 schema。T013–T020 相关测试 102 passed，五个 GitHub Local Tools 的 `tests/taskpilot/test_github_tools.py` 13 passed，`tests/taskpilot` 115 passed。全量 `pytest --maxfail=1` 在无关 sandbox 用例因断言 Python 3.10、实际 Python 3.12.14 而停止（1 failed、9 passed），完整全量结果 NOT VERIFIED；真实 MCP lifecycle/server call 与真实模型/GitHub E2E 本轮 NOT VERIFIED，分别留待 T035/T038、T021。
 
 ### T021 — Parameter regression tests / real E2E validation
 
