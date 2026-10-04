@@ -1,14 +1,14 @@
-pydantic~=2.10.6
+pydantic~=2.13.5
 jsonschema~=4.26.0
-openai~=1.66.3
+openai~=3.22.1
 tenacity~=9.0.0
 pyyaml~=6.0.2
 loguru~=0.7.3
 structlog>=24.1.0,<26.0.0
 numpy
 datasets~=3.4.1
-fastapi~=0.115.11
-tiktoken~=0.9.0
+fastapi~=0.142.2
+tiktoken~=0.14.0
 
 html2text~=2024.2.26
 gymnasium~=1.1.1
@@ -22,7 +22,7 @@ baidusearch~=1.0.3
 duckduckgo_search~=7.5.3
 
 aiofiles~=24.1.0
-pydantic_core~=2.27.2
+pydantic_core~=2.49.0
 colorama~=0.4.6
 playwright~=1.51.0
 
