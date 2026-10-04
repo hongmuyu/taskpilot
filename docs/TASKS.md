@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 3 — Tool Routing
-- Current PR: PR-04 — Tool Routing（T022 DONE；T023–T030 未启动）
-- Next Task: T023 — In-memory embedding index（TODO，未启动；需单独授权）
+- Current PR: PR-04 — Tool Routing（T022–T023 DONE；T024–T030 未启动）
+- Next Task: T024 — Semantic tool retrieval（TODO，未启动；需单独授权）
 - Total Tasks: 73
-- Completed: 22
-- TODO: 50
+- Completed: 23
+- TODO: 49
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 31
+- Remaining P0: 30
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-04；PR-04 起点 main `8370495e5531fbefe76f56e93b428e01007dd491`
+- State verified: 2026-10-05；PR-04 起点 main `8370495e5531fbefe76f56e93b428e01007dd491`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已合并；PR-04 仅实施并验收 T022，尚未合并。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已合并；PR-04 已实施并验收 T022–T023，尚未合并。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 22 + 50 + 1 + 0 + 0 = 73；剩余 31 + 19 + 1 = 51。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 23 + 49 + 1 + 0 + 0 = 73；剩余 30 + 19 + 1 = 50。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -72,7 +72,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 0：T001–T003，Foundation，PR-00 / PR-01，DONE。
 - Phase 1：T004–T012，Real Business Loop，PR-02，DONE。
 - Phase 2：T013–T021，Reliable Parameter Execution，PR-03，任务 DONE；GitHub PR #13。
-- Phase 3：T022–T030，Tool Routing，PR-04，T022 DONE；T023–T030 TODO。
+- Phase 3：T022–T030，Tool Routing，PR-04，T022–T023 DONE；T024–T030 TODO。
 - Phase 4：T031–T038，Reliability，PR-05。
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
@@ -438,14 +438,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** In-memory embedding index
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T022
 - **Target PR:** PR-04
 - **Goal:** 为小型工具池建立可重建内存索引。
 - **Acceptance Criteria:** 模型/向量版本可追踪；工具新增、删除、schema/metadata 变化使索引更新；失败可明确反馈。
 - **Tests:** 固定向量 fixture 检索、空工具池、更新/失效测试；真实 embedding smoke。
 - **Out of Scope:** Qdrant、持久向量服务、大规模检索平台。
-- **Notes:** 先固定真实 embedding 方案和成本记录，避免为凑工具数量引入新集成。
+- **Evidence (2026-10-05):** `InMemoryToolIndex` 从当前 `ToolCollection.to_metadata()` 生成规范化文档和内容指纹；每次 `refresh`/`search` 比对指纹及 model ID、revision、vector version，新增/删除或 schema/metadata 原位变化时惰性失效并重建。空池返回空结果且不调用 embedding；构建失败清空旧快照并明确报错，查询失败明确报错；并发查询使用进入查询时的完整快照。真实 backend 复用现有锁定环境的 `transformers` 4.50.3、CPU `torch` 2.12.1 和 numpy，不增加依赖或远程向量服务；模型 `sentence-transformers/paraphrase-MiniLM-L3-v2` 固定 revision `4ca70771034acceecb2e72475f72050fcdde4ddc`，向量版本 `tool-metadata-json-v1/cosine-v1/mean-pool-128-v1`。真实本地 smoke：384 维，`find bug reports` 查询返回 `issue_search` 0.2057、`file_read` 0.165；首次约 418.99 秒（含 69.6 MB 模型下载），缓存后新进程加载加查询约 1.82 秒，热查询低于 0.01 秒（单次小样本，仅作成本参考）。固定向量 deterministic 8 passed；TaskPilot 加 baseline/browser MCP fixture 回归 148 passed。全量 `pytest --maxfail=1` 在无关 sandbox Python 3.10/3.12.14 断言处为 9 passed、1 failed，其余全量 NOT VERIFIED。真实 MCP server E2E、task+observation retrieval、Top-K、不同运行环境中的模型下载/性能均 NOT VERIFIED；T024–T030 未启动。
 
 ### T024 — Semantic tool retrieval
 
@@ -1324,4 +1324,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 仅完成 T022，T023–T030 保持 TODO，需单独授权。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 仅完成 T022–T023，T024–T030 保持 TODO，需单独授权。
