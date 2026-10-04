@@ -70,7 +70,11 @@ def call(arguments, call_id="missing-call"):
     "required,arguments,expected_fields",
     [
         (["path"], {}, ["path"]),
-        (["repository", "path", "issue_number"], {}, ["repository", "path", "issue_number"]),
+        (
+            ["repository", "path", "issue_number"],
+            {},
+            ["repository", "path", "issue_number"],
+        ),
     ],
 )
 async def test_missing_fields_force_clarification_before_real_execution(
@@ -108,11 +112,14 @@ async def test_trusted_repository_context_is_not_asked_again(monkeypatch):
         }
     )
     agent = RepositoryInvestigationAgent.create(
-        RepositoryContext.parse("octo-org/sample-repo"), client=GitHubClient()
+        RepositoryContext.parse("octo-org/sample-repo", source="user_input"),
+        client=GitHubClient(),
     )
     agent.available_tools = ToolCollection(tool)
     prompts = []
-    monkeypatch.setattr("builtins.input", lambda prompt: prompts.append(prompt) or "README.md")
+    monkeypatch.setattr(
+        "builtins.input", lambda prompt: prompts.append(prompt) or "README.md"
+    )
     agent.tool_calls = [call({})]
 
     try:
@@ -123,8 +130,8 @@ async def test_trusted_repository_context_is_not_asked_again(monkeypatch):
     assert len(prompts) == 1
     assert "path" in prompts[0]
     assert "repository" not in prompts[0]
-    assert "clarification" in result.lower()
-    assert tool.calls == []
+    assert "executed" in result
+    assert tool.calls == [{"repository": "octo-org/sample-repo", "path": "README.md"}]
 
 
 @pytest.mark.asyncio
@@ -137,7 +144,9 @@ async def test_without_repository_context_asks_for_repository(monkeypatch):
     )
     agent = ToolCallAgent(available_tools=ToolCollection(tool))
     prompts = []
-    monkeypatch.setattr("builtins.input", lambda prompt: prompts.append(prompt) or "cancel")
+    monkeypatch.setattr(
+        "builtins.input", lambda prompt: prompts.append(prompt) or "cancel"
+    )
 
     await agent.execute_tool(call({}))
 
@@ -148,12 +157,13 @@ async def test_without_repository_context_asks_for_repository(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_only_trusted_repository_field_missing_does_not_prompt_or_dispatch(
+async def test_only_trusted_repository_field_missing_executes_without_prompt(
     monkeypatch,
 ):
     tool = CountingTool(parameters={**SCHEMA, "required": ["repository"]})
     agent = RepositoryInvestigationAgent.create(
-        RepositoryContext.parse("octo-org/sample-repo"), client=GitHubClient()
+        RepositoryContext.parse("octo-org/sample-repo", source="user_input"),
+        client=GitHubClient(),
     )
     agent.available_tools = ToolCollection(tool)
 
@@ -166,9 +176,8 @@ async def test_only_trusted_repository_field_missing_does_not_prompt_or_dispatch
     finally:
         await agent.cleanup()
 
-    assert "required" in result
-    assert "trusted context" in result
-    assert tool.calls == []
+    assert "executed" in result
+    assert tool.calls == [{"repository": "octo-org/sample-repo"}]
 
 
 @pytest.mark.asyncio
@@ -184,7 +193,9 @@ async def test_mcp_schema_missing_parameter_clarifies_without_remote_call(monkey
     )
     agent = ToolCallAgent(available_tools=ToolCollection(tool))
     prompts = []
-    monkeypatch.setattr("builtins.input", lambda prompt: prompts.append(prompt) or "cancel")
+    monkeypatch.setattr(
+        "builtins.input", lambda prompt: prompts.append(prompt) or "cancel"
+    )
     command = ToolCall(
         id="mcp-missing",
         function=Function(name=tool.name, arguments="{}"),

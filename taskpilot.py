@@ -6,7 +6,7 @@ from app.taskpilot.github_tools import RepositoryContext
 
 
 async def run(repository: str, prompt: str, ref: str | None = None) -> str:
-    context = RepositoryContext.parse(repository, ref=ref)
+    context = RepositoryContext.parse(repository, ref=ref, source="user_input")
     agent = RepositoryInvestigationAgent.create(context)
     try:
         return await agent.run(prompt)

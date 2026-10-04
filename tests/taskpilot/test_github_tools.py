@@ -285,7 +285,7 @@ async def test_investigation_agent_exposes_only_read_only_github_tools_and_obser
         from app.agent.repository_investigation import RepositoryInvestigationAgent
         from app.schema import Function, ToolCall
 
-    context = RepositoryContext.parse("octo-org/sample-repo")
+    context = RepositoryContext.parse("octo-org/sample-repo", source="user_input")
     mock_api = api_client(
         lambda request: httpx.Response(
             200, json={"items": [{"number": 12, "title": "MCP timeout"}]}

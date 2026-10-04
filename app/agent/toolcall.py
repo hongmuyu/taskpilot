@@ -78,6 +78,9 @@ class ToolCallAgent(ReActAgent):
     closed_pending_call_ids: set[str] = Field(
         default_factory=set, exclude=True, repr=False
     )
+    tool_call_sources: dict[str, dict[str, str]] = Field(
+        default_factory=dict, exclude=True, repr=False
+    )
     _current_base64_image: Optional[str] = None
 
     max_steps: int = 30
@@ -249,18 +252,37 @@ class ToolCallAgent(ReActAgent):
                 return f"Error: Tool call ID '{command.id}' already has a different pending call"
             return f"Error: Clarification pending for '{name}'; original tool not executed."
 
+        context_arguments = self._trusted_context_arguments(name)
+        conflicts = [
+            field
+            for field, value in context_arguments.items()
+            if field in args and args[field] != value
+        ]
+        if conflicts:
+            return (
+                f"Error: Tool '{name}' arguments conflict with confirmed repository "
+                f"context: {', '.join(conflicts)}. Explicitly switch context or correct "
+                "the call; original tool not executed."
+            )
+        sources = {field: "tool_call" for field in args}
+        for field, value in context_arguments.items():
+            if field not in args:
+                args[field] = value
+                sources[field] = "repository_context:user_input"
+        self.tool_call_sources[command.id] = sources
+
         try:
             logger.info(f"🔧 Activating tool: '{name}'...")
             result = await self.available_tools.execute(name=name, tool_input=args)
             if isinstance(result, MissingParameterFailure):
-                original = copy.deepcopy(args)
+                original = json.loads(command.function.arguments)
                 pending = PendingToolCall(
                     tool_call_id=command.id,
                     tool_name=name,
                     original_arguments_json=command.function.arguments,
                     original_arguments=original,
-                    arguments=copy.deepcopy(original),
-                    sources={field: "tool_call" for field in original},
+                    arguments=copy.deepcopy(args),
+                    sources=sources.copy(),
                     missing_fields=result.missing_fields.copy(),
                 )
                 self.pending_tool_calls[command.id] = pending
@@ -313,6 +335,9 @@ class ToolCallAgent(ReActAgent):
     def _trusted_required_fields(self) -> set[str]:
         return set()
 
+    def _trusted_context_arguments(self, tool_name: str) -> dict[str, Any]:
+        return {}
+
     async def _observe_tool_result(self, name: str, result: Any) -> str:
         await self._handle_special_tool(name=name, result=result)
         if hasattr(result, "base64_image") and result.base64_image:
@@ -352,6 +377,8 @@ class ToolCallAgent(ReActAgent):
             return f"Error: Tool call ID '{tool_call_id}' is already resuming"
 
         status = self._merge_clarification_reply(tool_call_id, reply)
+        if status == "merged":
+            self.tool_call_sources[tool_call_id] = pending.sources.copy()
         if status != "merged":
             observation = (
                 f"Error: Tool '{pending.tool_name}' validation failed: required "
@@ -368,8 +395,12 @@ class ToolCallAgent(ReActAgent):
             except Exception as e:
                 self.pending_tool_calls.pop(tool_call_id, None)
                 self.closed_pending_call_ids.add(tool_call_id)
-                logger.exception(f"Tool '{pending.tool_name}' failed during resume: {e}")
-                observation = f"Error: Tool '{pending.tool_name}' failed during resume: {e}"
+                logger.exception(
+                    f"Tool '{pending.tool_name}' failed during resume: {e}"
+                )
+                observation = (
+                    f"Error: Tool '{pending.tool_name}' failed during resume: {e}"
+                )
             else:
                 if isinstance(result, ToolValidationFailure):
                     pending.in_flight = False
@@ -459,7 +490,9 @@ class ToolCallAgent(ReActAgent):
         pending.arguments = updated
         pending.sources.update({field: "user_clarification" for field in values})
         pending.missing_fields = [
-            field for field in pending.missing_fields if not _has_argument(updated, field)
+            field
+            for field in pending.missing_fields
+            if not _has_argument(updated, field)
         ]
         return "merged"
 
@@ -502,9 +535,11 @@ class ToolCallAgent(ReActAgent):
         """Run the agent with cleanup when done."""
         self.pending_tool_calls.clear()
         self.closed_pending_call_ids.clear()
+        self.tool_call_sources.clear()
         try:
             return await super().run(request)
         finally:
             self.pending_tool_calls.clear()
             self.closed_pending_call_ids.clear()
+            self.tool_call_sources.clear()
             await self.cleanup()
