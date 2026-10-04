@@ -11,8 +11,8 @@ from app.taskpilot.github_tools import (
     GitHubIssueDetail,
     GitHubIssueSearch,
     GitHubReadFile,
-    GitHubRepositoryInfo,
     GitHubReadOnlyTool,
+    GitHubRepositoryInfo,
     RepositoryContext,
 )
 from app.tool import Terminate, ToolCollection

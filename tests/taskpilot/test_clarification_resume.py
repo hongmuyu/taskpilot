@@ -157,9 +157,7 @@ async def test_duplicate_and_late_replies_do_not_dispatch_again(monkeypatch):
     repeated_call = await agent.execute_tool(call("original-id", {"path": "third.py"}))
     agent.max_steps = 0
     await agent.run("next task")
-    late = await agent.submit_clarification_reply(
-        "original-id", '{"path":"late.py"}'
-    )
+    late = await agent.submit_clarification_reply("original-id", '{"path":"late.py"}')
 
     assert "executed" not in duplicate + repeated_call + late
     assert tool.calls == [{"path": "README.md"}]
