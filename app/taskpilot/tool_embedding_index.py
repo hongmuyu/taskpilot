@@ -185,9 +185,17 @@ class InMemoryToolIndex:
 
     async def search(self, query: str, tools: ToolCollection) -> list[ToolMatch]:
         """Score every current tool; candidate selection belongs to T025."""
+        _, matches = await self.search_with_version(query, tools)
+        return matches
+
+    async def search_with_version(
+        self, query: str, tools: ToolCollection
+    ) -> tuple[IndexVersion, list[ToolMatch]]:
+        """Return scores with the version of the exact snapshot used."""
         await self.refresh(tools)
+        version = self.version
         if not self._entries:
-            return []
+            return version, []
         entries, vectors = self._entries, self._vectors
         if not query.strip():
             raise EmbeddingIndexError("embedding query must not be empty")
@@ -203,7 +211,9 @@ class InMemoryToolIndex:
             ToolMatch(name=name, identity=identity, score=float(score))
             for (name, identity), score in zip(entries, scores)
         ]
-        return sorted(matches, key=lambda match: (-match.score, match.identity))
+        return version, sorted(
+            matches, key=lambda match: (-match.score, match.identity)
+        )
 
     def _clear(self) -> None:
         self.version = None
