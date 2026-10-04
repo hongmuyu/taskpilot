@@ -3,7 +3,7 @@ import json
 import os
 import re
 import time
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 from urllib.parse import quote
 
 import httpx
@@ -17,9 +17,16 @@ class RepositoryContext(BaseModel):
     owner: str
     repo: str
     ref: Optional[str] = None
+    source: Optional[Literal["user_input"]] = Field(default=None, exclude=True)
 
     @classmethod
-    def parse(cls, identifier: str, ref: Optional[str] = None) -> "RepositoryContext":
+    def parse(
+        cls,
+        identifier: str,
+        ref: Optional[str] = None,
+        *,
+        source: Optional[Literal["user_input"]] = None,
+    ) -> "RepositoryContext":
         parts = identifier.strip().split("/")
         if len(parts) != 2 or not all(parts):
             raise ValueError("Repository must use owner/repo format")
@@ -32,7 +39,7 @@ class RepositoryContext(BaseModel):
             or not re.fullmatch(r"[A-Za-z0-9._-]+", repo)
         ):
             raise ValueError("Repository must use valid GitHub owner/repo names")
-        return cls(owner=owner, repo=repo, ref=ref)
+        return cls(owner=owner, repo=repo, ref=ref, source=source)
 
     @property
     def api_path(self) -> str:

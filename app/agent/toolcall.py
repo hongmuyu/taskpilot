@@ -1,5 +1,7 @@
 import asyncio
+import copy
 import json
+from dataclasses import dataclass
 from typing import Any, List, Optional, Union
 
 from pydantic import Field
@@ -10,9 +12,48 @@ from app.logger import logger
 from app.prompt.toolcall import NEXT_STEP_PROMPT, SYSTEM_PROMPT
 from app.schema import TOOL_CHOICE_TYPE, AgentState, Message, ToolCall, ToolChoice
 from app.tool import CreateChatCompletion, Terminate, ToolCollection
+from app.tool.ask_human import AskHuman
+from app.tool.tool_collection import MissingParameterFailure, ToolValidationFailure
 
 
 TOOL_CALL_REQUIRED = "Tool calls required but none provided"
+MAX_CLARIFICATION_ATTEMPTS = 3
+
+
+def _reject_non_json_constant(value: str):
+    raise ValueError(f"Invalid JSON constant: {value}")
+
+
+def _reject_duplicate_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"Duplicate clarification field: {key}")
+        result[key] = value
+    return result
+
+
+def _has_argument(arguments: dict[str, Any], field: str) -> bool:
+    if field in arguments:
+        return True
+    value = arguments
+    for part in field.split("."):
+        if not isinstance(value, dict) or part not in value:
+            return False
+        value = value[part]
+    return True
+
+
+@dataclass
+class PendingToolCall:
+    tool_call_id: str
+    tool_name: str
+    original_arguments_json: str
+    original_arguments: dict[str, Any]
+    arguments: dict[str, Any]
+    sources: dict[str, str]
+    missing_fields: list[str]
+    in_flight: bool = False
 
 
 class ToolCallAgent(ReActAgent):
@@ -31,6 +72,15 @@ class ToolCallAgent(ReActAgent):
     special_tool_names: List[str] = Field(default_factory=lambda: [Terminate().name])
 
     tool_calls: List[ToolCall] = Field(default_factory=list)
+    pending_tool_calls: dict[str, PendingToolCall] = Field(
+        default_factory=dict, exclude=True, repr=False
+    )
+    closed_pending_call_ids: set[str] = Field(
+        default_factory=set, exclude=True, repr=False
+    )
+    tool_call_sources: dict[str, dict[str, str]] = Field(
+        default_factory=dict, exclude=True, repr=False
+    )
     _current_base64_image: Optional[str] = None
 
     max_steps: int = 30
@@ -181,39 +231,270 @@ class ToolCallAgent(ReActAgent):
             return f"Error: Unknown tool '{name}'"
 
         try:
-            # Parse arguments
-            args = json.loads(command.function.arguments or "{}")
+            args = json.loads(
+                command.function.arguments, parse_constant=_reject_non_json_constant
+            )
+        except ValueError:
+            logger.warning(f"Invalid JSON arguments for tool '{name}'")
+            return f"Error: Error parsing arguments for {name}: Invalid JSON format"
 
-            # Execute the tool
+        if not isinstance(args, dict):
+            return f"Error: Arguments for {name} must be a JSON object"
+
+        if command.id in self.closed_pending_call_ids:
+            return f"Error: Tool call ID '{command.id}' is already resolved"
+        pending = self.pending_tool_calls.get(command.id)
+        if pending:
+            if (
+                pending.tool_name != name
+                or pending.original_arguments_json != command.function.arguments
+            ):
+                return f"Error: Tool call ID '{command.id}' already has a different pending call"
+            return f"Error: Clarification pending for '{name}'; original tool not executed."
+
+        context_arguments = self._trusted_context_arguments(name)
+        conflicts = [
+            field
+            for field, value in context_arguments.items()
+            if field in args and args[field] != value
+        ]
+        if conflicts:
+            return (
+                f"Error: Tool '{name}' arguments conflict with confirmed repository "
+                f"context: {', '.join(conflicts)}. Explicitly switch context or correct "
+                "the call; original tool not executed."
+            )
+        sources = {field: "tool_call" for field in args}
+        for field, value in context_arguments.items():
+            if field not in args:
+                args[field] = value
+                sources[field] = "repository_context:user_input"
+        self.tool_call_sources[command.id] = sources
+
+        try:
             logger.info(f"🔧 Activating tool: '{name}'...")
             result = await self.available_tools.execute(name=name, tool_input=args)
+            if isinstance(result, MissingParameterFailure):
+                original = json.loads(command.function.arguments)
+                pending = PendingToolCall(
+                    tool_call_id=command.id,
+                    tool_name=name,
+                    original_arguments_json=command.function.arguments,
+                    original_arguments=original,
+                    arguments=copy.deepcopy(args),
+                    sources=sources.copy(),
+                    missing_fields=result.missing_fields.copy(),
+                )
+                self.pending_tool_calls[command.id] = pending
+                missing = [
+                    field
+                    for field in pending.missing_fields
+                    if field not in self._trusted_required_fields()
+                ]
+                if missing:
+                    for attempt in range(MAX_CLARIFICATION_ATTEMPTS):
+                        question = (
+                            f"Tool '{name}' needs required parameters: "
+                            f"{', '.join(missing)}. "
+                            "Reply with a JSON object naming each field, or cancel."
+                            if attempt == 0
+                            else (
+                                f"Clarify parameters for tool '{name}' and call "
+                                f"'{command.id}': {', '.join(missing)}. "
+                                "Use a JSON object with unique field names, or cancel."
+                            )
+                        )
+                        try:
+                            reply = await AskHuman().execute(inquire=question)
+                        except EOFError:
+                            reply = "cancel"
+                        observation = await self.submit_clarification_reply(
+                            command.id, reply, record_tool_message=False
+                        )
+                        remaining = self.pending_tool_calls.get(command.id)
+                        if not remaining or (
+                            remaining.missing_fields
+                            and all(
+                                field in self._trusted_required_fields()
+                                for field in remaining.missing_fields
+                            )
+                        ):
+                            break
+                    return observation
+                return (
+                    f"Error: Tool '{name}' validation failed: required parameters are "
+                    "available in trusted context; original tool not executed."
+                )
 
-            # Handle special tools
-            await self._handle_special_tool(name=name, result=result)
-
-            # Check if result is a ToolResult with base64_image
-            if hasattr(result, "base64_image") and result.base64_image:
-                # Store the base64_image for later use in tool_message
-                self._current_base64_image = result.base64_image
-
-            # Format result for display (standard case)
-            observation = (
-                f"Observed output of cmd `{name}` executed:\n{str(result)}"
-                if result
-                else f"Cmd `{name}` completed with no output"
-            )
-
-            return observation
-        except json.JSONDecodeError:
-            error_msg = f"Error parsing arguments for {name}: Invalid JSON format"
-            logger.error(
-                f"📝 Oops! The arguments for '{name}' don't make sense - invalid JSON, arguments:{command.function.arguments}"
-            )
-            return f"Error: {error_msg}"
+            return await self._observe_tool_result(name, result)
         except Exception as e:
             error_msg = f"⚠️ Tool '{name}' encountered a problem: {str(e)}"
             logger.exception(error_msg)
             return f"Error: {error_msg}"
+
+    def _trusted_required_fields(self) -> set[str]:
+        return set()
+
+    def _trusted_context_arguments(self, tool_name: str) -> dict[str, Any]:
+        return {}
+
+    async def _observe_tool_result(self, name: str, result: Any) -> str:
+        await self._handle_special_tool(name=name, result=result)
+        if hasattr(result, "base64_image") and result.base64_image:
+            self._current_base64_image = result.base64_image
+        return (
+            f"Observed output of cmd `{name}` executed:\n{str(result)}"
+            if result
+            else f"Cmd `{name}` completed with no output"
+        )
+
+    def _record_clarification_observation(
+        self, tool_call_id: str, name: str, observation: str
+    ) -> None:
+        for message in reversed(self.memory.messages):
+            if message.tool_call_id == tool_call_id and message.name == name:
+                message.content = observation
+                message.base64_image = self._current_base64_image
+                return
+        self.memory.add_message(
+            Message.tool_message(
+                content=observation,
+                tool_call_id=tool_call_id,
+                name=name,
+                base64_image=self._current_base64_image,
+            )
+        )
+
+    async def submit_clarification_reply(
+        self, tool_call_id: str, reply: str, *, record_tool_message: bool = True
+    ) -> str:
+        if tool_call_id in self.closed_pending_call_ids:
+            return f"Error: Tool call ID '{tool_call_id}' is already resolved"
+        pending = self.pending_tool_calls.get(tool_call_id)
+        if pending is None:
+            return f"Error: No pending tool call for '{tool_call_id}'"
+        if pending.in_flight:
+            return f"Error: Tool call ID '{tool_call_id}' is already resuming"
+
+        status = self._merge_clarification_reply(tool_call_id, reply)
+        if status == "merged":
+            self.tool_call_sources[tool_call_id] = pending.sources.copy()
+        if status != "merged":
+            observation = (
+                f"Error: Tool '{pending.tool_name}' validation failed: required "
+                f"parameters missing. Clarification {status}; original tool not executed."
+            )
+        else:
+            pending.in_flight = True
+            self._current_base64_image = None
+            try:
+                result = await self.available_tools.execute(
+                    name=pending.tool_name,
+                    tool_input=copy.deepcopy(pending.arguments),
+                )
+            except Exception as e:
+                self.pending_tool_calls.pop(tool_call_id, None)
+                self.closed_pending_call_ids.add(tool_call_id)
+                logger.exception(
+                    f"Tool '{pending.tool_name}' failed during resume: {e}"
+                )
+                observation = (
+                    f"Error: Tool '{pending.tool_name}' failed during resume: {e}"
+                )
+            else:
+                if isinstance(result, ToolValidationFailure):
+                    pending.in_flight = False
+                    if isinstance(result, MissingParameterFailure):
+                        pending.missing_fields = result.missing_fields.copy()
+                    observation = (
+                        f"Error: Clarification pending for '{pending.tool_name}': "
+                        f"{result}; original tool not executed."
+                    )
+                else:
+                    self.pending_tool_calls.pop(tool_call_id, None)
+                    self.closed_pending_call_ids.add(tool_call_id)
+                    observation = await self._observe_tool_result(
+                        pending.tool_name, result
+                    )
+
+        if record_tool_message:
+            self._record_clarification_observation(
+                tool_call_id, pending.tool_name, observation
+            )
+        return observation
+
+    def _merge_clarification_reply(self, tool_call_id: str, reply: str) -> str:
+        pending = self.pending_tool_calls.get(tool_call_id)
+        if pending is None:
+            return "mismatch"
+        if pending.in_flight:
+            return "busy"
+        answerable_fields = [
+            field
+            for field in pending.missing_fields
+            if field not in self._trusted_required_fields()
+        ]
+
+        text = reply.strip()
+        if text.lower() == "cancel":
+            del self.pending_tool_calls[tool_call_id]
+            self.closed_pending_call_ids.add(tool_call_id)
+            return "cancelled"
+        if not text:
+            return "needs_clarification"
+
+        try:
+            values = json.loads(
+                text,
+                object_pairs_hook=_reject_duplicate_fields,
+                parse_constant=_reject_non_json_constant,
+            )
+        except json.JSONDecodeError:
+            if len(answerable_fields) != 1 or text.startswith(("{", "[")):
+                return "needs_clarification"
+            values = {answerable_fields[0]: text}
+        except ValueError:
+            return "needs_clarification"
+        else:
+            if not isinstance(values, dict):
+                if len(answerable_fields) != 1 or not isinstance(
+                    values, (str, int, float, bool)
+                ):
+                    return "needs_clarification"
+                values = {answerable_fields[0]: values}
+
+        tool = self.available_tools.get_tool(pending.tool_name)
+        root_fields = set(tool.parameters.get("properties", {})) | set(
+            pending.arguments
+        )
+        if not values or any(
+            (field not in root_fields and field not in pending.missing_fields)
+            or value is None
+            or value == ""
+            for field, value in values.items()
+        ):
+            return "needs_clarification"
+
+        updated = copy.deepcopy(pending.arguments)
+        for field, value in values.items():
+            if field in root_fields:
+                updated[field] = value
+                continue
+            target = updated
+            for part in field.split(".")[:-1]:
+                target = target.get(part)
+                if not isinstance(target, dict):
+                    return "needs_clarification"
+            target[field.split(".")[-1]] = value
+
+        pending.arguments = updated
+        pending.sources.update({field: "user_clarification" for field in values})
+        pending.missing_fields = [
+            field
+            for field in pending.missing_fields
+            if not _has_argument(updated, field)
+        ]
+        return "merged"
 
     async def _handle_special_tool(self, name: str, result: Any, **kwargs):
         """Handle special tool execution and state changes"""
@@ -252,7 +533,13 @@ class ToolCallAgent(ReActAgent):
 
     async def run(self, request: Optional[str] = None) -> str:
         """Run the agent with cleanup when done."""
+        self.pending_tool_calls.clear()
+        self.closed_pending_call_ids.clear()
+        self.tool_call_sources.clear()
         try:
             return await super().run(request)
         finally:
+            self.pending_tool_calls.clear()
+            self.closed_pending_call_ids.clear()
+            self.tool_call_sources.clear()
             await self.cleanup()

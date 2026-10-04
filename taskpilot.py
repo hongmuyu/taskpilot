@@ -3,10 +3,20 @@ import asyncio
 
 from app.agent.repository_investigation import RepositoryInvestigationAgent
 from app.taskpilot.github_tools import RepositoryContext
+from app.tool.ask_human import AskHuman
 
 
-async def run(repository: str, prompt: str, ref: str | None = None) -> str:
-    context = RepositoryContext.parse(repository, ref=ref)
+async def run(repository: str | None, prompt: str, ref: str | None = None) -> str:
+    if not repository:
+        try:
+            repository = await AskHuman().execute(
+                inquire="Which GitHub repository should I investigate? Reply with owner/repo, or cancel."
+            )
+        except EOFError as exc:
+            raise ValueError("Repository selection cancelled") from exc
+        if not repository or repository.lower() == "cancel":
+            raise ValueError("Repository selection cancelled")
+    context = RepositoryContext.parse(repository, ref=ref, source="user_input")
     agent = RepositoryInvestigationAgent.create(context)
     try:
         return await agent.run(prompt)
@@ -19,7 +29,8 @@ def main() -> None:
         description="Investigate a GitHub repository with read-only tools"
     )
     parser.add_argument(
-        "--repository", required=True, help="Target GitHub repository as owner/repo"
+        "--repository",
+        help="Target GitHub repository as owner/repo; prompted if omitted",
     )
     parser.add_argument(
         "--ref", help="Optional branch, tag, or commit to use for file reads"
