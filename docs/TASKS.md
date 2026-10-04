@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 2 — Reliable Parameter Execution
-- Current PR: PR-03 — Parameter Validation and Clarification（进行中，T013–T017 完成）
-- Next Task: T018 — Re-validation and exactly-once resume（未启动）
+- Current PR: PR-03 — Parameter Validation and Clarification（进行中，T013–T018 完成）
+- Next Task: T019 — Repository Context parameter reuse（未启动）
 - Total Tasks: 73
-- Completed: 17
-- TODO: 55
+- Completed: 18
+- TODO: 54
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 36
+- Remaining P0: 35
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-09-30；功能基线 main `7ca8a9b02fea07a8de476fdf68ed45e919ba1e28`
+- State verified: 2026-10-04；功能基线 main `7ca8a9b02fea07a8de476fdf68ed45e919ba1e28`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 目前已实施 T013–T017，T018–T021 尚未启动。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 目前已实施 T013–T018，T019–T021 尚未启动。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 17 + 55 + 1 + 0 + 0 = 73；剩余 36 + 19 + 1 = 56。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 18 + 54 + 1 + 0 + 0 = 73；剩余 35 + 19 + 1 = 55。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -42,7 +42,7 @@
 
 **Stretch — P2**：有时间再做，例如更丰富 UI 和高级 trace visualization；不影响当前 Core 出口。
 
-Phase 编号和 PR 标识保留完整路线图，不代表必须逐阶段串行交付。Core 可按 PR-03 → PR-04 → PR-05 的 P0 → PR-08 的 P0 → PR-09 完成，跳过 Phase 5/6；T065 在 T028 后即可逐步准备和冻结，不等待部署。具体执行以依赖图为准，下一任务为 T018 / PR-03，尚未启动。
+Phase 编号和 PR 标识保留完整路线图，不代表必须逐阶段串行交付。Core 可按 PR-03 → PR-04 → PR-05 的 P0 → PR-08 的 P0 → PR-09 完成，跳过 Phase 5/6；T065 在 T028 后即可逐步准备和冻结，不等待部署。具体执行以依赖图为准，下一任务为 T019 / PR-03，尚未启动。
 
 Core 保持 read-only：不启用写工具即可延期整套写入增强。若后续启用任何副作用能力，Validation、Risk Check、Human Confirmation、路径边界和去重要求仍完整生效，不能以降级 P1 为由跳过。只读服务仍需保留现有工具范围、参数校验、凭据保护和任务资源边界；公网专项安全 T061 仅在公开部署前验收。
 
@@ -71,7 +71,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 
 - Phase 0：T001–T003，Foundation，PR-00 / PR-01，DONE。
 - Phase 1：T004–T012，Real Business Loop，PR-02，DONE。
-- Phase 2：T013–T021，Reliable Parameter Execution，PR-03，进行中（T013–T017 完成）。
+- Phase 2：T013–T021，Reliable Parameter Execution，PR-03，进行中（T013–T018 完成）。
 - Phase 3：T022–T030，Tool Routing，PR-04。
 - Phase 4：T031–T038，Reliability，PR-05。
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
@@ -356,7 +356,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - **Title:** Re-validation and exactly-once resume
 - **Phase:** Phase 2
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T017
 - **Target PR:** PR-03
 - **Goal:** 补参后重新校验再恢复原调用。
@@ -364,6 +364,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - **Tests:** 无效→有效、多次无效、重复回复、并列 tool calls、取消后迟到回复。
 - **Out of Scope:** 用澄清回复跳过安全门禁。
 - **Notes:** 参数澄清不等于副作用批准；写入仍需 Phase 5。
+- **Evidence (2026-10-04):** 每次明确合并的回复重新进入 `ToolCollection.execute` 的同一 Draft 7 validation boundary；校验失败保留 pending 且真实 Tool 零执行，成功或工具自身失败后关闭原 call ID。任务内 pending 的 `in_flight` 和已关闭 ID 阻止并发、重复及迟到回复再次 dispatch；取消后不可恢复。CLI 在原调用内最多询问三次，仍无效则保留 pending；后续回复的 Tool observation 更新原 `tool_call_id` 的消息。`tests/taskpilot/test_clarification_resume.py` 10 passed；T013–T018 相关测试 81 passed；`tests/taskpilot` 回归 94 passed。全量 `pytest --maxfail=1` 在无关 `tests/sandbox/test_client.py::test_sandbox_creation` 因断言 Python 3.10、实际 Python 3.12.14 而停止，完整全量结果 NOT VERIFIED；真实人工 CLI 回合及真实模型/GitHub E2E NOT VERIFIED，留待 T021。
 
 ### T019 — Repository Context parameter reuse
 

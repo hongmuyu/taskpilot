@@ -198,7 +198,7 @@ async def test_mcp_schema_missing_parameter_clarifies_without_remote_call(monkey
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("reply", ["cancel", "", "  ", "not a path"])
+@pytest.mark.parametrize("reply", ["cancel", "", "  ", '{"path":7}'])
 async def test_cancel_empty_or_invalid_reply_never_dispatches_original_tool(
     monkeypatch, reply
 ):

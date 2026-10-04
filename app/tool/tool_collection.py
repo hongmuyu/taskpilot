@@ -26,7 +26,11 @@ _SUPPORTED_SCHEMA_KEYWORDS = {
 }
 
 
-class MissingParameterFailure(ToolFailure):
+class ToolValidationFailure(ToolFailure):
+    """Arguments or schema failed before the underlying tool was called."""
+
+
+class MissingParameterFailure(ToolValidationFailure):
     missing_fields: List[str]
 
 
@@ -75,19 +79,19 @@ class ToolCollection:
     ) -> ToolResult:
         tool = self.tool_map.get(name)
         if not tool:
-            return ToolFailure(error=f"Tool {name} is invalid")
+            return ToolValidationFailure(error=f"Tool {name} is invalid")
         if (
             not isinstance(tool.parameters, dict)
             or tool.parameters.get("type") != "object"
         ):
-            return ToolFailure(
+            return ToolValidationFailure(
                 error=(
                     f"Tool '{name}' validation failed: unsupported parameter schema "
                     "(expected object)"
                 )
             )
         if not isinstance(tool_input, dict):
-            return ToolFailure(
+            return ToolValidationFailure(
                 error=(
                     f"Tool '{name}' validation failed: arguments must be "
                     "a JSON object"
@@ -96,10 +100,12 @@ class ToolCollection:
         try:
             Draft7Validator.check_schema(tool.parameters)
         except SchemaError:
-            return ToolFailure(error=f"Tool '{name}' has an invalid parameter schema")
+            return ToolValidationFailure(
+                error=f"Tool '{name}' has an invalid parameter schema"
+            )
         unsupported = _unsupported_schema_keyword(tool.parameters)
         if unsupported:
-            return ToolFailure(
+            return ToolValidationFailure(
                 error=f"Tool '{name}' has unsupported schema keyword: {unsupported}"
             )
         errors = list(Draft7Validator(tool.parameters).iter_errors(tool_input))
@@ -120,7 +126,7 @@ class ToolCollection:
         if errors:
             error = errors[0]
             path = "$" + "".join(f"[{part!r}]" for part in error.absolute_path)
-            return ToolFailure(
+            return ToolValidationFailure(
                 error=f"Tool '{name}' validation failed at {path}: {error.validator}"
             )
         try:

@@ -59,10 +59,11 @@ def make_agent(required=("path",)):
 @pytest.mark.asyncio
 async def test_single_field_reply_merges_into_pending_call_without_dispatch(monkeypatch):
     agent, tool = make_agent()
-    monkeypatch.setattr("builtins.input", lambda prompt: "README.md")
+    monkeypatch.setattr("builtins.input", lambda prompt: "")
     command = call("call-a", {})
 
     await agent.execute_tool(command)
+    assert agent._merge_clarification_reply("call-a", "README.md") == "merged"
 
     pending = agent.pending_tool_calls["call-a"]
     assert pending.tool_call_id == "call-a"
@@ -79,11 +80,12 @@ async def test_single_field_reply_merges_into_pending_call_without_dispatch(monk
 @pytest.mark.asyncio
 async def test_multiple_named_fields_merge_without_guessing(monkeypatch):
     agent, tool = make_agent(("path", "issue_number"))
-    monkeypatch.setattr(
-        "builtins.input", lambda prompt: '{"path":"src/main.py","issue_number":12}'
-    )
+    monkeypatch.setattr("builtins.input", lambda prompt: "")
 
     await agent.execute_tool(call("call-a", {}))
+    assert agent._merge_clarification_reply(
+        "call-a", '{"path":"src/main.py","issue_number":12}'
+    ) == "merged"
 
     pending = agent.pending_tool_calls["call-a"]
     assert pending.arguments == {"path": "src/main.py", "issue_number": 12}
@@ -105,7 +107,7 @@ async def test_multi_round_reply_only_updates_named_field(monkeypatch):
     assert first.arguments == {"path": "README.md"}
     assert first.missing_fields == ["issue_number"]
 
-    status = agent.merge_clarification_reply("call-a", '{"issue_number":12}')
+    status = agent._merge_clarification_reply("call-a", '{"issue_number":12}')
 
     assert status == "merged"
     assert first.arguments == {"path": "README.md", "issue_number": 12}
@@ -116,10 +118,11 @@ async def test_multi_round_reply_only_updates_named_field(monkeypatch):
 @pytest.mark.asyncio
 async def test_existing_value_changes_only_when_explicitly_named(monkeypatch):
     agent, tool = make_agent()
-    monkeypatch.setattr("builtins.input", lambda prompt: "README.md")
+    monkeypatch.setattr("builtins.input", lambda prompt: "")
     original = {"repository": "octo/old"}
 
     await agent.execute_tool(call("call-a", original))
+    assert agent._merge_clarification_reply("call-a", "README.md") == "merged"
     pending = agent.pending_tool_calls["call-a"]
     assert pending.arguments == {"repository": "octo/old", "path": "README.md"}
     assert pending.sources == {
@@ -127,7 +130,7 @@ async def test_existing_value_changes_only_when_explicitly_named(monkeypatch):
         "path": "user_clarification",
     }
 
-    status = agent.merge_clarification_reply(
+    status = agent._merge_clarification_reply(
         "call-a", '{"repository":"octo/new"}'
     )
 
@@ -141,7 +144,11 @@ async def test_existing_value_changes_only_when_explicitly_named(monkeypatch):
 @pytest.mark.asyncio
 async def test_conflict_and_ambiguous_reply_reprompt_and_stay_pending(monkeypatch):
     agent, tool = make_agent(("path", "issue_number"))
-    answers = iter(['{"path":"a","path":"b"}', "path or issue number"])
+    answers = iter([
+        '{"path":"a","path":"b"}',
+        "path or issue number",
+        '{"path":"a","path":"b"}',
+    ])
     prompts = []
     monkeypatch.setattr(
         "builtins.input", lambda prompt: prompts.append(prompt) or next(answers)
@@ -150,7 +157,7 @@ async def test_conflict_and_ambiguous_reply_reprompt_and_stay_pending(monkeypatc
     await agent.execute_tool(call("call-a", {}))
 
     pending = agent.pending_tool_calls["call-a"]
-    assert len(prompts) == 2
+    assert len(prompts) == 3
     assert pending.arguments == {}
     assert pending.sources == {}
     assert pending.missing_fields == ["path", "issue_number"]
@@ -167,14 +174,14 @@ async def test_multiple_pending_calls_and_reply_mismatch_stay_isolated(monkeypat
     before_a = agent.pending_tool_calls["call-a"].arguments.copy()
     before_b = agent.pending_tool_calls["call-b"].arguments.copy()
 
-    assert agent.merge_clarification_reply("unknown", '{"path":"wrong"}') == "mismatch"
-    assert agent.merge_clarification_reply(
+    assert agent._merge_clarification_reply("unknown", '{"path":"wrong"}') == "mismatch"
+    assert agent._merge_clarification_reply(
         "call-a", '{"tool_call_id":"call-b","path":"wrong"}'
     ) == "needs_clarification"
     assert agent.pending_tool_calls["call-a"].arguments == before_a
     assert agent.pending_tool_calls["call-b"].arguments == before_b
 
-    assert agent.merge_clarification_reply("call-b", '{"path":"b.py"}') == "merged"
+    assert agent._merge_clarification_reply("call-b", '{"path":"b.py"}') == "merged"
     assert agent.pending_tool_calls["call-a"].arguments == before_a
     assert agent.pending_tool_calls["call-b"].arguments == {
         "repository": "octo/b",
@@ -191,7 +198,7 @@ async def test_cancel_removes_pending_and_late_reply_cannot_merge(monkeypatch):
     await agent.execute_tool(call("call-a", {}))
 
     assert agent.pending_tool_calls == {}
-    assert agent.merge_clarification_reply("call-a", '{"path":"README.md"}') == "mismatch"
+    assert agent._merge_clarification_reply("call-a", '{"path":"README.md"}') == "mismatch"
     assert tool.calls == []
 
 
@@ -212,9 +219,12 @@ async def test_nested_required_field_merges_without_replacing_parent(monkeypatch
         },
         "required": ["meta"],
     }
-    monkeypatch.setattr("builtins.input", lambda prompt: '{"meta.owner":"octo"}')
+    monkeypatch.setattr("builtins.input", lambda prompt: "")
 
     await agent.execute_tool(call("call-a", {"meta": {"branch": "main"}}))
+    assert agent._merge_clarification_reply(
+        "call-a", '{"meta.owner":"octo"}'
+    ) == "merged"
 
     pending = agent.pending_tool_calls["call-a"]
     assert pending.original_arguments == {"meta": {"branch": "main"}}
@@ -257,7 +267,7 @@ async def test_unnamed_list_reply_stays_pending(monkeypatch):
     monkeypatch.setattr("builtins.input", lambda prompt: "")
     await agent.execute_tool(call("call-a", {}))
 
-    status = agent.merge_clarification_reply("call-a", '["a.py", "b.py"]')
+    status = agent._merge_clarification_reply("call-a", '["a.py", "b.py"]')
 
     assert status == "needs_clarification"
     assert agent.pending_tool_calls["call-a"].arguments == {}
