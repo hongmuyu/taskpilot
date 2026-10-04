@@ -3,8 +3,8 @@
 ## Dashboard
 
 - Current Phase: Phase 2 — Reliable Parameter Execution
-- Current PR: PR-03 — Parameter Validation and Clarification（T013–T021 完成，待整体检查/合并）
-- Next Task: PR-03 整体检查与合并决策；未授权 PR-04 / T022
+- Current PR: PR-03 — Parameter Validation and Clarification（T013–T021 DONE；GitHub PR #13）
+- Next Task: T022 — Unified Tool Metadata（TODO，未启动；需单独授权）
 - Total Tasks: 73
 - Completed: 21
 - TODO: 51
@@ -17,7 +17,7 @@
 - Total P0 / P1 / P2: 53 / 19 / 1
 - State verified: 2026-10-04；功能基线 main `7ca8a9b02fea07a8de476fdf68ed45e919ba1e28`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已实施并验收 T013–T021，尚未合并。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已实施并验收 T013–T021；GitHub PR #13 记录其合并状态。
 
 ## Maintenance and priority rules
 
@@ -42,7 +42,7 @@
 
 **Stretch — P2**：有时间再做，例如更丰富 UI 和高级 trace visualization；不影响当前 Core 出口。
 
-Phase 编号和 PR 标识保留完整路线图，不代表必须逐阶段串行交付。Core 可按 PR-03 → PR-04 → PR-05 的 P0 → PR-08 的 P0 → PR-09 完成，跳过 Phase 5/6；T065 在 T028 后即可逐步准备和冻结，不等待部署。具体执行以依赖图为准；PR-03 已完成 T013–T021，待整体检查与合并决策。
+Phase 编号和 PR 标识保留完整路线图，不代表必须逐阶段串行交付。Core 可按 PR-03 → PR-04 → PR-05 的 P0 → PR-08 的 P0 → PR-09 完成，跳过 Phase 5/6；T065 在 T028 后即可逐步准备和冻结，不等待部署。具体执行以依赖图为准；PR-03 已完成 T013–T021，GitHub PR #13 记录交付。
 
 Core 保持 read-only：不启用写工具即可延期整套写入增强。若后续启用任何副作用能力，Validation、Risk Check、Human Confirmation、路径边界和去重要求仍完整生效，不能以降级 P1 为由跳过。只读服务仍需保留现有工具范围、参数校验、凭据保护和任务资源边界；公网专项安全 T061 仅在公开部署前验收。
 
@@ -71,7 +71,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 
 - Phase 0：T001–T003，Foundation，PR-00 / PR-01，DONE。
 - Phase 1：T004–T012，Real Business Loop，PR-02，DONE。
-- Phase 2：T013–T021，Reliable Parameter Execution，PR-03，任务完成，待整体检查/合并。
+- Phase 2：T013–T021，Reliable Parameter Execution，PR-03，任务 DONE；GitHub PR #13。
 - Phase 3：T022–T030，Tool Routing，PR-04。
 - Phase 4：T031–T038，Reliability，PR-05。
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
@@ -1324,4 +1324,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-当前 PR-03 已完成 T013–T021，待整体检查与合并决策；本轮不开始 PR-04 / T022。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 / T022 保持 TODO，需单独授权。
