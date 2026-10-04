@@ -1,5 +1,7 @@
+import hashlib
+import json
 from contextlib import AsyncExitStack
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.sse import sse_client
@@ -17,6 +19,11 @@ class MCPClientTool(BaseTool):
     session: Optional[ClientSession] = None
     server_id: str = ""  # Add server identifier
     original_name: str = ""
+
+    def metadata_origin(
+        self,
+    ) -> tuple[Literal["local", "mcp"], Optional[str], str]:
+        return "mcp", self.server_id, self.original_name
 
     async def execute(self, **kwargs) -> ToolResult:
         """Execute the tool by making a remote call to the MCP server."""
@@ -137,6 +144,32 @@ class MCPClients(ToolCollection):
                 else original_name
             )
             tool_name = self._sanitize_tool_name(tool_name)
+            existing = self.tool_map.get(tool_name)
+            if existing and (
+                not isinstance(existing, MCPClientTool)
+                or (existing.server_id, existing.original_name)
+                != (server_id, original_name)
+            ):
+                raw_identity = json.dumps(
+                    [server_id, original_name],
+                    ensure_ascii=False,
+                    separators=(",", ":"),
+                )
+                fingerprint = hashlib.sha256(raw_identity.encode("utf-8")).hexdigest()
+                for width in (10, 16, 24, 32, 40, 48, 56):
+                    candidate = f"{tool_name[:63 - width]}_{fingerprint[:width]}"
+                    existing = self.tool_map.get(candidate)
+                    if not existing or (
+                        isinstance(existing, MCPClientTool)
+                        and (existing.server_id, existing.original_name)
+                        == (server_id, original_name)
+                    ):
+                        tool_name = candidate
+                        break
+                else:
+                    raise ValueError(
+                        f"Cannot assign a unique MCP tool name for {server_id}/{original_name}"
+                    )
 
             server_tool = MCPClientTool(
                 name=tool_name,
@@ -171,7 +204,7 @@ class MCPClients(ToolCollection):
         if len(sanitized) > 64:
             sanitized = sanitized[:64]
 
-        return sanitized
+        return sanitized or "tool"
 
     async def list_tools(self) -> ListToolsResult:
         """List all available tools."""

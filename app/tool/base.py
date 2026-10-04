@@ -1,6 +1,8 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, Union
+from dataclasses import dataclass
+from typing import Any, Dict, Literal, Optional, Union
+from urllib.parse import quote
 
 from pydantic import BaseModel, Field
 
@@ -75,6 +77,63 @@ class ToolResult(BaseModel):
         return type(self)(**{**self.dict(), **kwargs})
 
 
+@dataclass(frozen=True)
+class ToolMetadata:
+    """Live view of a tool's existing definition, not a second schema."""
+
+    tool: "BaseTool"
+
+    @property
+    def name(self) -> str:
+        return self.tool.name
+
+    @property
+    def description(self) -> str:
+        return self.tool.description
+
+    @property
+    def schema(self) -> Optional[dict]:
+        return self.tool.parameters
+
+    @property
+    def capabilities(self) -> tuple[str, ...]:
+        return self.tool.capabilities
+
+    @property
+    def examples(self) -> tuple[str, ...]:
+        return self.tool.examples
+
+    @property
+    def source(self) -> Literal["local", "mcp"]:
+        return self.tool.metadata_origin()[0]
+
+    @property
+    def server_id(self) -> Optional[str]:
+        return self.tool.metadata_origin()[1]
+
+    @property
+    def original_name(self) -> str:
+        return self.tool.metadata_origin()[2]
+
+    @property
+    def identity(self) -> str:
+        source, server_id, original_name = self.tool.metadata_origin()
+        if source == "mcp":
+            return (
+                f"mcp:{quote(server_id or '', safe='')}:{quote(original_name, safe='')}"
+            )
+        return f"local:{quote(original_name, safe='')}"
+
+    @property
+    def risk(self) -> dict[str, str | bool]:
+        """Informational placeholder; dispatch does not use it as a gate."""
+        return {
+            "status": "pending_phase_5",
+            "write_allowed": False,
+            "enforced": False,
+        }
+
+
 class BaseTool(ABC, BaseModel):
     """Consolidated base class for all tools combining BaseModel and Tool functionality.
 
@@ -94,6 +153,8 @@ class BaseTool(ABC, BaseModel):
     name: str
     description: str
     parameters: Optional[dict] = None
+    capabilities: tuple[str, ...] = ()
+    examples: tuple[str, ...] = ()
     # _schemas: Dict[str, List[ToolSchema]] = {}
 
     class Config:
@@ -120,6 +181,15 @@ class BaseTool(ABC, BaseModel):
     @abstractmethod
     async def execute(self, **kwargs) -> Any:
         """Execute the tool with given parameters."""
+
+    def metadata_origin(
+        self,
+    ) -> tuple[Literal["local", "mcp"], Optional[str], str]:
+        return "local", None, self.name
+
+    @property
+    def metadata(self) -> ToolMetadata:
+        return ToolMetadata(self)
 
     def to_param(self) -> Dict:
         """Convert tool to function call format.

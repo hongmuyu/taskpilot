@@ -2,22 +2,22 @@
 
 ## Dashboard
 
-- Current Phase: Phase 2 — Reliable Parameter Execution
-- Current PR: PR-03 — Parameter Validation and Clarification（T013–T021 DONE；GitHub PR #13）
-- Next Task: T022 — Unified Tool Metadata（TODO，未启动；需单独授权）
+- Current Phase: Phase 3 — Tool Routing
+- Current PR: PR-04 — Tool Routing（T022 DONE；T023–T030 未启动）
+- Next Task: T023 — In-memory embedding index（TODO，未启动；需单独授权）
 - Total Tasks: 73
-- Completed: 21
-- TODO: 51
+- Completed: 22
+- TODO: 50
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 32
+- Remaining P0: 31
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-04；功能基线 main `7ca8a9b02fea07a8de476fdf68ed45e919ba1e28`
+- State verified: 2026-10-04；PR-04 起点 main `8370495e5531fbefe76f56e93b428e01007dd491`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已实施并验收 T013–T021；GitHub PR #13 记录其合并状态。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已合并；PR-04 仅实施并验收 T022，尚未合并。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 21 + 51 + 1 + 0 + 0 = 73；剩余 32 + 19 + 1 = 52。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 22 + 50 + 1 + 0 + 0 = 73；剩余 31 + 19 + 1 = 51。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -72,7 +72,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 0：T001–T003，Foundation，PR-00 / PR-01，DONE。
 - Phase 1：T004–T012，Real Business Loop，PR-02，DONE。
 - Phase 2：T013–T021，Reliable Parameter Execution，PR-03，任务 DONE；GitHub PR #13。
-- Phase 3：T022–T030，Tool Routing，PR-04。
+- Phase 3：T022–T030，Tool Routing，PR-04，T022 DONE；T023–T030 TODO。
 - Phase 4：T031–T038，Reliability，PR-05。
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
@@ -423,14 +423,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Unified Tool Metadata
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T021
 - **Target PR:** PR-04
 - **Goal:** 在已有工具定义上统一最小元数据。
 - **Acceptance Criteria:** name/description/schema 复用原定义；capability/examples/source 可读取；Local/MCP 身份唯一且不丢原名称；risk metadata placeholder 明确待 Phase 5 生效。
 - **Tests:** 两来源一致性、重名/名称清洗冲突、schema 引用与版本变化测试。
 - **Out of Scope:** 第二套 Registry、把 risk placeholder 当执行授权。
-- **Notes:** 含 capability / examples metadata、source metadata；风险占位缺省不应允许写。
+- **Evidence (2026-10-04):** `BaseTool.metadata` / `ToolCollection.to_metadata()` 提供现有 Tool 的动态视图，直接引用当前 `name`、`description`、`parameters`，包含 capabilities、examples、`local`/`mcp` source 和不参与 dispatch 的 Phase 5 risk 占位（默认 `write_allowed=False`）。五个 GitHub Local Tools 声明 capability/example；MCP proxy 保留 `server_id`、`original_name` 与清洗后的公开名，metadata identity 用原来源编码；清洗/截断撞名以原身份的摘要去歧义，Local/MCP 集合同名明确拒绝而不覆盖。`tests/taskpilot/test_tool_metadata.py` deterministic 7 passed，覆盖两来源、名称冲突、原 schema 引用与替换后的版本变化；`tests/taskpilot` 127 passed，合并 PR-02 baseline/browser MCP fixture 回归 140 passed，pre-commit 全通过。全量 `pytest --maxfail=1` 在无关 sandbox Python 3.10/3.12.14 断言处为 9 passed、1 failed，其余全量 NOT VERIFIED。真实 MCP server/transport 与语义检索、embedding、Top-K 未实施/NOT VERIFIED；T023–T030 未启动。
 
 ### T023 — In-memory embedding index
 
@@ -1324,4 +1324,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 / T022 保持 TODO，需单独授权。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 仅完成 T022，T023–T030 保持 TODO，需单独授权。

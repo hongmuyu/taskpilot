@@ -5,8 +5,7 @@ from jsonschema import Draft7Validator
 from jsonschema.exceptions import SchemaError
 
 from app.exceptions import ToolError
-from app.logger import logger
-from app.tool.base import BaseTool, ToolFailure, ToolResult
+from app.tool.base import BaseTool, ToolFailure, ToolMetadata, ToolResult
 
 
 _SUPPORTED_SCHEMA_KEYWORDS = {
@@ -66,13 +65,20 @@ class ToolCollection:
 
     def __init__(self, *tools: BaseTool):
         self.tools = tools
-        self.tool_map = {tool.name: tool for tool in tools}
+        self.tool_map = {}
+        for tool in tools:
+            if tool.name in self.tool_map:
+                raise ValueError(f"Duplicate tool name: {tool.name}")
+            self.tool_map[tool.name] = tool
 
     def __iter__(self):
         return iter(self.tools)
 
     def to_params(self) -> List[Dict[str, Any]]:
         return [tool.to_param() for tool in self.tools]
+
+    def to_metadata(self) -> List[ToolMetadata]:
+        return [tool.metadata for tool in self.tools]
 
     async def execute(self, *, name: str, tool_input: Any = None) -> ToolResult:
         tool = self.tool_map.get(name)
@@ -148,23 +154,16 @@ class ToolCollection:
         return self.tool_map.get(name)
 
     def add_tool(self, tool: BaseTool):
-        """Add a single tool to the collection.
-
-        If a tool with the same name already exists, it will be skipped and a warning will be logged.
-        """
+        """Add a single tool to the collection."""
         if tool.name in self.tool_map:
-            logger.warning(f"Tool {tool.name} already exists in collection, skipping")
-            return self
+            raise ValueError(f"Duplicate tool name: {tool.name}")
 
         self.tools += (tool,)
         self.tool_map[tool.name] = tool
         return self
 
     def add_tools(self, *tools: BaseTool):
-        """Add multiple tools to the collection.
-
-        If any tool has a name conflict with an existing tool, it will be skipped and a warning will be logged.
-        """
+        """Add multiple tools to the collection."""
         for tool in tools:
             self.add_tool(tool)
         return self

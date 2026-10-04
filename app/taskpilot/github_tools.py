@@ -140,6 +140,8 @@ class GitHubReadOnlyTool(BaseTool):
 
 class GitHubRepositoryInfo(GitHubReadOnlyTool):
     name: str = "github_repository_info"
+    capabilities: tuple[str, ...] = ("repository_understanding",)
+    examples: tuple[str, ...] = ("What does this repository do?",)
     description: str = (
         "Read metadata and description for the configured GitHub repository."
     )
@@ -171,6 +173,8 @@ class GitHubRepositoryInfo(GitHubReadOnlyTool):
 
 class GitHubIssueSearch(GitHubReadOnlyTool):
     name: str = "github_issue_search"
+    capabilities: tuple[str, ...] = ("issue_search",)
+    examples: tuple[str, ...] = ("Find open issues about MCP.",)
     description: str = "Search issues in the configured repository using keywords or GitHub issue search qualifiers."
     parameters: dict = {
         "type": "object",
@@ -226,6 +230,8 @@ class GitHubIssueSearch(GitHubReadOnlyTool):
 
 class GitHubIssueDetail(GitHubReadOnlyTool):
     name: str = "github_issue_detail"
+    capabilities: tuple[str, ...] = ("issue_investigation",)
+    examples: tuple[str, ...] = ("Summarize issue #42 and its comments.",)
     description: str = (
         "Read an issue and up to ten comments from the configured repository."
     )
@@ -292,6 +298,8 @@ class GitHubIssueDetail(GitHubReadOnlyTool):
 
 class GitHubCodeSearch(GitHubReadOnlyTool):
     name: str = "github_code_search"
+    capabilities: tuple[str, ...] = ("code_search",)
+    examples: tuple[str, ...] = ("Find code that handles MCP tool results.",)
     description: str = "Search source code in the configured repository. GitHub requires GITHUB_TOKEN for code search."
     parameters: dict = {
         "type": "object",
@@ -329,6 +337,8 @@ class GitHubCodeSearch(GitHubReadOnlyTool):
 
 class GitHubReadFile(GitHubReadOnlyTool):
     name: str = "github_read_file"
+    capabilities: tuple[str, ...] = ("file_read",)
+    examples: tuple[str, ...] = ("Read README.md from this repository.",)
     description: str = "Read a text file from the configured repository at the selected ref or default branch."
     parameters: dict = {
         "type": "object",
