@@ -524,7 +524,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** 标注字段/工具存在性校验；人工核查歧义和证据；固定版本。
 - **Out of Scope:** 用 16 条 v0 全当已跑 Benchmark。
 - **Notes:** 工具等价选择可多标签，避免只因顺序不同判错。
-- **Evidence (2026-10-05):** `eval/datasets/routing_v1.schema.json` 固定 v1.0.0 字段契约；`routing_v1_experiment.json` 28 条（含逐字保留并补标注的 v0 16 条），`routing_v1_evaluation.json` 12 条独立新题。两份物理分离，评估题不用于选 K；各覆盖 Repository Understanding、Issue Investigation、Issue→Code、多步 Observation 变化、缺参、相近工具、多标签、无匹配/澄清。每题有 Context/来源、step/合成 Observation、acceptable tools、关键 slot/来源、动作、标注理由与证据要求；合成 Observation 不冒充真实 GitHub 证据。`tests/taskpilot/test_routing_dataset.py` 逐项校验 JSON schema、v0 迁移、分割去重、真实五个 Tool Metadata/schema 名称及 slot 类型/必填、多步状态变化；新增样本的歧义与证据要求已逐条审阅。`.venv/bin/python -m pytest tests/taskpilot tests/baseline/test_runtime.py tests/tools/test_browser_use_mcp.py -q` 为 192 passed；独立人工复核和真实路由评测 NOT VERIFIED；T029 不在本任务运行。
+- **Evidence (2026-10-05):** `eval/datasets/routing_v1.schema.json` 固定 v1.1.0 字段契约（evidence_scope=current_step）；`routing_v1_experiment.json` 28 条（含逐字保留并补标注的 v0 16 条），`routing_v1_evaluation.json` 12 条独立新题。两份物理分离，评估题不用于选 K；各覆盖 Repository Understanding、Issue Investigation、Issue→Code、多步 Observation 变化、缺参、相近工具、多标签、无匹配/澄清。每题有 Context/来源、step/合成 Observation、acceptable tools、关键 slot/来源、动作、标注理由与证据要求；合成 Observation 不冒充真实 GitHub 证据。`tests/taskpilot/test_routing_dataset.py` 逐项校验 JSON schema、v0 迁移、分割去重、真实五个 Tool Metadata/schema 名称及 slot 类型/必填、多步状态变化；新增样本的歧义与证据要求已逐条审阅。`.venv/bin/python -m pytest tests/taskpilot tests/baseline/test_runtime.py tests/tools/test_browser_use_mcp.py -q` 为 192 passed；独立人工复核和真实路由评测 NOT VERIFIED；T029 不在本任务运行。
 
 ### T029 — Top-K experiments / full-tool baseline comparison
 

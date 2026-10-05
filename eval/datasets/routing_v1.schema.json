@@ -2,15 +2,16 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "TaskPilot routing dataset v1",
   "type": "object",
-  "required": ["dataset", "version", "split", "source_dataset", "tool_pool", "observation_policy", "samples"],
+  "required": ["dataset", "version", "split", "source_dataset", "tool_pool", "observation_policy", "evidence_scope", "samples"],
   "additionalProperties": false,
   "properties": {
     "dataset": {"const": "taskpilot_routing"},
-    "version": {"const": "1.0.0"},
+    "version": {"const": "1.1.0"},
     "split": {"enum": ["experiment", "evaluation"]},
     "source_dataset": {"const": "repository_investigation_v0"},
     "tool_pool": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
     "observation_policy": {"const": "synthetic_routing_fixture_not_live_evidence"},
+    "evidence_scope": {"const": "current_step"},
     "samples": {
       "type": "array",
       "minItems": 1,

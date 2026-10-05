@@ -1,6 +1,6 @@
 {
   "dataset": "taskpilot_routing",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "split": "experiment",
   "source_dataset": "repository_investigation_v0",
   "tool_pool": [
@@ -11,6 +11,7 @@
     "github_read_file"
   ],
   "observation_policy": "synthetic_routing_fixture_not_live_evidence",
+  "evidence_scope": "current_step",
   "samples": [
     {
       "id": "exp-001",
@@ -370,7 +371,7 @@
       },
       "expected_action": "tool",
       "label_rationale": "The initial step must identify a concrete MCP issue before tracing code.",
-      "evidence_requirement": "At least one real issue result followed by code-search or file-read evidence, with linked issue and source paths."
+      "evidence_requirement": "Current issue-search result gives a concrete MCP-related issue number and URL, or an explicit empty result."
     },
     {
       "id": "exp-016",
@@ -395,7 +396,7 @@
       },
       "expected_action": "tool",
       "label_rationale": "No issue number is given, so the initial step searches issue reports.",
-      "evidence_requirement": "Issue detail plus relevant source evidence retrieved from GitHub."
+      "evidence_requirement": "Current issue-search result gives a concrete tool-failure issue number and URL, or an explicit empty result."
     },
     {
       "id": "exp-017",
@@ -434,9 +435,10 @@
         "provenance": "confirmed_user"
       },
       "step": 2,
-      "observation": "Synthetic issue-search result: issue #1427 reports MCP connection failures and links app/tool/mcp.py.",
+      "observation": "Synthetic issue-search result: issue #1427 (https://example.test/issues/1427) reports MCP connection failures and links app/tool/mcp.py.",
       "acceptable_tools": [
         "github_issue_detail",
+        "github_code_search",
         "github_read_file"
       ],
       "critical_slots": {
@@ -444,15 +446,19 @@
           "source": "observation",
           "value": 1427
         },
+        "query": {
+          "source": "observation",
+          "value": "MCP connection failures"
+        },
         "path": {
           "source": "observation",
           "value": "app/tool/mcp.py"
         }
       },
       "expected_action": "tool",
-      "label_rationale": "The new issue number and linked file make either issue detail or file read useful next.",
+      "label_rationale": "Issue detail can clarify symptoms; code search can locate related implementation; the linked file can be read directly.",
       "scenario": "exp-mcp-trace",
-      "evidence_requirement": "Issue details or linked file content with a source URL; observation is synthetic."
+      "evidence_requirement": "For the selected next tool: issue body/comments and URL, or code-search source paths and URLs, or linked file content and URL."
     },
     {
       "id": "exp-019",
@@ -491,20 +497,25 @@
         "provenance": "confirmed_user"
       },
       "step": 2,
-      "observation": "Synthetic issue-search result: an issue describes timeout handling during tool execution.",
+      "observation": "Synthetic issue-search result: issue #314 (https://example.test/issues/314) reports tool execution timing out after 30 seconds; no source path is supplied.",
       "acceptable_tools": [
+        "github_issue_detail",
         "github_code_search"
       ],
       "critical_slots": {
+        "issue_number": {
+          "source": "observation",
+          "value": 314
+        },
         "query": {
           "source": "observation",
-          "value": "timeout handling"
+          "value": "tool execution timeout 30 seconds"
         }
       },
       "expected_action": "tool",
-      "label_rationale": "After an issue describes timeout behavior, search implementation code.",
+      "label_rationale": "The new issue identity supports detail inspection, while its concrete symptom supports implementation search.",
       "scenario": "exp-timeout-trace",
-      "evidence_requirement": "Code-search paths and URLs relevant to the observed timeout behavior."
+      "evidence_requirement": "For the selected next tool: issue body/comments and URL, or code-search paths and URLs related to the observed timeout symptom."
     },
     {
       "id": "exp-021",

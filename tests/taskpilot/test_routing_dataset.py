@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 from collections import Counter, defaultdict
 from pathlib import Path
 from unittest.mock import patch
@@ -78,8 +79,9 @@ def test_routing_dataset_schema_and_split():
     for split, dataset in datasets.items():
         assert not list(validator.iter_errors(dataset))
         assert dataset["dataset"] == "taskpilot_routing"
-        assert dataset["version"] == "1.0.0"
+        assert dataset["version"] == "1.1.0"
         assert dataset["split"] == split
+        assert dataset["evidence_scope"] == "current_step"
         assert dataset["tool_pool"] == [
             "github_repository_info",
             "github_issue_search",
@@ -90,8 +92,8 @@ def test_routing_dataset_schema_and_split():
 
     experiment = datasets["experiment"]["samples"]
     evaluation = datasets["evaluation"]["samples"]
-    assert len(experiment) > 16
-    assert evaluation
+    assert len(experiment) == 28
+    assert len(evaluation) == 12
     assert not {item["id"] for item in experiment} & {item["id"] for item in evaluation}
     assert not {item["task"].casefold() for item in experiment} & {
         item["task"].casefold() for item in evaluation
@@ -111,8 +113,14 @@ def test_routing_dataset_schema_and_split():
             assert {item["step"] for item in steps} == {1, 2}
             assert len({item["task"] for item in steps}) == 1
             assert steps[0]["context"] == steps[1]["context"]
-            assert next(item for item in steps if item["step"] == 2)["observation"]
+            second = next(item for item in steps if item["step"] == 2)
+            assert second["observation"]
             assert steps[0]["acceptable_tools"] != steps[1]["acceptable_tools"]
+            if steps[0]["acceptable_tools"] == ["github_issue_search"]:
+                assert re.search(r"issue #\d+", second["observation"], re.I)
+                assert "https://" in second["observation"]
+            if steps[0]["acceptable_tools"] == ["github_code_search"]:
+                assert "https://" in second["observation"]
 
 
 def test_v0_tasks_are_annotated_as_experiment_only():
@@ -124,7 +132,10 @@ def test_v0_tasks_are_annotated_as_experiment_only():
         sample = migrated[f"v0:{index}"]
         assert sample["task"] == original["task"]
         assert sample["context"]["repository"] == original["repository"]
-        assert sample["evidence_requirement"] == original["evidence_requirement"]
+        if index in (15, 16):
+            assert sample["evidence_requirement"] != original["evidence_requirement"]
+        else:
+            assert sample["evidence_requirement"] == original["evidence_requirement"]
 
 
 def test_labels_reference_live_tool_metadata_and_schema(real_tool_metadata):
@@ -166,6 +177,10 @@ def test_labels_reference_live_tool_metadata_and_schema(real_tool_metadata):
                     assert slot["value"] == sample["context"][name], (sample["id"], name)
                 if slot["source"] == "observation":
                     assert sample["observation"], (sample["id"], name)
+                    if name in {"issue_number", "path"}:
+                        assert str(slot["value"]) in sample["observation"], (sample["id"], name)
+                if name == "query" and slot["source"] == "task" and "_" in slot["value"]:
+                    assert slot["value"] in sample["task"], (sample["id"], name)
                 if name == "repository" and slot["source"] == "missing":
                     assert sample["context"]["repository"] is None, sample["id"]
                 if "value" in slot and isinstance(slot["value"], str):
