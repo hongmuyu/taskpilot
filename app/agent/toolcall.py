@@ -11,6 +11,12 @@ from app.exceptions import TokenLimitExceeded
 from app.logger import logger
 from app.prompt.toolcall import NEXT_STEP_PROMPT, SYSTEM_PROMPT
 from app.schema import TOOL_CHOICE_TYPE, AgentState, Message, ToolCall, ToolChoice
+from app.taskpilot.semantic_tool_retrieval import SemanticToolRetriever
+from app.taskpilot.tool_embedding_index import (
+    EmbeddingIndexError,
+    InMemoryToolIndex,
+    LocalTransformerEmbeddingBackend,
+)
 from app.tool import CreateChatCompletion, Terminate, ToolCollection
 from app.tool.ask_human import AskHuman
 from app.tool.tool_collection import MissingParameterFailure, ToolValidationFailure
@@ -72,6 +78,12 @@ class ToolCallAgent(ReActAgent):
     special_tool_names: List[str] = Field(default_factory=lambda: [Terminate().name])
 
     tool_calls: List[ToolCall] = Field(default_factory=list)
+    routing_top_k: Optional[int] = Field(default=None, gt=0)
+    routing_retriever: Optional[SemanticToolRetriever] = Field(
+        default=None, exclude=True, repr=False
+    )
+    routing_original_task: Optional[str] = Field(default=None, exclude=True, repr=False)
+    routing_clarification: Optional[str] = Field(default=None, exclude=True, repr=False)
     pending_tool_calls: dict[str, PendingToolCall] = Field(
         default_factory=dict, exclude=True, repr=False
     )
@@ -88,9 +100,56 @@ class ToolCallAgent(ReActAgent):
 
     async def think(self) -> bool:
         """Process current state and decide next actions using tools"""
+        self.routing_clarification = None
         if self.next_step_prompt:
             user_msg = Message.user_message(self.next_step_prompt)
             self.messages += [user_msg]
+
+        tool_schemas = self.available_tools.to_params()
+        if self.routing_top_k is not None:
+            business_tools = [
+                tool
+                for tool in self.available_tools
+                if not self._is_special_tool(tool.name)
+            ]
+            if not business_tools or not (self.routing_original_task or "").strip():
+                self.routing_clarification = (
+                    "No suitable tool candidate is available for this step. "
+                    "Please clarify the request and retry."
+                )
+            else:
+                if self.routing_retriever is None:
+                    self.routing_retriever = SemanticToolRetriever(
+                        InMemoryToolIndex(LocalTransformerEmbeddingBackend())
+                    )
+                try:
+                    retrieval = await self.routing_retriever.retrieve(
+                        self.routing_original_task, self.messages, self.available_tools
+                    )
+                except EmbeddingIndexError:
+                    self.routing_clarification = "Tool retrieval is unavailable. Please retry or clarify the request."
+                else:
+                    selected = [
+                        match.name
+                        for match in retrieval.matches
+                        if match.score > 0 and not self._is_special_tool(match.name)
+                    ][: self.routing_top_k]
+                    tool_schemas = [
+                        self.available_tools.get_tool(name).to_param()
+                        for name in selected
+                    ]
+                    if not tool_schemas:
+                        self.routing_clarification = (
+                            "No suitable tool candidate matched this step. "
+                            "Please clarify the request and retry."
+                        )
+            if self.routing_clarification:
+                self.tool_calls = []
+                self.memory.add_message(
+                    Message.assistant_message(self.routing_clarification)
+                )
+                self.state = AgentState.FINISHED
+                return True
 
         try:
             # Get response with tool options
@@ -101,7 +160,7 @@ class ToolCallAgent(ReActAgent):
                     if self.system_prompt
                     else None
                 ),
-                tools=self.available_tools.to_params(),
+                tools=tool_schemas,
                 tool_choice=self.tool_choices,
             )
         except ValueError:
@@ -180,6 +239,8 @@ class ToolCallAgent(ReActAgent):
 
     async def act(self) -> str:
         """Execute tool calls and handle their results"""
+        if self.routing_clarification:
+            return self.routing_clarification
         if not self.tool_calls:
             if self.tool_choices == ToolChoice.REQUIRED:
                 raise ValueError(TOOL_CALL_REQUIRED)
@@ -536,9 +597,13 @@ class ToolCallAgent(ReActAgent):
         self.pending_tool_calls.clear()
         self.closed_pending_call_ids.clear()
         self.tool_call_sources.clear()
+        self.routing_original_task = request
+        self.routing_clarification = None
         try:
             return await super().run(request)
         finally:
+            self.routing_original_task = None
+            self.routing_clarification = None
             self.pending_tool_calls.clear()
             self.closed_pending_call_ids.clear()
             self.tool_call_sources.clear()
