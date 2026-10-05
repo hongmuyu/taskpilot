@@ -3,15 +3,15 @@
 ## Dashboard
 
 - Current Phase: Phase 3 — Tool Routing
-- Current PR: PR-04 — Tool Routing（T022–T027 DONE；T028–T030 未启动）
-- Next Task: T028 — Routing dataset（TODO，未启动；需单独授权）
+- Current PR: PR-04 — Tool Routing（T022–T028 DONE；T029–T030 未启动）
+- Next Task: T029 — Top-K experiments / full-tool baseline comparison（TODO，未启动；需单独授权）
 - Total Tasks: 73
-- Completed: 27
-- TODO: 45
+- Completed: 28
+- TODO: 44
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 26
+- Remaining P0: 25
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 27 + 45 + 1 + 0 + 0 = 73；剩余 26 + 19 + 1 = 46。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 28 + 44 + 1 + 0 + 0 = 73；剩余 25 + 19 + 1 = 45。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -72,7 +72,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 0：T001–T003，Foundation，PR-00 / PR-01，DONE。
 - Phase 1：T004–T012，Real Business Loop，PR-02，DONE。
 - Phase 2：T013–T021，Reliable Parameter Execution，PR-03，任务 DONE；GitHub PR #13。
-- Phase 3：T022–T030，Tool Routing，PR-04，T022–T027 DONE；T028–T030 TODO。
+- Phase 3：T022–T030，Tool Routing，PR-04，T022–T028 DONE；T029–T030 TODO。
 - Phase 4：T031–T038，Reliability，PR-05。
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
@@ -516,7 +516,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Routing dataset
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T011, T022
 - **Target PR:** PR-04
 - **Goal:** 建立工具选择标注与独立评估样本。
@@ -524,6 +524,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** 标注字段/工具存在性校验；人工核查歧义和证据；固定版本。
 - **Out of Scope:** 用 16 条 v0 全当已跑 Benchmark。
 - **Notes:** 工具等价选择可多标签，避免只因顺序不同判错。
+- **Evidence (2026-10-05):** `eval/datasets/routing_v1.schema.json` 固定 v1.0.0 字段契约；`routing_v1_experiment.json` 28 条（含逐字保留并补标注的 v0 16 条），`routing_v1_evaluation.json` 12 条独立新题。两份物理分离，评估题不用于选 K；各覆盖 Repository Understanding、Issue Investigation、Issue→Code、多步 Observation 变化、缺参、相近工具、多标签、无匹配/澄清。每题有 Context/来源、step/合成 Observation、acceptable tools、关键 slot/来源、动作、标注理由与证据要求；合成 Observation 不冒充真实 GitHub 证据。`tests/taskpilot/test_routing_dataset.py` 逐项校验 JSON schema、v0 迁移、分割去重、真实五个 Tool Metadata/schema 名称及 slot 类型/必填、多步状态变化；新增样本的歧义与证据要求已逐条审阅。`.venv/bin/python -m pytest tests/taskpilot tests/baseline/test_runtime.py tests/tools/test_browser_use_mcp.py -q` 为 192 passed；独立人工复核和真实路由评测 NOT VERIFIED；T029 不在本任务运行。
 
 ### T029 — Top-K experiments / full-tool baseline comparison
 
@@ -1327,4 +1328,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 仅完成 T022–T027，T028–T030 保持 TODO，需单独授权。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 仅完成 T022–T028，T029–T030 保持 TODO，需单独授权。

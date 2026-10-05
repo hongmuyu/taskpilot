@@ -1,0 +1,304 @@
+{
+  "dataset": "taskpilot_routing",
+  "version": "1.0.0",
+  "split": "evaluation",
+  "source_dataset": "repository_investigation_v0",
+  "tool_pool": [
+    "github_repository_info",
+    "github_issue_search",
+    "github_issue_detail",
+    "github_code_search",
+    "github_read_file"
+  ],
+  "observation_policy": "synthetic_routing_fixture_not_live_evidence",
+  "samples": [
+    {
+      "id": "eva-001",
+      "origin": "new",
+      "category": "repository_understanding",
+      "task": "Give the configured repository's main language and default branch.",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_repository_info"
+      ],
+      "critical_slots": {},
+      "expected_action": "tool",
+      "label_rationale": "Repository metadata directly supplies both fields.",
+      "evidence_requirement": "Repository metadata with language, default branch, and GitHub URL."
+    },
+    {
+      "id": "eva-002",
+      "origin": "new",
+      "category": "issue_investigation",
+      "task": "Which open issues mention redirect loops?",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "redirect loops is:open"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "Search issue reports using the stated topic and open state.",
+      "evidence_requirement": "Repository-scoped issue-search results with issue numbers and URLs."
+    },
+    {
+      "id": "eva-003",
+      "origin": "new",
+      "category": "issue_to_code",
+      "task": "Trace a reported proxy failure to its source implementation.",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "proxy failure"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "First identify a concrete proxy-related report.",
+      "evidence_requirement": "Proxy-related issue result with issue number and URL, or explicit empty result."
+    },
+    {
+      "id": "eva-004",
+      "origin": "new",
+      "category": "multi_step",
+      "task": "Investigate a proxy-related issue and locate its handling code.",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "proxy"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "Initial step needs an issue report.",
+      "scenario": "eva-proxy-trace",
+      "evidence_requirement": "Issue-search result about proxy behavior with issue number and URL."
+    },
+    {
+      "id": "eva-005",
+      "origin": "new",
+      "category": "multi_step",
+      "task": "Investigate a proxy-related issue and locate its handling code.",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 2,
+      "observation": "Synthetic issue-search result: proxy authentication fails; report mentions requests/sessions.py.",
+      "acceptable_tools": [
+        "github_code_search",
+        "github_read_file"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "observation",
+          "value": "proxy authentication"
+        },
+        "path": {
+          "source": "observation",
+          "value": "requests/sessions.py"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The observed symptom and file hint support code search or reading the named file.",
+      "scenario": "eva-proxy-trace",
+      "evidence_requirement": "Relevant code-search paths or named file content with source URL; observation is synthetic."
+    },
+    {
+      "id": "eva-006",
+      "origin": "new",
+      "category": "missing_parameters",
+      "task": "Summarize the issue discussion for this repository.",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_detail"
+      ],
+      "critical_slots": {
+        "issue_number": {
+          "source": "missing"
+        }
+      },
+      "expected_action": "clarify",
+      "label_rationale": "A confirmed repository alone does not identify an issue.",
+      "evidence_requirement": "Clarification asking for issue_number; zero tool dispatch before an answer."
+    },
+    {
+      "id": "eva-007",
+      "origin": "new",
+      "category": "similar_capabilities",
+      "task": "Locate timeout handling references in reports or implementation.",
+      "context": {
+        "repository": "pallets/flask",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search",
+        "github_code_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "timeout handling"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "Either matching issue reports or code references are acceptable.",
+      "evidence_requirement": "Matching issue URLs or source paths/URLs about timeout handling."
+    },
+    {
+      "id": "eva-008",
+      "origin": "new",
+      "category": "no_match_clarification",
+      "task": "What is tomorrow's temperature in Paris?",
+      "context": {
+        "repository": null,
+        "ref": null,
+        "provenance": "absent"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [],
+      "critical_slots": {},
+      "expected_action": "no_match",
+      "label_rationale": "Weather is outside the current GitHub read tool pool.",
+      "evidence_requirement": "No GitHub tool selection or dispatch for weather data."
+    },
+    {
+      "id": "eva-009",
+      "origin": "new",
+      "category": "repository_understanding",
+      "task": "How many open issues are listed for this repository?",
+      "context": {
+        "repository": "pallets/flask",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_repository_info"
+      ],
+      "critical_slots": {},
+      "expected_action": "tool",
+      "label_rationale": "Repository metadata contains the open issue count.",
+      "evidence_requirement": "Repository metadata with open issue count and GitHub URL."
+    },
+    {
+      "id": "eva-010",
+      "origin": "new",
+      "category": "issue_investigation",
+      "task": "Open issue #42 and list its labels.",
+      "context": {
+        "repository": "pallets/flask",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_detail"
+      ],
+      "critical_slots": {
+        "issue_number": {
+          "source": "task",
+          "value": 42
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The task supplies a specific issue number for detail lookup.",
+      "evidence_requirement": "Issue detail response with labels and source URL."
+    },
+    {
+      "id": "eva-011",
+      "origin": "new",
+      "category": "missing_parameters",
+      "task": "Read the file I mentioned earlier.",
+      "context": {
+        "repository": "pallets/flask",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_read_file"
+      ],
+      "critical_slots": {
+        "path": {
+          "source": "missing"
+        }
+      },
+      "expected_action": "clarify",
+      "label_rationale": "No file path appears in the current task or confirmed context.",
+      "evidence_requirement": "Clarification asking for path; zero tool dispatch before an answer."
+    },
+    {
+      "id": "eva-012",
+      "origin": "new",
+      "category": "no_match_clarification",
+      "task": "Check an issue for me.",
+      "context": {
+        "repository": "pallets/flask",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_detail"
+      ],
+      "critical_slots": {
+        "issue_number": {
+          "source": "missing"
+        }
+      },
+      "expected_action": "clarify",
+      "label_rationale": "The issue number must be clarified before detail lookup.",
+      "evidence_requirement": "Clarification asking for issue_number; zero tool dispatch before an answer."
+    }
+  ]
+}

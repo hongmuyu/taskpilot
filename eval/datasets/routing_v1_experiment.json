@@ -1,0 +1,705 @@
+{
+  "dataset": "taskpilot_routing",
+  "version": "1.0.0",
+  "split": "experiment",
+  "source_dataset": "repository_investigation_v0",
+  "tool_pool": [
+    "github_repository_info",
+    "github_issue_search",
+    "github_issue_detail",
+    "github_code_search",
+    "github_read_file"
+  ],
+  "observation_policy": "synthetic_routing_fixture_not_live_evidence",
+  "samples": [
+    {
+      "id": "exp-001",
+      "origin": "v0:1",
+      "category": "repository_understanding",
+      "task": "What does this repository do, and what language is it primarily written in?",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_repository_info"
+      ],
+      "critical_slots": {},
+      "expected_action": "tool",
+      "label_rationale": "Repository metadata gives purpose and primary language.",
+      "evidence_requirement": "Repository description and language metadata returned by GitHub."
+    },
+    {
+      "id": "exp-002",
+      "origin": "v0:2",
+      "category": "repository_understanding",
+      "task": "Summarize the repository's main purpose and link to its GitHub page.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_repository_info"
+      ],
+      "critical_slots": {},
+      "expected_action": "tool",
+      "label_rationale": "Repository metadata contains description and GitHub URL.",
+      "evidence_requirement": "Repository metadata with a source URL."
+    },
+    {
+      "id": "exp-003",
+      "origin": "v0:3",
+      "category": "repository_understanding",
+      "task": "How active is this repository, based on its open issue count and latest update?",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_repository_info"
+      ],
+      "critical_slots": {},
+      "expected_action": "tool",
+      "label_rationale": "Repository metadata contains issue count and update time.",
+      "evidence_requirement": "Current repository metadata returned from GitHub."
+    },
+    {
+      "id": "exp-004",
+      "origin": "v0:4",
+      "category": "issue_investigation",
+      "task": "Find recent issues mentioning MCP.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "MCP"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The task requests a list of matching issues.",
+      "evidence_requirement": "GitHub issue search results with issue numbers and URLs."
+    },
+    {
+      "id": "exp-005",
+      "origin": "v0:5",
+      "category": "issue_investigation",
+      "task": "Find open issues related to timeout failures.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "timeout is:open"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The task asks for open issues matching timeout.",
+      "evidence_requirement": "Repository-scoped issue search results."
+    },
+    {
+      "id": "exp-006",
+      "origin": "v0:6",
+      "category": "issue_investigation",
+      "task": "Search issues about Browser Use connection failures.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "Browser Use connection failures"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The task asks for matching issue reports.",
+      "evidence_requirement": "Matching issue titles, numbers, and URLs from GitHub."
+    },
+    {
+      "id": "exp-007",
+      "origin": "v0:7",
+      "category": "issue_investigation",
+      "task": "Find issues discussing tool calls that fail or return errors.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "tool calls fail or return errors"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "Issue search is the first evidence source for matching reports.",
+      "evidence_requirement": "Issue search results, including an explicit empty result when none match."
+    },
+    {
+      "id": "exp-008",
+      "origin": "v0:8",
+      "category": "issue_investigation",
+      "task": "Read issue #1427 and summarize the problem and discussion.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_detail"
+      ],
+      "critical_slots": {
+        "issue_number": {
+          "source": "task",
+          "value": 1427
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "A specific issue number is supplied; detail includes body and comments.",
+      "evidence_requirement": "Issue body, up to ten comments, and issue URL retrieved from GitHub."
+    },
+    {
+      "id": "exp-009",
+      "origin": "v0:9",
+      "category": "issue_investigation",
+      "task": "Inspect the current status and labels of issue #1427.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_detail"
+      ],
+      "critical_slots": {
+        "issue_number": {
+          "source": "task",
+          "value": 1427
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "A specific issue number is supplied; detail includes state and labels.",
+      "evidence_requirement": "Issue state, labels, and source URL from the issue detail response."
+    },
+    {
+      "id": "exp-010",
+      "origin": "v0:10",
+      "category": "code_investigation",
+      "task": "Search repository code for the MCP client connection lifecycle.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_code_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "MCP client connection lifecycle"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The task asks to locate code by subject.",
+      "evidence_requirement": "GitHub code-search results with file paths and URLs."
+    },
+    {
+      "id": "exp-011",
+      "origin": "v0:11",
+      "category": "code_investigation",
+      "task": "Find code that handles tool execution errors.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_code_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "tool execution errors"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The task asks to locate matching source paths.",
+      "evidence_requirement": "Matching source paths from GitHub code search."
+    },
+    {
+      "id": "exp-012",
+      "origin": "v0:12",
+      "category": "code_investigation",
+      "task": "Search for timeout handling in the repository.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_code_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "timeout handling"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The task asks to search code for timeout handling.",
+      "evidence_requirement": "Relevant code-search matches and links."
+    },
+    {
+      "id": "exp-013",
+      "origin": "v0:13",
+      "category": "code_investigation",
+      "task": "Read app/tool/mcp.py and explain how MCP tools are dispatched.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_read_file"
+      ],
+      "critical_slots": {
+        "path": {
+          "source": "task",
+          "value": "app/tool/mcp.py"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "An exact file path is supplied for reading.",
+      "evidence_requirement": "File content read from GitHub with a file URL."
+    },
+    {
+      "id": "exp-014",
+      "origin": "v0:14",
+      "category": "code_investigation",
+      "task": "Read app/agent/toolcall.py and locate how tool-call responses are executed.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_read_file"
+      ],
+      "critical_slots": {
+        "path": {
+          "source": "task",
+          "value": "app/agent/toolcall.py"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "An exact file path is supplied for reading.",
+      "evidence_requirement": "Source excerpt and corresponding GitHub file URL."
+    },
+    {
+      "id": "exp-015",
+      "origin": "v0:15",
+      "category": "issue_to_code",
+      "task": "Find an MCP-related issue and trace the reported behavior to likely implementation code.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "MCP"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The initial step must identify a concrete MCP issue before tracing code.",
+      "evidence_requirement": "At least one real issue result followed by code-search or file-read evidence, with linked issue and source paths."
+    },
+    {
+      "id": "exp-016",
+      "origin": "v0:16",
+      "category": "issue_to_code",
+      "task": "Investigate an issue about tool failure, inspect its details, then identify the code handling that failure.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "tool failure"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "No issue number is given, so the initial step searches issue reports.",
+      "evidence_requirement": "Issue detail plus relevant source evidence retrieved from GitHub."
+    },
+    {
+      "id": "exp-017",
+      "origin": "new",
+      "category": "multi_step",
+      "task": "Trace an MCP connection bug from its issue report into source.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "MCP connection"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "Find an issue before choosing source to inspect.",
+      "scenario": "exp-mcp-trace",
+      "evidence_requirement": "Issue-search result with issue number and URL, or an explicit empty result."
+    },
+    {
+      "id": "exp-018",
+      "origin": "new",
+      "category": "multi_step",
+      "task": "Trace an MCP connection bug from its issue report into source.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 2,
+      "observation": "Synthetic issue-search result: issue #1427 reports MCP connection failures and links app/tool/mcp.py.",
+      "acceptable_tools": [
+        "github_issue_detail",
+        "github_read_file"
+      ],
+      "critical_slots": {
+        "issue_number": {
+          "source": "observation",
+          "value": 1427
+        },
+        "path": {
+          "source": "observation",
+          "value": "app/tool/mcp.py"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The new issue number and linked file make either issue detail or file read useful next.",
+      "scenario": "exp-mcp-trace",
+      "evidence_requirement": "Issue details or linked file content with a source URL; observation is synthetic."
+    },
+    {
+      "id": "exp-019",
+      "origin": "new",
+      "category": "multi_step",
+      "task": "Investigate timeout reports and locate their handling code.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "timeout"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "First find a concrete report of timeout behavior.",
+      "scenario": "exp-timeout-trace",
+      "evidence_requirement": "Issue-search result about timeout behavior with issue number and URL."
+    },
+    {
+      "id": "exp-020",
+      "origin": "new",
+      "category": "multi_step",
+      "task": "Investigate timeout reports and locate their handling code.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 2,
+      "observation": "Synthetic issue-search result: an issue describes timeout handling during tool execution.",
+      "acceptable_tools": [
+        "github_code_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "observation",
+          "value": "timeout handling"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "After an issue describes timeout behavior, search implementation code.",
+      "scenario": "exp-timeout-trace",
+      "evidence_requirement": "Code-search paths and URLs relevant to the observed timeout behavior."
+    },
+    {
+      "id": "exp-021",
+      "origin": "new",
+      "category": "missing_parameters",
+      "task": "Summarize that issue and its discussion.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_detail"
+      ],
+      "critical_slots": {
+        "issue_number": {
+          "source": "missing"
+        }
+      },
+      "expected_action": "clarify",
+      "label_rationale": "No issue number is supplied in task or confirmed context.",
+      "evidence_requirement": "Clarification asking for issue_number; zero tool dispatch before an answer."
+    },
+    {
+      "id": "exp-022",
+      "origin": "new",
+      "category": "missing_parameters",
+      "task": "Read the file at my selected ref.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": "main",
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_read_file"
+      ],
+      "critical_slots": {
+        "path": {
+          "source": "missing"
+        },
+        "ref": {
+          "source": "confirmed_context",
+          "value": "main"
+        }
+      },
+      "expected_action": "clarify",
+      "label_rationale": "The ref is confirmed, but the required file path is absent.",
+      "evidence_requirement": "Clarification asking for path while preserving confirmed ref=main; zero dispatch."
+    },
+    {
+      "id": "exp-023",
+      "origin": "new",
+      "category": "missing_parameters",
+      "task": "Describe this repository's purpose.",
+      "context": {
+        "repository": null,
+        "ref": null,
+        "provenance": "absent"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_repository_info"
+      ],
+      "critical_slots": {
+        "repository": {
+          "source": "missing"
+        }
+      },
+      "expected_action": "clarify",
+      "label_rationale": "There is no confirmed repository identity to use.",
+      "evidence_requirement": "Clarification asking for repository identity; zero tool dispatch."
+    },
+    {
+      "id": "exp-024",
+      "origin": "new",
+      "category": "similar_capabilities",
+      "task": "Find references to retrying failed tool calls in issue reports or code.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search",
+        "github_code_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "retrying failed tool calls"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "Both issue reports and source code can satisfy the requested references.",
+      "evidence_requirement": "Matching issue URLs or source paths/URLs about tool-call retries."
+    },
+    {
+      "id": "exp-025",
+      "origin": "new",
+      "category": "similar_capabilities",
+      "task": "Locate where MCP timeouts are discussed in this project.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search",
+        "github_code_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "MCP timeout"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The task permits either issue discussion or implementation matches.",
+      "evidence_requirement": "Matching issue URLs or source paths/URLs about MCP timeouts."
+    },
+    {
+      "id": "exp-026",
+      "origin": "new",
+      "category": "no_match_clarification",
+      "task": "What will the weather be tomorrow?",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [],
+      "critical_slots": {},
+      "expected_action": "no_match",
+      "label_rationale": "No current GitHub read tool provides weather data.",
+      "evidence_requirement": "No GitHub tool selection or dispatch for weather data."
+    },
+    {
+      "id": "exp-027",
+      "origin": "new",
+      "category": "no_match_clarification",
+      "task": "Can you summarize the issue?",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_detail"
+      ],
+      "critical_slots": {
+        "issue_number": {
+          "source": "missing"
+        }
+      },
+      "expected_action": "clarify",
+      "label_rationale": "Issue detail is appropriate after the user identifies which issue.",
+      "evidence_requirement": "Clarification asking for issue_number; zero tool dispatch."
+    },
+    {
+      "id": "exp-028",
+      "origin": "new",
+      "category": "issue_to_code",
+      "task": "Find the implementation tied to issue #1427 after reading its symptoms.",
+      "context": {
+        "repository": "FoundationAgents/OpenManus",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 2,
+      "observation": "Synthetic issue detail: issue #1427 reports MCP connection failure during initialization.",
+      "acceptable_tools": [
+        "github_code_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "observation",
+          "value": "MCP connection initialization"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The issue observation now identifies implementation search terms.",
+      "evidence_requirement": "Code-search paths and URLs tied to the synthetic issue symptoms."
+    }
+  ]
+}
