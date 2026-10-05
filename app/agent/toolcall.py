@@ -105,44 +105,63 @@ class ToolCallAgent(ReActAgent):
             user_msg = Message.user_message(self.next_step_prompt)
             self.messages += [user_msg]
 
-        tool_schemas = self.available_tools.to_params()
+        tool_schemas = (
+            self.available_tools.to_params() if self.routing_top_k is None else []
+        )
         if self.routing_top_k is not None:
+            # K limits business schemas; required controls are appended separately.
+            controls = [
+                tool
+                for tool in self.available_tools
+                if type(tool) is Terminate
+                or (self.pending_tool_calls and type(tool) is AskHuman)
+            ]
             business_tools = [
                 tool
                 for tool in self.available_tools
-                if not self._is_special_tool(tool.name)
+                if not isinstance(tool, (Terminate, AskHuman))
+                and not self._is_special_tool(tool.name)
             ]
-            if not business_tools or not (self.routing_original_task or "").strip():
+            if not (self.routing_original_task or "").strip():
                 self.routing_clarification = (
                     "No suitable tool candidate is available for this step. "
                     "Please clarify the request and retry."
                 )
-            else:
+            elif business_tools:
                 if self.routing_retriever is None:
                     self.routing_retriever = SemanticToolRetriever(
                         InMemoryToolIndex(LocalTransformerEmbeddingBackend())
                     )
                 try:
                     retrieval = await self.routing_retriever.retrieve(
-                        self.routing_original_task, self.messages, self.available_tools
+                        self.routing_original_task,
+                        self.messages,
+                        ToolCollection(*business_tools),
                     )
                 except EmbeddingIndexError:
                     self.routing_clarification = "Tool retrieval is unavailable. Please retry or clarify the request."
                 else:
                     selected = [
-                        match.name
-                        for match in retrieval.matches
-                        if match.score > 0 and not self._is_special_tool(match.name)
+                        match.name for match in retrieval.matches if match.score > 0
                     ][: self.routing_top_k]
                     tool_schemas = [
                         self.available_tools.get_tool(name).to_param()
                         for name in selected
                     ]
-                    if not tool_schemas:
+                    if not tool_schemas and (
+                        not self.pending_tool_calls or not controls
+                    ):
                         self.routing_clarification = (
                             "No suitable tool candidate matched this step. "
                             "Please clarify the request and retry."
                         )
+            if not business_tools and not controls:
+                self.routing_clarification = (
+                    "No suitable tool candidate is available for this step. "
+                    "Please clarify the request and retry."
+                )
+            if not self.routing_clarification:
+                tool_schemas += [tool.to_param() for tool in controls]
             if self.routing_clarification:
                 self.tool_calls = []
                 self.memory.add_message(
