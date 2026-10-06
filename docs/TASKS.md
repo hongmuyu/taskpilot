@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 3 — Tool Routing
-- Current PR: PR-04 — Tool Routing（T022–T028 DONE；T029–T030 未启动）
-- Next Task: T029 — Top-K experiments / full-tool baseline comparison（TODO，未启动；需单独授权）
+- Current PR: PR-04 — Tool Routing（T022–T029 DONE；T030 未启动）
+- Next Task: T030 — Tool Selection Accuracy / token / latency comparison（TODO，未启动；需单独授权）
 - Total Tasks: 73
-- Completed: 28
-- TODO: 44
+- Completed: 29
+- TODO: 43
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 25
+- Remaining P0: 24
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-05；PR-04 起点 main `8370495e5531fbefe76f56e93b428e01007dd491`
+- State verified: 2026-10-06；PR-04 起点 main `8370495e5531fbefe76f56e93b428e01007dd491`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已合并；PR-04 已实施并验收 T022–T027，尚未合并。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已合并；PR-04 已实施并验收 T022–T029，尚未合并。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 28 + 44 + 1 + 0 + 0 = 73；剩余 25 + 19 + 1 = 45。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 29 + 43 + 1 + 0 + 0 = 73；剩余 24 + 19 + 1 = 44。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -72,7 +72,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 0：T001–T003，Foundation，PR-00 / PR-01，DONE。
 - Phase 1：T004–T012，Real Business Loop，PR-02，DONE。
 - Phase 2：T013–T021，Reliable Parameter Execution，PR-03，任务 DONE；GitHub PR #13。
-- Phase 3：T022–T030，Tool Routing，PR-04，T022–T028 DONE；T029–T030 TODO。
+- Phase 3：T022–T030，Tool Routing，PR-04，T022–T029 DONE；T030 TODO。
 - Phase 4：T031–T038，Reliability，PR-05。
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
@@ -532,7 +532,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Top-K experiments / full-tool baseline comparison
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T027, T028
 - **Target PR:** PR-04
 - **Goal:** 以同工具池对照选择 K。
@@ -540,6 +540,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** 真实工具和真实模型成组实验；重放运行配置，核验 full-tool 未经过检索过滤。
 - **Out of Scope:** 预定最优 K、把新增工具收益归因路由。
 - **Notes:** 这是路由阶段实验；最终版本仍需 Phase 8 对比。
+- **Evidence (2026-10-06):** [T029 experiment report](T029_TOPK_EXPERIMENT.md) 与 [`eval/results/t029_experiment_v1_1_0.jsonl`](../eval/results/t029_experiment_v1_1_0.jsonl)：v1.1.0 experiment 28 条 × K=1/3/5/full = 112 次真实 `deepseek-flash` 单步选择；固定 model/config、原任务/Observation、真实五个 GitHub Local Tool schema、`terminate`、单步零 dispatch 预算。28/28 full 组绕过检索，84/84 Top-K 组保留原始 routing event；无请求异常。工具选择样本首选命中 K=1 14/23、K=3 21/23、K=5 19/23、full 17/23，推荐 K=3 进入后续受控评估。clarification 样本未证明完整澄清；GitHub HTTP 任务结果、模型服务端 revision 与多次重复稳定性 NOT VERIFIED。evaluation 12 条封存，未用于选 K；正式 Accuracy/Token/Latency 属 T030，本轮未做。
 
 ### T030 — Tool Selection Accuracy / token / latency comparison
 
@@ -1328,4 +1329,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 仅完成 T022–T028，T029–T030 保持 TODO，需单独授权。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T029，T030 保持 TODO，需单独授权。
