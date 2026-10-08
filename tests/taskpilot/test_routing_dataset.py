@@ -55,7 +55,9 @@ def load_json(path):
 
 @pytest.fixture
 def real_tool_metadata():
-    client = GitHubClient(http_client=httpx.AsyncClient(base_url="https://example.test"))
+    client = GitHubClient(
+        http_client=httpx.AsyncClient(base_url="https://example.test")
+    )
     context = RepositoryContext.parse("FoundationAgents/OpenManus", source="user_input")
     tools = (
         GitHubRepositoryInfo(context=context, client=client),
@@ -156,9 +158,13 @@ def test_labels_reference_live_tool_metadata_and_schema(real_tool_metadata):
             else:
                 assert selected, sample["id"]
             if sample["expected_action"] == "clarify":
-                assert any(slot["source"] == "missing" for slot in slots.values()), sample["id"]
+                assert any(
+                    slot["source"] == "missing" for slot in slots.values()
+                ), sample["id"]
             if sample["expected_action"] == "tool":
-                assert all(slot["source"] != "missing" for slot in slots.values()), sample["id"]
+                assert all(
+                    slot["source"] != "missing" for slot in slots.values()
+                ), sample["id"]
 
             if sample["context"]["repository"] is None:
                 assert sample["context"]["provenance"] == "absent", sample["id"]
@@ -172,14 +178,27 @@ def test_labels_reference_live_tool_metadata_and_schema(real_tool_metadata):
                     for tool in selected
                 )
                 assert supported, (sample["id"], name)
-                assert ("value" in slot) == (slot["source"] != "missing"), (sample["id"], name)
+                assert ("value" in slot) == (slot["source"] != "missing"), (
+                    sample["id"],
+                    name,
+                )
                 if slot["source"] == "confirmed_context":
-                    assert slot["value"] == sample["context"][name], (sample["id"], name)
+                    assert slot["value"] == sample["context"][name], (
+                        sample["id"],
+                        name,
+                    )
                 if slot["source"] == "observation":
                     assert sample["observation"], (sample["id"], name)
                     if name in {"issue_number", "path"}:
-                        assert str(slot["value"]) in sample["observation"], (sample["id"], name)
-                if name == "query" and slot["source"] == "task" and "_" in slot["value"]:
+                        assert str(slot["value"]) in sample["observation"], (
+                            sample["id"],
+                            name,
+                        )
+                if (
+                    name == "query"
+                    and slot["source"] == "task"
+                    and "_" in slot["value"]
+                ):
                     assert slot["value"] in sample["task"], (sample["id"], name)
                 if name == "repository" and slot["source"] == "missing":
                     assert sample["context"]["repository"] is None, sample["id"]
@@ -193,8 +212,14 @@ def test_labels_reference_live_tool_metadata_and_schema(real_tool_metadata):
                 for required in metadata.schema.get("required", []):
                     assert required in slots, (sample["id"], tool_name, required)
                     if sample["expected_action"] == "tool":
-                        assert slots[required]["source"] != "missing", (sample["id"], tool_name, required)
+                        assert slots[required]["source"] != "missing", (
+                            sample["id"],
+                            tool_name,
+                            required,
+                        )
                 for name, slot in slots.items():
                     property_schema = metadata.schema.get("properties", {}).get(name)
                     if property_schema and "value" in slot:
-                        assert not list(Draft7Validator(property_schema).iter_errors(slot["value"])), (sample["id"], tool_name, name)
+                        assert not list(
+                            Draft7Validator(property_schema).iter_errors(slot["value"])
+                        ), (sample["id"], tool_name, name)

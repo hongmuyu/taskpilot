@@ -55,11 +55,15 @@ SECRET_PATTERN = re.compile(
 
 def _digest(value) -> str:
     return hashlib.sha256(
-        json.dumps(value, ensure_ascii=False, sort_keys=True, default=str).encode("utf-8")
+        json.dumps(value, ensure_ascii=False, sort_keys=True, default=str).encode(
+            "utf-8"
+        )
     ).hexdigest()
 
 
-def _tools_for_context(context: RepositoryContext, client: GitHubClient) -> ToolCollection:
+def _tools_for_context(
+    context: RepositoryContext, client: GitHubClient
+) -> ToolCollection:
     return ToolCollection(
         GitHubRepositoryInfo(context=context, client=client),
         GitHubIssueSearch(context=context, client=client),
@@ -142,9 +146,7 @@ async def run_case(
                 "system": [message.to_dict() for message in kwargs["system_msgs"]],
             }
         )
-        return await original_ask_tool(
-            *args, **kwargs, timeout=REQUEST_TIMEOUT_SECONDS
-        )
+        return await original_ask_tool(*args, **kwargs, timeout=REQUEST_TIMEOUT_SECONDS)
 
     def capture_event(message):
         raw = message.record["message"]
@@ -270,10 +272,14 @@ async def run_experiment(output: Path, limit: int | None = None, resume: bool = 
             raise ValueError("Resume model configuration changed")
         completed = {(item["sample_id"], item["group"]) for item in old[1:]}
     else:
-        output.write_text(json.dumps(manifest, ensure_ascii=False) + "\n", encoding="utf-8")
+        output.write_text(
+            json.dumps(manifest, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
 
     logger.remove()
-    client = GitHubClient(http_client=httpx.AsyncClient(base_url="https://api.github.com"))
+    client = GitHubClient(
+        http_client=httpx.AsyncClient(base_url="https://api.github.com")
+    )
     total = len(samples) * len(GROUPS)
     try:
         with output.open("a", encoding="utf-8") as stream:

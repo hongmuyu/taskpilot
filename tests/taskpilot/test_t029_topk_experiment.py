@@ -24,11 +24,17 @@ with patch(
         RetrievalResult,
         SemanticToolRetriever,
     )
-    from app.taskpilot.tool_embedding_index import IndexVersion, InMemoryToolIndex, ToolMatch
+    from app.taskpilot.tool_embedding_index import (
+        IndexVersion,
+        InMemoryToolIndex,
+        ToolMatch,
+    )
     from eval.t029_topk_experiment import run_case
 
 
-DATASET = Path(__file__).resolve().parents[2] / "eval/datasets/routing_v1_experiment.json"
+DATASET = (
+    Path(__file__).resolve().parents[2] / "eval/datasets/routing_v1_experiment.json"
+)
 
 
 def sample(sample_id):
@@ -49,7 +55,9 @@ def fake_retriever():
     retriever.retrieve = AsyncMock(
         return_value=RetrievalResult(
             query="Original user task: Find recent issues mentioning MCP.",
-            matches=(ToolMatch("github_issue_search", "local:github_issue_search", 0.8),),
+            matches=(
+                ToolMatch("github_issue_search", "local:github_issue_search", 0.8),
+            ),
             index_version=IndexVersion("fixed", "v1", "fixed-vectors", "fingerprint"),
             observation_tool_call_id=None,
         )
@@ -59,10 +67,14 @@ def fake_retriever():
 
 @pytest.mark.asyncio
 async def test_full_baseline_sends_all_schemas_without_retrieval():
-    client = GitHubClient(http_client=httpx.AsyncClient(base_url="https://example.test"))
+    client = GitHubClient(
+        http_client=httpx.AsyncClient(base_url="https://example.test")
+    )
     retriever = fake_retriever()
     try:
-        record = await run_case(sample("exp-004"), "full", fake_llm(), client, retriever)
+        record = await run_case(
+            sample("exp-004"), "full", fake_llm(), client, retriever
+        )
     finally:
         await client.aclose()
 
@@ -81,7 +93,9 @@ async def test_full_baseline_sends_all_schemas_without_retrieval():
 
 @pytest.mark.asyncio
 async def test_routed_and_full_groups_share_messages_and_registry():
-    client = GitHubClient(http_client=httpx.AsyncClient(base_url="https://example.test"))
+    client = GitHubClient(
+        http_client=httpx.AsyncClient(base_url="https://example.test")
+    )
     retriever = fake_retriever()
     llm = fake_llm()
     try:
@@ -99,11 +113,15 @@ async def test_routed_and_full_groups_share_messages_and_registry():
 
 @pytest.mark.asyncio
 async def test_model_error_records_type_without_error_message():
-    client = GitHubClient(http_client=httpx.AsyncClient(base_url="https://example.test"))
+    client = GitHubClient(
+        http_client=httpx.AsyncClient(base_url="https://example.test")
+    )
     llm = fake_llm()
     llm.ask_tool.side_effect = RuntimeError("private-value-must-not-be-logged")
     try:
-        record = await run_case(sample("exp-004"), "full", llm, client, fake_retriever())
+        record = await run_case(
+            sample("exp-004"), "full", llm, client, fake_retriever()
+        )
     finally:
         await client.aclose()
 
