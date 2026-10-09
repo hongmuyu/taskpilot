@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TaskPilot routing dataset v1",
+  "type": "object",
+  "required": ["dataset", "version", "split", "source_dataset", "tool_pool", "observation_policy", "evidence_scope", "samples"],
+  "additionalProperties": false,
+  "properties": {
+    "dataset": {"const": "taskpilot_routing"},
+    "version": {"const": "1.1.0"},
+    "split": {"enum": ["experiment", "evaluation"]},
+    "source_dataset": {"const": "repository_investigation_v0"},
+    "tool_pool": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "observation_policy": {"const": "synthetic_routing_fixture_not_live_evidence"},
+    "evidence_scope": {"const": "current_step"},
+    "samples": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "origin", "category", "task", "context", "step", "observation", "acceptable_tools", "critical_slots", "expected_action", "label_rationale", "evidence_requirement"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "origin": {"type": "string", "pattern": "^(new|v0:([1-9]|1[0-6]))$"},
+          "category": {"enum": ["repository_understanding", "issue_investigation", "code_investigation", "issue_to_code", "multi_step", "missing_parameters", "similar_capabilities", "no_match_clarification"]},
+          "task": {"type": "string", "minLength": 1},
+          "context": {
+            "type": "object",
+            "required": ["repository", "ref", "provenance"],
+            "additionalProperties": false,
+            "properties": {
+              "repository": {"type": ["string", "null"]},
+              "ref": {"type": ["string", "null"]},
+              "provenance": {"enum": ["confirmed_user", "absent"]}
+            }
+          },
+          "scenario": {"type": "string", "minLength": 1},
+          "step": {"type": "integer", "minimum": 1},
+          "observation": {"type": ["string", "null"]},
+          "acceptable_tools": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+          "critical_slots": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["source"],
+              "additionalProperties": false,
+              "properties": {
+                "source": {"enum": ["task", "confirmed_context", "observation", "missing"]},
+                "value": {"type": ["string", "integer"]}
+              }
+            }
+          },
+          "expected_action": {"enum": ["tool", "clarify", "no_match"]},
+          "label_rationale": {"type": "string", "minLength": 1},
+          "evidence_requirement": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

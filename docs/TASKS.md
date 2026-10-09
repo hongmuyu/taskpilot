@@ -2,22 +2,22 @@
 
 ## Dashboard
 
-- Current Phase: Phase 2 — Reliable Parameter Execution
-- Current PR: PR-03 — Parameter Validation and Clarification（T013–T021 DONE；GitHub PR #13）
-- Next Task: T022 — Unified Tool Metadata（TODO，未启动；需单独授权）
+- Current Phase: Phase 3 — Tool Routing
+- Current PR: PR-04 — Tool Routing（T022–T030 DONE；交付状态见 GitHub PR）
+- Next Task: T031 — Tool result status normalization / MCP isError preservation（TODO，未授权）
 - Total Tasks: 73
-- Completed: 21
-- TODO: 51
+- Completed: 30
+- TODO: 42
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 32
+- Remaining P0: 23
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-04；功能基线 main `7ca8a9b02fea07a8de476fdf68ed45e919ba1e28`
+- State verified: 2026-10-09；PR-04 起点 main `8370495e5531fbefe76f56e93b428e01007dd491`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已实施并验收 T013–T021；GitHub PR #13 记录其合并状态。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已合并；PR-04 已实施并验收 T022–T030，交付状态见 GitHub PR。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 21 + 51 + 1 + 0 + 0 = 73；剩余 32 + 19 + 1 = 52。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 30 + 42 + 1 + 0 + 0 = 73；剩余 23 + 19 + 1 = 43。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -72,7 +72,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 0：T001–T003，Foundation，PR-00 / PR-01，DONE。
 - Phase 1：T004–T012，Real Business Loop，PR-02，DONE。
 - Phase 2：T013–T021，Reliable Parameter Execution，PR-03，任务 DONE；GitHub PR #13。
-- Phase 3：T022–T030，Tool Routing，PR-04。
+- Phase 3：T022–T030，Tool Routing，PR-04，T022–T030 DONE；待最终合并评审。
 - Phase 4：T031–T038，Reliability，PR-05。
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
@@ -423,14 +423,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Unified Tool Metadata
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T021
 - **Target PR:** PR-04
 - **Goal:** 在已有工具定义上统一最小元数据。
 - **Acceptance Criteria:** name/description/schema 复用原定义；capability/examples/source 可读取；Local/MCP 身份唯一且不丢原名称；risk metadata placeholder 明确待 Phase 5 生效。
 - **Tests:** 两来源一致性、重名/名称清洗冲突、schema 引用与版本变化测试。
 - **Out of Scope:** 第二套 Registry、把 risk placeholder 当执行授权。
-- **Notes:** 含 capability / examples metadata、source metadata；风险占位缺省不应允许写。
+- **Evidence (2026-10-04):** `BaseTool.metadata` / `ToolCollection.to_metadata()` 提供现有 Tool 的动态视图，直接引用当前 `name`、`description`、`parameters`，包含 capabilities、examples、`local`/`mcp` source 和不参与 dispatch 的 Phase 5 risk 占位（默认 `write_allowed=False`）。五个 GitHub Local Tools 声明 capability/example；MCP proxy 保留 `server_id`、`original_name` 与清洗后的公开名，metadata identity 用原来源编码；清洗/截断撞名以原身份的摘要去歧义，Local/MCP 集合同名明确拒绝而不覆盖。`tests/taskpilot/test_tool_metadata.py` deterministic 7 passed，覆盖两来源、名称冲突、原 schema 引用与替换后的版本变化；`tests/taskpilot` 127 passed，合并 PR-02 baseline/browser MCP fixture 回归 140 passed，pre-commit 全通过。全量 `pytest --maxfail=1` 在无关 sandbox Python 3.10/3.12.14 断言处为 9 passed、1 failed，其余全量 NOT VERIFIED。真实 MCP server/transport 与语义检索、embedding、Top-K 未实施/NOT VERIFIED；T023–T030 未启动。
 
 ### T023 — In-memory embedding index
 
@@ -438,14 +438,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** In-memory embedding index
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T022
 - **Target PR:** PR-04
 - **Goal:** 为小型工具池建立可重建内存索引。
 - **Acceptance Criteria:** 模型/向量版本可追踪；工具新增、删除、schema/metadata 变化使索引更新；失败可明确反馈。
 - **Tests:** 固定向量 fixture 检索、空工具池、更新/失效测试；真实 embedding smoke。
 - **Out of Scope:** Qdrant、持久向量服务、大规模检索平台。
-- **Notes:** 先固定真实 embedding 方案和成本记录，避免为凑工具数量引入新集成。
+- **Evidence (2026-10-05):** `InMemoryToolIndex` 从当前 `ToolCollection.to_metadata()` 生成规范化文档和内容指纹；每次 `refresh`/`search` 比对指纹及 model ID、revision、vector version，新增/删除或 schema/metadata 原位变化时惰性失效并重建。空池返回空结果且不调用 embedding；构建失败清空旧快照并明确报错，查询失败明确报错；并发查询使用进入查询时的完整快照。真实 backend 复用现有锁定环境的 `transformers` 4.50.3、CPU `torch` 2.12.1 和 numpy，不增加依赖或远程向量服务；模型 `sentence-transformers/paraphrase-MiniLM-L3-v2` 固定 revision `4ca70771034acceecb2e72475f72050fcdde4ddc`，向量版本 `tool-metadata-json-v1/cosine-v1/mean-pool-128-v1`。真实本地 smoke：384 维，`find bug reports` 查询返回 `issue_search` 0.2057、`file_read` 0.165；首次约 418.99 秒（含 69.6 MB 模型下载），缓存后新进程加载加查询约 1.82 秒，热查询低于 0.01 秒（单次小样本，仅作成本参考）。固定向量 deterministic 8 passed；TaskPilot 加 baseline/browser MCP fixture 回归 148 passed。全量 `pytest --maxfail=1` 在无关 sandbox Python 3.10/3.12.14 断言处为 9 passed、1 failed，其余全量 NOT VERIFIED。真实 MCP server E2E、task+observation retrieval、Top-K、不同运行环境中的模型下载/性能均 NOT VERIFIED；T024–T030 未启动。
 
 ### T024 — Semantic tool retrieval
 
@@ -453,14 +453,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Semantic tool retrieval
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T023
 - **Target PR:** PR-04
 - **Goal:** 按任务及当前有效 Observation 检索候选能力。
 - **Acceptance Criteria:** 查询包含原任务和最新相关状态；下一步可改变候选；输出工具名/分数可复核。
 - **Tests:** 同任务不同 Observation 的候选变化、同义表达、无匹配案例；真实 embedding 检索。
 - **Out of Scope:** 按 Intent 写死工具序列。
-- **Notes:** embedding 调用和耗时进入实验成本；不得只检索重复 next_step_prompt。
+- **Evidence (2026-10-05):** `SemanticToolRetriever.retrieve(original_task, messages, tools)` 用显式原任务定位当前任务消息段，只采用其后最近一条带 `tool_call_id` 的非空 Tool Observation；重复的 `next_step_prompt`、assistant 自述和上一任务 Observation 不进入查询。查询包含原任务与该 Observation，调用 T023 的同一内存索引，返回完整排序的 Tool identity/name、cosine score、实际查询文本、Observation call ID 和与分数对应的 index version；不筛选候选或修改 `to_params()` / Tool Registry。`tests/taskpilot/test_semantic_tool_retrieval.py` deterministic 7 passed，覆盖 Observation 改变排名、同义表达、无明显匹配仍返回全部低分候选、任务隔离、并发版本一致性；T023 索引 8 passed，TaskPilot 加 baseline/browser MCP fixture 回归 155 passed。真实本地 embedding smoke 使用五个现有 GitHub Local Tools 的 metadata、模型 `sentence-transformers/paraphrase-MiniLM-L3-v2` revision `4ca70771034acceecb2e72475f72050fcdde4ddc`、向量版本 `tool-metadata-json-v1/cosine-v1/mean-pool-128-v1`，未调用 GitHub API。同一原任务下，issue Observation 查询约 1.937 秒：`github_issue_search` 0.272（第 2）、`github_read_file` 0.1728（第 4）；文件路径 Observation 查询约 0.003 秒：两者分别 0.216（第 4）和 0.2298（第 3）。这是单次功能/成本证据，不推断 Token 或整体 Latency 改善。全量 `pytest --maxfail=1` 仍在无关 sandbox Python 3.10/3.12.14 断言处为 9 passed、1 failed，其余全量 NOT VERIFIED；真实 Agent Loop 中自动调用 retrieval、长 Observation 截断效果、广泛语义质量与真实 MCP 工具均 NOT VERIFIED。T025–T030 未启动。
 
 ### T025 — Top-K candidate selection
 
@@ -468,7 +468,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Top-K candidate selection
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T024
 - **Target PR:** PR-04
 - **Goal:** 只向本轮 LLM 暴露候选业务工具 schema。
@@ -476,6 +476,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** K 边界、少工具、空召回、注册表不变、候选外调用仍经独立许可/校验门禁。
 - **Out of Scope:** Top-K 作为权限系统、固定 K=3。
 - **Notes:** 候选入口以当前 ToolCallAgent.think 为核对起点，不复制整套循环。
+- **Evidence (2026-10-05):** `ToolCallAgent.think()` 在显式配置 `routing_top_k`（正整数）时调用 T024 的 `SemanticToolRetriever`，只把正分业务候选的前 K 个原 Tool schema 传给本轮 `llm.ask_tool`；未启用时仍传完整 `ToolCollection.to_params()`。K 不足时不补齐；无业务工具、无原任务、无正分匹配或 embedding/index failure 时返回澄清/重试提示并停止本轮调用，不回退到全量 schema。完整 `ToolCollection`、`execute_tool` validation boundary 和 cleanup 未修改，候选外调用仍独立校验后可执行。`tests/taskpilot/test_top_k_candidate_selection.py` 12 passed，覆盖 K=1/2/9、非法 K、少工具、空池、无匹配、Observation 改变候选、索引失败、默认全量、原 Registry 不变、候选外非法调用零 dispatch 与合法调用一次 dispatch；TaskPilot + baseline/Browser MCP fixture 共 167 passed。正分阈值仅用于明确无匹配安全行为，广泛语义质量、真实模型 Agent Loop 及 Token/Latency 改善均 NOT VERIFIED；控制工具保留在本次 T025 验收时尚未实施，见后续 T026。
 
 ### T026 — Required control tools preservation
 
@@ -483,7 +484,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Required control tools preservation
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T025
 - **Target PR:** PR-04
 - **Goal:** 保留 terminate 与状态需要的澄清/确认控制入口。
@@ -491,6 +492,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** K=1、零业务候选、待澄清、终止回合和并列调用回归。
 - **Out of Scope:** 依靠模型是否选 ask_human 决定安全。
 - **Notes:** 控制入口与业务检索分开计数；不额外暴露危险工具。
+- **Evidence (2026-10-05):** 路由开启时用当前 `ToolCollection` 的业务工具创建临时检索视图，T023/T024 embedding 排名不含 `Terminate`、`AskHuman` 或其他 `special_tool_names`；完整 Registry、validation 和 dispatch 不变。只保留已注册、具体类型为 `Terminate` 的终止入口；存在 pending call 时才额外保留已注册、具体类型为 `AskHuman` 的入口。`K_business` 为实际选中的正分业务 schema 数（≤ `routing_top_k`），`K_total` 为本轮实际送入 LLM 的业务与控制 schema 总数；例如 K=1 且有终止入口时为 1+1=2，pending 且有 AskHuman 时为 1+2=3。零业务工具但有 `Terminate` 时可正常终止；一般无匹配仍澄清，pending 无注册控制入口时不发送空 schema。T016 缺参后由执行层强制调用 `AskHuman`，不依赖模型选择；并列调用各自保持原 call ID 和原 validation boundary。`tests/taskpilot/test_control_tool_preservation.py` 9 passed，T025/T026 定向 21 passed，TaskPilot + baseline/Browser MCP fixture 176 passed。当前无确认控制工具可保留，故真实确认流程 NOT VERIFIED；真实模型多轮与真实 MCP 路由 NOT VERIFIED。全量 `pytest -q --maxfail=1` 在无关 sandbox Python 3.10/3.12.14 断言处 9 passed、1 failed，其余全量 NOT VERIFIED。
 
 ### T027 — Routing event logging
 
@@ -498,7 +500,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Routing event logging
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T025, T026
 - **Target PR:** PR-04
 - **Goal:** 留存可解释的检索与选择证据。
@@ -506,6 +508,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** 事件字段断言、可串联单次运行、凭据脱敏和真实路由日志抽查。
 - **Out of Scope:** 大型 observability、隐藏推理采集、完整 Trace UI。
 - **Notes:** 先最小 routing 事件；T053/T054 汇总并稳定完整事件契约。
+- **Evidence (2026-10-05):** `ToolCallAgent.think()` 每次启用 semantic routing 时向现有 Loguru sink 写一条 `tool_routing_event` JSON：事件版本、当前运行 UUID/step、有效查询 SHA-256/长度/Observation 来源摘要、全部业务候选 identity/source/cosine score、暴露标志、实际发给 LLM 的业务与控制工具、模型选中的 tool name/call ID、`K_business`/`K_total`、各 schema SHA-256、T023 索引 model/revision/vector/content fingerprint 和候选/选择状态。无候选、空池、index failure、模型未选工具、无响应及 LLM 异常均有明确状态；路由关闭无事件。原任务、Observation、schema 内容、模型回复正文、工具参数和结果不进入路由事件；MCP 工具名称/身份使用稳定 SHA-256 引用，避免 server URL 凭据进入事件；启用路由时相邻的旧 info 日志也不再输出回复正文/参数/结果。`tests/taskpilot/test_routing_event_logging.py` 13 passed，覆盖字段/分数、同一运行多步与跨运行隔离、schema/index 变化、脱敏、无候选/pending 控制、未选择、index failure、关闭路由；T025–T027 定向 34 passed，TaskPilot + baseline/Browser MCP fixture 189 passed。真实本地 embedding + Loguru sink 抽查产生 1 条事件：模型 `sentence-transformers/paraphrase-MiniLM-L3-v2` revision `4ca70771034acceecb2e72475f72050fcdde4ddc`，向量版本 `tool-metadata-json-v1/cosine-v1/mean-pool-128-v1`，两个本地工具得分 0.2610/0.1999，向 LLM 暴露 `issue_tool` + `terminate`，约 2.027 秒；该 smoke 使用假 LLM 回复、未调用 GitHub。真实模型/GitHub 或 MCP 的 routing event、日志长期保留策略与指标改善 NOT VERIFIED。全量 `pytest -q --maxfail=1` 仍在无关 sandbox Python 3.10/3.12.14 断言处 9 passed、1 failed，其余全量 NOT VERIFIED。
 
 ### T028 — Routing dataset
 
@@ -513,7 +516,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Routing dataset
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T011, T022
 - **Target PR:** PR-04
 - **Goal:** 建立工具选择标注与独立评估样本。
@@ -521,6 +524,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** 标注字段/工具存在性校验；人工核查歧义和证据；固定版本。
 - **Out of Scope:** 用 16 条 v0 全当已跑 Benchmark。
 - **Notes:** 工具等价选择可多标签，避免只因顺序不同判错。
+- **Evidence (2026-10-05):** `eval/datasets/routing_v1.schema.json` 固定 v1.1.0 字段契约（evidence_scope=current_step）；`routing_v1_experiment.json` 28 条（含逐字保留并补标注的 v0 16 条），`routing_v1_evaluation.json` 12 条独立新题。两份物理分离，评估题不用于选 K；各覆盖 Repository Understanding、Issue Investigation、Issue→Code、多步 Observation 变化、缺参、相近工具、多标签、无匹配/澄清。每题有 Context/来源、step/合成 Observation、acceptable tools、关键 slot/来源、动作、标注理由与证据要求；合成 Observation 不冒充真实 GitHub 证据。`tests/taskpilot/test_routing_dataset.py` 逐项校验 JSON schema、v0 迁移、分割去重、真实五个 Tool Metadata/schema 名称及 slot 类型/必填、多步状态变化；新增样本的歧义与证据要求已逐条审阅。`.venv/bin/python -m pytest tests/taskpilot tests/baseline/test_runtime.py tests/tools/test_browser_use_mcp.py -q` 为 192 passed；独立人工复核和真实路由评测 NOT VERIFIED；T029 不在本任务运行。
 
 ### T029 — Top-K experiments / full-tool baseline comparison
 
@@ -528,7 +532,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Top-K experiments / full-tool baseline comparison
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T027, T028
 - **Target PR:** PR-04
 - **Goal:** 以同工具池对照选择 K。
@@ -536,6 +540,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** 真实工具和真实模型成组实验；重放运行配置，核验 full-tool 未经过检索过滤。
 - **Out of Scope:** 预定最优 K、把新增工具收益归因路由。
 - **Notes:** 这是路由阶段实验；最终版本仍需 Phase 8 对比。
+- **Evidence (2026-10-06):** [T029 experiment report](T029_TOPK_EXPERIMENT.md) 与 [`eval/results/t029_experiment_v1_1_0.jsonl`](../eval/results/t029_experiment_v1_1_0.jsonl)：v1.1.0 experiment 28 条 × K=1/3/5/full = 112 次真实 `deepseek-flash` 单步选择；固定 model/config、原任务/Observation、真实五个 GitHub Local Tool schema、`terminate`、单步零 dispatch 预算。28/28 full 组绕过检索，84/84 Top-K 组保留原始 routing event；无请求异常。工具选择样本首选命中 K=1 14/23、K=3 21/23、K=5 19/23、full 17/23，推荐 K=3 进入后续受控评估。clarification 样本未证明完整澄清；GitHub HTTP 任务结果、模型服务端 revision 与多次重复稳定性 NOT VERIFIED。evaluation 12 条封存，未用于选 K；正式 Accuracy/Token/Latency 属 T030，本轮未做。
 
 ### T030 — Tool Selection Accuracy / token / latency comparison
 
@@ -543,7 +548,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Tool Selection Accuracy / token / latency comparison
 - **Phase:** Phase 3
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T029
 - **Target PR:** PR-04
 - **Goal:** 给出路由准确率和成本权衡。
@@ -551,6 +556,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** 从实际 run 记录计算指标；抽查原始调用和计算结果；回归 T021 调查链路。
 - **Out of Scope:** 预写提升百分比、只报告成功样本。
 - **Notes:** PR-04 出口；正式 resume metrics 仅从最终 Benchmark 提取。
+- **Evidence (2026-10-08):** [T030 comparison report](T030_ROUTING_COMPARISON.md) 与 [`eval/results/t030_evaluation_v1_1_0.jsonl`](../eval/results/t030_evaluation_v1_1_0.jsonl)：v1.1.0 独立 evaluation 12 条 × K=3/true full = 24 次真实模型单步选择；full 12/12 完全绕过语义过滤，K=3 12/12 有原始 routing event，24/24 零 Tool dispatch。8 条 `tool` 样本候选召回两组均 8/8，最终严格 Tool Selection Accuracy 为 K=3 8/8、full 7/8；3 条 clarification 和 1 条 no-match 单独报告。Provider input/output/total usage 两组均 12/12 返回，K=3 为 8392/2950/11342、full 为 9922/2137/12059 tokens；K=3 embedding 13 次、3214.8 ms；两组 retry 均 0。K=3 端到端单步决策平均 1985.2 ms，高于 full 的 1355.4 ms；负收益、`eva-004`/`eva-008`/`eva-012` 偏差及重复并列调用均保留。三类 T021 调查在 K=3 下重新使用真实模型/GitHub REST，分别有 2/4/10 次 HTTP 200、非空回答及成功 `terminate`；原测量脚本的完成状态误判和修正重跑均留证。凭据已人工轮换且鉴权可用；本轮结果/文档/当前 Git 中未检出当前活动凭据字面量。Provider revision、重复稳定性、完整任务级 Benchmark、真实 MCP 参数 E2E 与默认 thinking-mode 多轮兼容性 NOT VERIFIED。
 
 ## Phase 4 — Reliability
 
@@ -1324,4 +1330,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 / T022 保持 TODO，需单独授权。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，交付状态见 GitHub PR；T031 未授权。

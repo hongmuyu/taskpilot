@@ -1,0 +1,305 @@
+{
+  "dataset": "taskpilot_routing",
+  "version": "1.1.0",
+  "split": "evaluation",
+  "source_dataset": "repository_investigation_v0",
+  "tool_pool": [
+    "github_repository_info",
+    "github_issue_search",
+    "github_issue_detail",
+    "github_code_search",
+    "github_read_file"
+  ],
+  "observation_policy": "synthetic_routing_fixture_not_live_evidence",
+  "evidence_scope": "current_step",
+  "samples": [
+    {
+      "id": "eva-001",
+      "origin": "new",
+      "category": "repository_understanding",
+      "task": "Give the configured repository's main language and default branch.",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_repository_info"
+      ],
+      "critical_slots": {},
+      "expected_action": "tool",
+      "label_rationale": "Repository metadata directly supplies both fields.",
+      "evidence_requirement": "Repository metadata with language, default branch, and GitHub URL."
+    },
+    {
+      "id": "eva-002",
+      "origin": "new",
+      "category": "issue_investigation",
+      "task": "Which open issues mention redirect loops?",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "redirect loops is:open"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "Search issue reports using the stated topic and open state.",
+      "evidence_requirement": "Repository-scoped issue-search results with issue numbers and URLs."
+    },
+    {
+      "id": "eva-003",
+      "origin": "new",
+      "category": "issue_to_code",
+      "task": "Inspect issue #3371 before tracing any implementation it names.",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_detail"
+      ],
+      "critical_slots": {
+        "issue_number": {
+          "source": "task",
+          "value": 3371
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The issue number is known; issue detail is the current step before any source search.",
+      "evidence_requirement": "Current issue-detail response for #3371 with body/comments and URL, or an explicit error."
+    },
+    {
+      "id": "eva-004",
+      "origin": "new",
+      "category": "multi_step",
+      "task": "Locate the Session.prepare_request implementation, then read its source file.",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_code_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "prepare_request"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "Code search must identify the source path before the requested file read.",
+      "scenario": "eva-session-source",
+      "evidence_requirement": "Current code-search result with a matching source path and URL, or an explicit empty result."
+    },
+    {
+      "id": "eva-005",
+      "origin": "new",
+      "category": "multi_step",
+      "task": "Locate the Session.prepare_request implementation, then read its source file.",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 2,
+      "observation": "Synthetic code-search result: prepare_request matched path=requests/sessions.py; html_url=https://example.test/psf/requests/blob/main/requests/sessions.py.",
+      "acceptable_tools": [
+        "github_read_file"
+      ],
+      "critical_slots": {
+        "path": {
+          "source": "observation",
+          "value": "requests/sessions.py"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "The new code-search result supplies an exact file path, so the next step is to read it.",
+      "scenario": "eva-session-source",
+      "evidence_requirement": "Current file-read result with requests/sessions.py content and URL, or an explicit read error."
+    },
+    {
+      "id": "eva-006",
+      "origin": "new",
+      "category": "missing_parameters",
+      "task": "Find issues about the behavior I am about to name.",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "missing"
+        }
+      },
+      "expected_action": "clarify",
+      "label_rationale": "The user requests issue search but has not supplied its required query.",
+      "evidence_requirement": "Clarification requesting the issue-search query; zero tool dispatch before an answer."
+    },
+    {
+      "id": "eva-007",
+      "origin": "new",
+      "category": "similar_capabilities",
+      "task": "Inspect src/flask/app.py for dispatch_request, or locate other source references to that symbol.",
+      "context": {
+        "repository": "pallets/flask",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_code_search",
+        "github_read_file"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "task",
+          "value": "dispatch_request"
+        },
+        "path": {
+          "source": "task",
+          "value": "src/flask/app.py"
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "Reading the named file or searching for the named symbol can each satisfy the current request.",
+      "evidence_requirement": "For the selected next tool: named file content and URL, or code-search paths and URLs for dispatch_request."
+    },
+    {
+      "id": "eva-008",
+      "origin": "new",
+      "category": "no_match_clarification",
+      "task": "Create and push a release tag v2.0.0 for this repository.",
+      "context": {
+        "repository": "psf/requests",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [],
+      "critical_slots": {},
+      "expected_action": "no_match",
+      "label_rationale": "The available GitHub tools are read-only and cannot create or push a tag.",
+      "evidence_requirement": "No GitHub read tool selection or dispatch for a tag-creation request."
+    },
+    {
+      "id": "eva-009",
+      "origin": "new",
+      "category": "repository_understanding",
+      "task": "List the repository's GitHub topics and star count.",
+      "context": {
+        "repository": "pallets/flask",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_repository_info"
+      ],
+      "critical_slots": {},
+      "expected_action": "tool",
+      "label_rationale": "Repository metadata exposes topics and stargazers_count.",
+      "evidence_requirement": "Current repository metadata with topics, stargazers_count, and GitHub URL."
+    },
+    {
+      "id": "eva-010",
+      "origin": "new",
+      "category": "issue_investigation",
+      "task": "For issue #42, report when it was created and last updated.",
+      "context": {
+        "repository": "pallets/flask",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_detail"
+      ],
+      "critical_slots": {
+        "issue_number": {
+          "source": "task",
+          "value": 42
+        }
+      },
+      "expected_action": "tool",
+      "label_rationale": "Issue detail exposes created_at and updated_at for the specified issue.",
+      "evidence_requirement": "Current issue-detail response with created_at, updated_at, and source URL."
+    },
+    {
+      "id": "eva-011",
+      "origin": "new",
+      "category": "missing_parameters",
+      "task": "I need code references for a function, but I have not said which one.",
+      "context": {
+        "repository": "pallets/flask",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_code_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "missing"
+        }
+      },
+      "expected_action": "clarify",
+      "label_rationale": "The code-search query is missing and cannot be inferred from the task.",
+      "evidence_requirement": "Clarification requesting the function name or code-search terms; zero tool dispatch before an answer."
+    },
+    {
+      "id": "eva-012",
+      "origin": "new",
+      "category": "no_match_clarification",
+      "task": "Look across issue reports and source for the behavior we discussed.",
+      "context": {
+        "repository": "pallets/flask",
+        "ref": null,
+        "provenance": "confirmed_user"
+      },
+      "step": 1,
+      "observation": null,
+      "acceptable_tools": [
+        "github_issue_search",
+        "github_code_search"
+      ],
+      "critical_slots": {
+        "query": {
+          "source": "missing"
+        }
+      },
+      "expected_action": "clarify",
+      "label_rationale": "No behavior description exists in the current task or confirmed context; either search source is reasonable after clarification.",
+      "evidence_requirement": "Clarification requesting the behavior or search terms; zero tool dispatch before an answer."
+    }
+  ]
+}

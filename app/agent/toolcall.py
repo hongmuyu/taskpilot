@@ -1,8 +1,10 @@
 import asyncio
 import copy
+import hashlib
 import json
 from dataclasses import dataclass
 from typing import Any, List, Optional, Union
+from uuid import uuid4
 
 from pydantic import Field
 
@@ -11,6 +13,12 @@ from app.exceptions import TokenLimitExceeded
 from app.logger import logger
 from app.prompt.toolcall import NEXT_STEP_PROMPT, SYSTEM_PROMPT
 from app.schema import TOOL_CHOICE_TYPE, AgentState, Message, ToolCall, ToolChoice
+from app.taskpilot.semantic_tool_retrieval import SemanticToolRetriever
+from app.taskpilot.tool_embedding_index import (
+    EmbeddingIndexError,
+    InMemoryToolIndex,
+    LocalTransformerEmbeddingBackend,
+)
 from app.tool import CreateChatCompletion, Terminate, ToolCollection
 from app.tool.ask_human import AskHuman
 from app.tool.tool_collection import MissingParameterFailure, ToolValidationFailure
@@ -44,6 +52,20 @@ def _has_argument(arguments: dict[str, Any], field: str) -> bool:
     return True
 
 
+def _schema_sha256(schema: Any) -> Optional[str]:
+    try:
+        encoded = json.dumps(
+            schema,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+    except (TypeError, ValueError):
+        return None
+    return hashlib.sha256(encoded).hexdigest()
+
+
 @dataclass
 class PendingToolCall:
     tool_call_id: str
@@ -72,6 +94,13 @@ class ToolCallAgent(ReActAgent):
     special_tool_names: List[str] = Field(default_factory=lambda: [Terminate().name])
 
     tool_calls: List[ToolCall] = Field(default_factory=list)
+    routing_top_k: Optional[int] = Field(default=None, gt=0)
+    routing_retriever: Optional[SemanticToolRetriever] = Field(
+        default=None, exclude=True, repr=False
+    )
+    routing_original_task: Optional[str] = Field(default=None, exclude=True, repr=False)
+    routing_clarification: Optional[str] = Field(default=None, exclude=True, repr=False)
+    routing_run_id: Optional[str] = Field(default=None, exclude=True, repr=False)
     pending_tool_calls: dict[str, PendingToolCall] = Field(
         default_factory=dict, exclude=True, repr=False
     )
@@ -86,11 +115,181 @@ class ToolCallAgent(ReActAgent):
     max_steps: int = 30
     max_observe: Optional[Union[int, bool]] = None
 
+    @staticmethod
+    def _log_routing_event(event: dict[str, Any]) -> None:
+        logger.info(
+            "tool_routing_event "
+            + json.dumps(
+                event, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+            )
+        )
+
+    def _routing_tool_label(self, name: str) -> str:
+        tool = self.available_tools.get_tool(name)
+        identity = tool.metadata.identity if tool else name
+        if tool is None or tool.metadata.source == "mcp":
+            source = "mcp" if tool else "unknown"
+            return f"{source}:sha256:{hashlib.sha256(identity.encode('utf-8')).hexdigest()}"
+        return name
+
     async def think(self) -> bool:
         """Process current state and decide next actions using tools"""
+        self.routing_clarification = None
+        routing_event = None
         if self.next_step_prompt:
             user_msg = Message.user_message(self.next_step_prompt)
             self.messages += [user_msg]
+
+        tool_schemas = (
+            self.available_tools.to_params() if self.routing_top_k is None else []
+        )
+        if self.routing_top_k is not None:
+            if self.routing_run_id is None:
+                self.routing_run_id = uuid4().hex
+            retrieval = None
+            selected = []
+            candidate_status = "ready"
+            # K limits business schemas; required controls are appended separately.
+            controls = [
+                tool
+                for tool in self.available_tools
+                if type(tool) is Terminate
+                or (self.pending_tool_calls and type(tool) is AskHuman)
+            ]
+            business_tools = [
+                tool
+                for tool in self.available_tools
+                if not isinstance(tool, (Terminate, AskHuman))
+                and not self._is_special_tool(tool.name)
+            ]
+            if not (self.routing_original_task or "").strip():
+                candidate_status = "missing_task"
+                self.routing_clarification = (
+                    "No suitable tool candidate is available for this step. "
+                    "Please clarify the request and retry."
+                )
+            elif business_tools:
+                if self.routing_retriever is None:
+                    self.routing_retriever = SemanticToolRetriever(
+                        InMemoryToolIndex(LocalTransformerEmbeddingBackend())
+                    )
+                try:
+                    retrieval = await self.routing_retriever.retrieve(
+                        self.routing_original_task,
+                        self.messages,
+                        ToolCollection(*business_tools),
+                    )
+                except EmbeddingIndexError:
+                    candidate_status = "index_error"
+                    self.routing_clarification = "Tool retrieval is unavailable. Please retry or clarify the request."
+                else:
+                    selected = [
+                        match.name for match in retrieval.matches if match.score > 0
+                    ][: self.routing_top_k]
+                    tool_schemas = [
+                        self.available_tools.get_tool(name).to_param()
+                        for name in selected
+                    ]
+                    if not tool_schemas:
+                        candidate_status = "no_match"
+                        if not self.pending_tool_calls or not controls:
+                            self.routing_clarification = (
+                                "No suitable tool candidate matched this step. "
+                                "Please clarify the request and retry."
+                            )
+            if not business_tools and not controls:
+                candidate_status = "no_business_tool"
+                self.routing_clarification = (
+                    "No suitable tool candidate is available for this step. "
+                    "Please clarify the request and retry."
+                )
+            elif not business_tools:
+                candidate_status = "no_business_tool"
+            if not self.routing_clarification:
+                tool_schemas += [tool.to_param() for tool in controls]
+            query = retrieval.query if retrieval else (self.routing_original_task or "")
+            version = retrieval.index_version if retrieval else None
+            exposed_names = {schema["function"]["name"] for schema in tool_schemas}
+            routing_event = {
+                "event": "tool_routing",
+                "version": 1,
+                "run_id": self.routing_run_id,
+                "step": self.current_step,
+                "query": {
+                    "sha256": hashlib.sha256(query.encode("utf-8")).hexdigest(),
+                    "chars": len(query),
+                    "summary": (
+                        "task_and_observation"
+                        if retrieval and retrieval.observation_tool_call_id
+                        else "task_only"
+                        if query
+                        else "missing_task"
+                    ),
+                    "observation_tool_call_id": (
+                        retrieval.observation_tool_call_id if retrieval else None
+                    ),
+                },
+                "candidates": [
+                    {
+                        "name": self._routing_tool_label(match.name),
+                        "identity": (
+                            self._routing_tool_label(match.name)
+                            if self.available_tools.get_tool(match.name).metadata.source
+                            == "mcp"
+                            else match.identity
+                        ),
+                        "source": self.available_tools.get_tool(
+                            match.name
+                        ).metadata.source,
+                        "score": match.score,
+                        "exposed": match.name in exposed_names,
+                        "schema_sha256": _schema_sha256(
+                            self.available_tools.get_tool(match.name).parameters
+                        ),
+                    }
+                    for match in (retrieval.matches if retrieval else [])
+                ],
+                "exposed_tools": [
+                    {
+                        "name": self._routing_tool_label(name),
+                        "identity": (
+                            self._routing_tool_label(name)
+                            if self.available_tools.get_tool(name).metadata.source
+                            == "mcp"
+                            else self.available_tools.get_tool(name).metadata.identity
+                        ),
+                        "source": self.available_tools.get_tool(name).metadata.source,
+                        "schema_sha256": _schema_sha256(
+                            self.available_tools.get_tool(name).parameters
+                        ),
+                    }
+                    for name in (schema["function"]["name"] for schema in tool_schemas)
+                ],
+                "selected_tools": [],
+                "k_business": len(selected),
+                "k_total": len(tool_schemas),
+                "index_version": (
+                    {
+                        "model_id": version.model_id,
+                        "model_revision": version.model_revision,
+                        "vector_version": version.vector_version,
+                        "content_fingerprint": version.content_fingerprint,
+                    }
+                    if version
+                    else None
+                ),
+                "metadata_version": version.content_fingerprint if version else None,
+                "candidate_status": candidate_status,
+                "selection_status": "not_called",
+            }
+            if self.routing_clarification:
+                self._log_routing_event(routing_event)
+                self.tool_calls = []
+                self.memory.add_message(
+                    Message.assistant_message(self.routing_clarification)
+                )
+                self.state = AgentState.FINISHED
+                return True
 
         try:
             # Get response with tool options
@@ -101,12 +300,18 @@ class ToolCallAgent(ReActAgent):
                     if self.system_prompt
                     else None
                 ),
-                tools=self.available_tools.to_params(),
+                tools=tool_schemas,
                 tool_choice=self.tool_choices,
             )
         except ValueError:
+            if routing_event is not None:
+                routing_event["selection_status"] = "llm_error"
+                self._log_routing_event(routing_event)
             raise
         except Exception as e:
+            if routing_event is not None:
+                routing_event["selection_status"] = "llm_error"
+                self._log_routing_event(routing_event)
             # Check if this is a RetryError containing TokenLimitExceeded
             if hasattr(e, "__cause__") and isinstance(e.__cause__, TokenLimitExceeded):
                 token_limit_error = e.__cause__
@@ -128,11 +333,27 @@ class ToolCallAgent(ReActAgent):
         content = response.content if response and response.content else ""
 
         # Log response info
-        logger.info(f"✨ {self.name}'s thoughts: {content}")
-        logger.info(
-            f"🛠️ {self.name} selected {len(tool_calls) if tool_calls else 0} tools to use"
-        )
-        if tool_calls:
+        if routing_event is not None:
+            routing_event["selected_tools"] = [
+                {
+                    "name": self._routing_tool_label(call.function.name),
+                    "tool_call_id": call.id,
+                }
+                for call in tool_calls
+            ]
+            if response is None:
+                routing_event["selection_status"] = "no_response"
+            elif tool_calls:
+                routing_event["selection_status"] = "selected"
+            else:
+                routing_event["selection_status"] = "not_selected"
+            self._log_routing_event(routing_event)
+        else:
+            logger.info(f"✨ {self.name}'s thoughts: {content}")
+            logger.info(
+                f"🛠️ {self.name} selected {len(tool_calls) if tool_calls else 0} tools to use"
+            )
+        if tool_calls and routing_event is None:
             logger.info(
                 f"🧰 Tools being prepared: {[call.function.name for call in tool_calls]}"
             )
@@ -180,6 +401,8 @@ class ToolCallAgent(ReActAgent):
 
     async def act(self) -> str:
         """Execute tool calls and handle their results"""
+        if self.routing_clarification:
+            return self.routing_clarification
         if not self.tool_calls:
             if self.tool_choices == ToolChoice.REQUIRED:
                 raise ValueError(TOOL_CALL_REQUIRED)
@@ -198,9 +421,14 @@ class ToolCallAgent(ReActAgent):
             if self.max_observe:
                 result = result[: self.max_observe]
 
-            logger.info(
-                f"🎯 Tool '{command.function.name}' completed its mission! Result: {result}"
-            )
+            if self.routing_top_k is None:
+                logger.info(
+                    f"🎯 Tool '{command.function.name}' completed its mission! Result: {result}"
+                )
+            else:
+                logger.info(
+                    f"🎯 Tool '{self._routing_tool_label(command.function.name)}' completed"
+                )
 
             # Add tool response to memory
             tool_msg = Message.tool_message(
@@ -272,7 +500,8 @@ class ToolCallAgent(ReActAgent):
         self.tool_call_sources[command.id] = sources
 
         try:
-            logger.info(f"🔧 Activating tool: '{name}'...")
+            logged_name = self._routing_tool_label(name) if self.routing_top_k else name
+            logger.info(f"🔧 Activating tool: '{logged_name}'...")
             result = await self.available_tools.execute(name=name, tool_input=args)
             if isinstance(result, MissingParameterFailure):
                 original = json.loads(command.function.arguments)
@@ -536,9 +765,15 @@ class ToolCallAgent(ReActAgent):
         self.pending_tool_calls.clear()
         self.closed_pending_call_ids.clear()
         self.tool_call_sources.clear()
+        self.routing_original_task = request
+        self.routing_clarification = None
+        self.routing_run_id = uuid4().hex if self.routing_top_k is not None else None
         try:
             return await super().run(request)
         finally:
+            self.routing_original_task = None
+            self.routing_clarification = None
+            self.routing_run_id = None
             self.pending_tool_calls.clear()
             self.closed_pending_call_ids.clear()
             self.tool_call_sources.clear()
