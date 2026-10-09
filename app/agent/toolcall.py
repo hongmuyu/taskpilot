@@ -21,6 +21,7 @@ from app.taskpilot.tool_embedding_index import (
 )
 from app.tool import CreateChatCompletion, Terminate, ToolCollection
 from app.tool.ask_human import AskHuman
+from app.tool.base import ToolFailure, normalize_tool_result
 from app.tool.tool_collection import MissingParameterFailure, ToolValidationFailure
 
 
@@ -559,7 +560,7 @@ class ToolCallAgent(ReActAgent):
         except Exception as e:
             error_msg = f"⚠️ Tool '{name}' encountered a problem: {str(e)}"
             logger.exception(error_msg)
-            return f"Error: {error_msg}"
+            return await self._observe_tool_result(name, ToolFailure(error=error_msg))
 
     def _trusted_required_fields(self) -> set[str]:
         return set()
@@ -568,13 +569,15 @@ class ToolCallAgent(ReActAgent):
         return {}
 
     async def _observe_tool_result(self, name: str, result: Any) -> str:
-        await self._handle_special_tool(name=name, result=result)
+        result = normalize_tool_result(result)
+        if result.status != "failure":
+            await self._handle_special_tool(name=name, result=result)
         if hasattr(result, "base64_image") and result.base64_image:
             self._current_base64_image = result.base64_image
         return (
-            f"Observed output of cmd `{name}` executed:\n{str(result)}"
+            f"Status: {result.status}\nObserved output of cmd `{name}` executed:\n{str(result)}"
             if result
-            else f"Cmd `{name}` completed with no output"
+            else f"Status: {result.status}\nCmd `{name}` completed with no output"
         )
 
     def _record_clarification_observation(

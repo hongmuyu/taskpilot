@@ -44,12 +44,16 @@ class ToolResult(BaseModel):
     error: Optional[str] = Field(default=None)
     base64_image: Optional[str] = Field(default=None)
     system: Optional[str] = Field(default=None)
+    status: Optional[Literal["success", "failure", "unknown"]] = Field(default=None)
 
     class Config:
         arbitrary_types_allowed = True
 
     def __bool__(self):
-        return any(getattr(self, field) for field in self.__fields__)
+        return any(
+            getattr(self, field) is not None
+            for field in ("output", "error", "base64_image", "system")
+        )
 
     def __add__(self, other: "ToolResult"):
         def combine_fields(
@@ -69,12 +73,29 @@ class ToolResult(BaseModel):
         )
 
     def __str__(self):
-        return f"Error: {self.error}" if self.error else self.output
+        if self.error is not None:
+            return f"Error: {self.error}"
+        return str(self.output) if self.output is not None else ""
 
     def replace(self, **kwargs):
         """Returns a new ToolResult with the given fields replaced."""
         # return self.copy(update=kwargs)
         return type(self)(**{**self.dict(), **kwargs})
+
+
+def normalize_tool_result(value: Any) -> ToolResult:
+    """Preserve explicit outcome signals before a result becomes observation text."""
+    if not isinstance(value, ToolResult):
+        return ToolResult(output=value, status="unknown")
+    if isinstance(value, ToolFailure) or value.error is not None:
+        status = "failure"
+    elif value.status is not None:
+        status = value.status
+    elif value.output is not None or value.base64_image is not None:
+        status = "success"
+    else:
+        status = "unknown"
+    return value.model_copy(update={"status": status})
 
 
 @dataclass(frozen=True)
@@ -249,3 +270,5 @@ class CLIResult(ToolResult):
 
 class ToolFailure(ToolResult):
     """A ToolResult that represents a failure."""
+
+    status: Literal["failure"] = "failure"

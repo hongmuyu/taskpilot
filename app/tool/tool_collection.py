@@ -5,7 +5,13 @@ from jsonschema import Draft7Validator
 from jsonschema.exceptions import SchemaError
 
 from app.exceptions import ToolError
-from app.tool.base import BaseTool, ToolFailure, ToolMetadata, ToolResult
+from app.tool.base import (
+    BaseTool,
+    ToolFailure,
+    ToolMetadata,
+    ToolResult,
+    normalize_tool_result,
+)
 
 
 _SUPPORTED_SCHEMA_KEYWORDS = {
@@ -135,9 +141,9 @@ class ToolCollection:
             )
         try:
             result = await tool(**tool_input)
-            return result
+            return normalize_tool_result(result)
         except ToolError as e:
-            return ToolFailure(error=e.message)
+            return normalize_tool_result(ToolFailure(error=e.message))
 
     async def execute_all(self) -> List[ToolResult]:
         """Execute all tools in the collection sequentially."""

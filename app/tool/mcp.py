@@ -44,10 +44,30 @@ class MCPClientTool(BaseTool):
                 ),
                 None,
             )
+            fields_set = getattr(result, "model_fields_set", None)
+            is_error = (
+                getattr(result, "isError", None)
+                if fields_set is None or "isError" in fields_set
+                else None
+            )
+            if is_error is True:
+                status = "failure"
+            elif is_error is False:
+                status = "success"
+            else:
+                status = "unknown"
+            content = content_str or (
+                "Image returned." if image else "No output returned."
+            )
             return ToolResult(
-                output=content_str
-                or ("Image returned." if image else "No output returned."),
+                output=content if status != "failure" else None,
+                error=(
+                    f"MCP tool reported failure: {content_str or 'no error detail returned'}"
+                    if status == "failure"
+                    else None
+                ),
                 base64_image=image,
+                status=status,
             )
         except Exception as e:
             return ToolResult(error=f"Error executing tool: {str(e)}")
