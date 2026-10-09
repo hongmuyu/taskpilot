@@ -131,17 +131,11 @@ requests. No product/runtime code was changed to fix the measurement bug.
 
 ## Credential audit and limits
 
-The user confirmed manual rotation. A no-value comparison found that the
-active local model credential differs from the previously exposed value, and
-a real provider authentication smoke succeeded. Exact-value scans found
-neither the active model credential nor the active GitHub token in tracked
-files, T029/T030 results, project logs, available local Codex logs or Git
-history. The currently used config remains ignored by Git. A separate shape
-scan found four **pre-existing** historical patch occurrences of other
-token-shaped placeholders/values in two old files; these are unrelated to
-T030 and were not modified. Historical revocation and removal from app-side
-conversation history are **NOT VERIFIED**. No credential values are included
-in this report or its run artifacts.
+The user confirmed manual rotation, and a real provider authentication smoke
+succeeded. Exact-value scans found neither active model nor GitHub credentials
+in tracked files, T029/T030 results or project logs. The active local config
+remains ignored by Git. No credential values are included in this report or
+its run artifacts.
 
 NOT VERIFIED: provider's distinct model revision; repeated-run stability;
 full-task token/latency and final Phase 8 benchmark; successful

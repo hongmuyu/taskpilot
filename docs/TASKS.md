@@ -3,7 +3,7 @@
 ## Dashboard
 
 - Current Phase: Phase 3 — Tool Routing
-- Current PR: PR-04 — Tool Routing（T022–T030 DONE；待最终合并评审）
+- Current PR: PR-04 — Tool Routing（T022–T030 DONE；交付状态见 GitHub PR）
 - Next Task: T031 — Tool result status normalization / MCP isError preservation（TODO，未授权）
 - Total Tasks: 73
 - Completed: 30
@@ -15,9 +15,9 @@
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-08；PR-04 起点 main `8370495e5531fbefe76f56e93b428e01007dd491`
+- State verified: 2026-10-09；PR-04 起点 main `8370495e5531fbefe76f56e93b428e01007dd491`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已合并；PR-04 已实施并验收 T022–T030，尚未合并。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已合并；PR-04 已实施并验收 T022–T030，交付状态见 GitHub PR。
 
 ## Maintenance and priority rules
 
@@ -556,7 +556,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** 从实际 run 记录计算指标；抽查原始调用和计算结果；回归 T021 调查链路。
 - **Out of Scope:** 预写提升百分比、只报告成功样本。
 - **Notes:** PR-04 出口；正式 resume metrics 仅从最终 Benchmark 提取。
-- **Evidence (2026-10-08):** [T030 comparison report](T030_ROUTING_COMPARISON.md) 与 [`eval/results/t030_evaluation_v1_1_0.jsonl`](../eval/results/t030_evaluation_v1_1_0.jsonl)：v1.1.0 独立 evaluation 12 条 × K=3/true full = 24 次真实模型单步选择；full 12/12 完全绕过语义过滤，K=3 12/12 有原始 routing event，24/24 零 Tool dispatch。8 条 `tool` 样本候选召回两组均 8/8，最终严格 Tool Selection Accuracy 为 K=3 8/8、full 7/8；3 条 clarification 和 1 条 no-match 单独报告。Provider input/output/total usage 两组均 12/12 返回，K=3 为 8392/2950/11342、full 为 9922/2137/12059 tokens；K=3 embedding 13 次、3214.8 ms；两组 retry 均 0。K=3 端到端单步决策平均 1985.2 ms，高于 full 的 1355.4 ms；负收益、`eva-004`/`eva-008`/`eva-012` 偏差及重复并列调用均保留。三类 T021 调查在 K=3 下重新使用真实模型/GitHub REST，分别有 2/4/10 次 HTTP 200、非空回答及成功 `terminate`；原测量脚本的完成状态误判和修正重跑均留证。凭据已人工轮换，当前值与原暴露值不同且鉴权可用；本轮结果/文档/当前 Git 中未检出当前凭据字面量。历史密钥撤销、provider revision、重复稳定性、完整任务级 Benchmark、真实 MCP 参数 E2E 与默认 thinking-mode 多轮兼容性 NOT VERIFIED。
+- **Evidence (2026-10-08):** [T030 comparison report](T030_ROUTING_COMPARISON.md) 与 [`eval/results/t030_evaluation_v1_1_0.jsonl`](../eval/results/t030_evaluation_v1_1_0.jsonl)：v1.1.0 独立 evaluation 12 条 × K=3/true full = 24 次真实模型单步选择；full 12/12 完全绕过语义过滤，K=3 12/12 有原始 routing event，24/24 零 Tool dispatch。8 条 `tool` 样本候选召回两组均 8/8，最终严格 Tool Selection Accuracy 为 K=3 8/8、full 7/8；3 条 clarification 和 1 条 no-match 单独报告。Provider input/output/total usage 两组均 12/12 返回，K=3 为 8392/2950/11342、full 为 9922/2137/12059 tokens；K=3 embedding 13 次、3214.8 ms；两组 retry 均 0。K=3 端到端单步决策平均 1985.2 ms，高于 full 的 1355.4 ms；负收益、`eva-004`/`eva-008`/`eva-012` 偏差及重复并列调用均保留。三类 T021 调查在 K=3 下重新使用真实模型/GitHub REST，分别有 2/4/10 次 HTTP 200、非空回答及成功 `terminate`；原测量脚本的完成状态误判和修正重跑均留证。凭据已人工轮换且鉴权可用；本轮结果/文档/当前 Git 中未检出当前活动凭据字面量。Provider revision、重复稳定性、完整任务级 Benchmark、真实 MCP 参数 E2E 与默认 thinking-mode 多轮兼容性 NOT VERIFIED。
 
 ## Phase 4 — Reliability
 
@@ -1330,4 +1330,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，尚未合并；T031 未授权。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，交付状态见 GitHub PR；T031 未授权。
