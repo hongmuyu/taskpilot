@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import json
 from contextlib import AsyncExitStack
@@ -69,6 +70,12 @@ class MCPClientTool(BaseTool):
                 base64_image=image,
                 status=status,
             )
+        except TimeoutError:
+            return ToolResult(
+                error="MCP tool call timed out; outcome unknown because the server may still complete it",
+                status="unknown",
+                error_kind="timeout",
+            )
         except Exception as e:
             return ToolResult(error=f"Error executing tool: {str(e)}")
 
@@ -83,12 +90,20 @@ class MCPClients(ToolCollection):
     server_instructions: Dict[str, str] = {}
     description: str = "MCP client tools for server interaction"
 
-    def __init__(self):
+    def __init__(
+        self,
+        connect_timeout_seconds: float = 30.0,
+        cleanup_timeout_seconds: float = 10.0,
+    ):
+        if connect_timeout_seconds <= 0 or cleanup_timeout_seconds <= 0:
+            raise ValueError("MCP timeouts must be positive")
         super().__init__()  # Initialize with empty tools list
         self.name = "mcp"  # Keep name for backward compatibility
         self.sessions = {}
         self.exit_stacks = {}
         self.server_instructions = {}
+        self.connect_timeout_seconds = connect_timeout_seconds
+        self.cleanup_timeout_seconds = cleanup_timeout_seconds
 
     async def connect_sse(self, server_url: str, server_id: str = "") -> None:
         """Connect to an MCP server using SSE transport."""
@@ -104,12 +119,21 @@ class MCPClients(ToolCollection):
         exit_stack = AsyncExitStack()
         self.exit_stacks[server_id] = exit_stack
 
-        streams_context = sse_client(url=server_url)
-        streams = await exit_stack.enter_async_context(streams_context)
-        session = await exit_stack.enter_async_context(ClientSession(*streams))
-        self.sessions[server_id] = session
-
-        await self._initialize_and_list_tools(server_id)
+        try:
+            async with asyncio.timeout(self.connect_timeout_seconds):
+                streams_context = sse_client(url=server_url)
+                streams = await exit_stack.enter_async_context(streams_context)
+                session = await exit_stack.enter_async_context(ClientSession(*streams))
+                self.sessions[server_id] = session
+                await self._initialize_and_list_tools(server_id)
+        except BaseException as exc:
+            await self.disconnect(server_id)
+            if isinstance(exc, TimeoutError):
+                raise TimeoutError(
+                    f"MCP connection to {server_id} timed out after "
+                    f"{self.connect_timeout_seconds:g} seconds"
+                ) from exc
+            raise
 
     async def connect_stdio(
         self,
@@ -132,15 +156,28 @@ class MCPClients(ToolCollection):
         exit_stack = AsyncExitStack()
         self.exit_stacks[server_id] = exit_stack
 
-        server_params = StdioServerParameters(command=command, args=args, env=env)
-        stdio_transport = await exit_stack.enter_async_context(
-            stdio_client(server_params)
-        )
-        read, write = stdio_transport
-        session = await exit_stack.enter_async_context(ClientSession(read, write))
-        self.sessions[server_id] = session
-
-        await self._initialize_and_list_tools(server_id, tool_name_prefix)
+        try:
+            async with asyncio.timeout(self.connect_timeout_seconds):
+                server_params = StdioServerParameters(
+                    command=command, args=args, env=env
+                )
+                stdio_transport = await exit_stack.enter_async_context(
+                    stdio_client(server_params)
+                )
+                read, write = stdio_transport
+                session = await exit_stack.enter_async_context(
+                    ClientSession(read, write)
+                )
+                self.sessions[server_id] = session
+                await self._initialize_and_list_tools(server_id, tool_name_prefix)
+        except BaseException as exc:
+            await self.disconnect(server_id)
+            if isinstance(exc, TimeoutError):
+                raise TimeoutError(
+                    f"MCP connection to {server_id} timed out after "
+                    f"{self.connect_timeout_seconds:g} seconds"
+                ) from exc
+            raise
 
     async def _initialize_and_list_tools(
         self, server_id: str, tool_name_prefix: bool = True
@@ -237,14 +274,17 @@ class MCPClients(ToolCollection):
     async def disconnect(self, server_id: str = "") -> None:
         """Disconnect from a specific MCP server or all servers if no server_id provided."""
         if server_id:
-            if server_id in self.sessions:
+            if server_id in self.sessions or server_id in self.exit_stacks:
                 try:
                     exit_stack = self.exit_stacks.get(server_id)
-
-                    # Close the exit stack which will handle session cleanup
                     if exit_stack:
                         try:
-                            await exit_stack.aclose()
+                            async with asyncio.timeout(self.cleanup_timeout_seconds):
+                                await exit_stack.aclose()
+                        except TimeoutError:
+                            logger.warning(
+                                f"MCP disconnect for {server_id} timed out; remote state unknown"
+                            )
                         except RuntimeError as e:
                             if "cancel scope" in str(e).lower():
                                 logger.warning(
@@ -252,25 +292,22 @@ class MCPClients(ToolCollection):
                                 )
                             else:
                                 raise
-
-                    # Clean up references
+                except Exception as e:
+                    logger.error(f"Error disconnecting from server {server_id}: {e}")
+                finally:
                     self.sessions.pop(server_id, None)
                     self.exit_stacks.pop(server_id, None)
                     self.server_instructions.pop(server_id, None)
-
-                    # Remove tools associated with this server
                     self.tool_map = {
                         k: v
                         for k, v in self.tool_map.items()
                         if v.server_id != server_id
                     }
                     self.tools = tuple(self.tool_map.values())
-                    logger.info(f"Disconnected from MCP server {server_id}")
-                except Exception as e:
-                    logger.error(f"Error disconnecting from server {server_id}: {e}")
+                    logger.info(f"Cleared local MCP state for {server_id}")
         else:
             # Disconnect from all servers in a deterministic order
-            for sid in sorted(list(self.sessions.keys())):
+            for sid in sorted(self.sessions.keys() | self.exit_stacks.keys()):
                 await self.disconnect(sid)
             self.tool_map = {}
             self.tools = tuple()

@@ -1,4 +1,5 @@
 """Collection classes for managing multiple tools."""
+import asyncio
 from typing import Any, Dict, List
 
 from jsonschema import Draft7Validator
@@ -140,8 +141,18 @@ class ToolCollection:
                 error=f"Tool '{name}' validation failed at {path}: {error.validator}"
             )
         try:
-            result = await tool(**tool_input)
+            async with asyncio.timeout(tool.timeout_seconds):
+                result = await tool(**tool_input)
             return normalize_tool_result(result)
+        except TimeoutError:
+            return ToolResult(
+                error=(
+                    f"Tool '{name}' timed out after {tool.timeout_seconds:g} seconds; "
+                    "outcome unknown because the operation may still complete"
+                ),
+                status="unknown",
+                error_kind="timeout",
+            )
         except ToolError as e:
             return normalize_tool_result(ToolFailure(error=e.message))
 

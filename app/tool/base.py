@@ -45,6 +45,7 @@ class ToolResult(BaseModel):
     base64_image: Optional[str] = Field(default=None)
     system: Optional[str] = Field(default=None)
     status: Optional[Literal["success", "failure", "unknown"]] = Field(default=None)
+    error_kind: Optional[Literal["timeout", "cancelled"]] = Field(default=None)
 
     class Config:
         arbitrary_types_allowed = True
@@ -87,7 +88,9 @@ def normalize_tool_result(value: Any) -> ToolResult:
     """Preserve explicit outcome signals before a result becomes observation text."""
     if not isinstance(value, ToolResult):
         return ToolResult(output=value, status="unknown")
-    if isinstance(value, ToolFailure) or value.error is not None:
+    if value.error_kind in {"timeout", "cancelled"}:
+        status = "unknown"
+    elif isinstance(value, ToolFailure) or value.error is not None:
         status = "failure"
     elif value.status is not None:
         status = value.status
@@ -174,6 +177,7 @@ class BaseTool(ABC, BaseModel):
     name: str
     description: str
     parameters: Optional[dict] = None
+    timeout_seconds: float = Field(default=30.0, gt=0)
     capabilities: tuple[str, ...] = ()
     examples: tuple[str, ...] = ()
     # _schemas: Dict[str, List[ToolSchema]] = {}

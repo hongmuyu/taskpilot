@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Any, List, Optional, Union
 from uuid import uuid4
 
-from pydantic import Field
+from pydantic import Field, PrivateAttr
 
 from app.agent.react import ReActAgent
 from app.exceptions import TokenLimitExceeded
@@ -21,7 +21,7 @@ from app.taskpilot.tool_embedding_index import (
 )
 from app.tool import CreateChatCompletion, Terminate, ToolCollection
 from app.tool.ask_human import AskHuman
-from app.tool.base import ToolFailure, normalize_tool_result
+from app.tool.base import ToolFailure, ToolResult, normalize_tool_result
 from app.tool.tool_collection import MissingParameterFailure, ToolValidationFailure
 
 
@@ -115,6 +115,9 @@ class ToolCallAgent(ReActAgent):
 
     max_steps: int = 30
     max_observe: Optional[Union[int, bool]] = None
+    run_timeout_seconds: float = Field(default=300.0, gt=0)
+    cleanup_timeout_seconds: float = Field(default=10.0, gt=0)
+    _run_deadline: Optional[float] = PrivateAttr(default=None)
 
     @staticmethod
     def _log_routing_event(event: dict[str, Any]) -> None:
@@ -135,6 +138,13 @@ class ToolCallAgent(ReActAgent):
 
     async def think(self) -> bool:
         """Process current state and decide next actions using tools"""
+        if self._remaining_run_seconds() == 0:
+            self.routing_clarification = (
+                "Status: unknown\nError: Agent execution budget exhausted; "
+                "no new tool calls started."
+            )
+            self.state = AgentState.FINISHED
+            return True
         self.routing_clarification = None
         routing_event = None
         if self.next_step_prompt:
@@ -503,7 +513,7 @@ class ToolCallAgent(ReActAgent):
         try:
             logged_name = self._routing_tool_label(name) if self.routing_top_k else name
             logger.info(f"🔧 Activating tool: '{logged_name}'...")
-            result = await self.available_tools.execute(name=name, tool_input=args)
+            result = await self._execute_with_budget(name, args)
             if isinstance(result, MissingParameterFailure):
                 original = json.loads(command.function.arguments)
                 pending = PendingToolCall(
@@ -557,6 +567,24 @@ class ToolCallAgent(ReActAgent):
                 )
 
             return await self._observe_tool_result(name, result)
+        except asyncio.CancelledError:
+            observation = await self._observe_tool_result(
+                name,
+                ToolResult(
+                    error=(
+                        "Tool call cancelled locally; outcome unknown because "
+                        "the operation may still complete"
+                    ),
+                    status="unknown",
+                    error_kind="cancelled",
+                ),
+            )
+            self.memory.add_message(
+                Message.tool_message(
+                    content=observation, tool_call_id=command.id, name=name
+                )
+            )
+            raise
         except Exception as e:
             error_msg = f"⚠️ Tool '{name}' encountered a problem: {str(e)}"
             logger.exception(error_msg)
@@ -565,19 +593,50 @@ class ToolCallAgent(ReActAgent):
     def _trusted_required_fields(self) -> set[str]:
         return set()
 
+    def _remaining_run_seconds(self) -> Optional[float]:
+        if self._run_deadline is None:
+            return None
+        return max(0.0, self._run_deadline - asyncio.get_running_loop().time())
+
+    async def _execute_with_budget(self, name: str, arguments: dict) -> ToolResult:
+        remaining = self._remaining_run_seconds()
+        if remaining == 0:
+            return ToolResult(
+                error="Agent execution budget exhausted; tool not started",
+                status="unknown",
+                error_kind="timeout",
+            )
+        try:
+            async with asyncio.timeout(remaining):
+                return await self.available_tools.execute(
+                    name=name, tool_input=arguments
+                )
+        except TimeoutError:
+            return ToolResult(
+                error=(
+                    "Agent execution budget exhausted during tool execution; "
+                    "outcome unknown because the operation may still complete"
+                ),
+                status="unknown",
+                error_kind="timeout",
+            )
+
     def _trusted_context_arguments(self, tool_name: str) -> dict[str, Any]:
         return {}
 
     async def _observe_tool_result(self, name: str, result: Any) -> str:
         result = normalize_tool_result(result)
-        if result.status != "failure":
+        if result.status != "failure" and result.error_kind is None:
             await self._handle_special_tool(name=name, result=result)
         if hasattr(result, "base64_image") and result.base64_image:
             self._current_base64_image = result.base64_image
+        status_header = f"Status: {result.status}\n"
+        if result.error_kind:
+            status_header += f"Error kind: {result.error_kind}\n"
         return (
-            f"Status: {result.status}\nObserved output of cmd `{name}` executed:\n{str(result)}"
+            f"{status_header}Observed output of cmd `{name}` executed:\n{str(result)}"
             if result
-            else f"Status: {result.status}\nCmd `{name}` completed with no output"
+            else f"{status_header}Cmd `{name}` completed with no output"
         )
 
     def _record_clarification_observation(
@@ -600,6 +659,11 @@ class ToolCallAgent(ReActAgent):
     async def submit_clarification_reply(
         self, tool_call_id: str, reply: str, *, record_tool_message: bool = True
     ) -> str:
+        if self._remaining_run_seconds() == 0:
+            return (
+                "Status: unknown\nError: Agent execution budget exhausted; "
+                "pending tool not resumed."
+            )
         if tool_call_id in self.closed_pending_call_ids:
             return f"Error: Tool call ID '{tool_call_id}' is already resolved"
         pending = self.pending_tool_calls.get(tool_call_id)
@@ -620,9 +684,8 @@ class ToolCallAgent(ReActAgent):
             pending.in_flight = True
             self._current_base64_image = None
             try:
-                result = await self.available_tools.execute(
-                    name=pending.tool_name,
-                    tool_input=copy.deepcopy(pending.arguments),
+                result = await self._execute_with_budget(
+                    pending.tool_name, copy.deepcopy(pending.arguments)
                 )
             except Exception as e:
                 self.pending_tool_calls.pop(tool_call_id, None)
@@ -750,21 +813,30 @@ class ToolCallAgent(ReActAgent):
     async def cleanup(self):
         """Clean up resources used by the agent's tools."""
         logger.info(f"🧹 Cleaning up resources for agent '{self.name}'...")
-        for tool_name, tool_instance in self.available_tools.tool_map.items():
-            if hasattr(tool_instance, "cleanup") and asyncio.iscoroutinefunction(
-                tool_instance.cleanup
-            ):
-                try:
-                    logger.debug(f"🧼 Cleaning up tool: {tool_name}")
-                    await tool_instance.cleanup()
-                except Exception as e:
-                    logger.error(
-                        f"🚨 Error cleaning up tool '{tool_name}': {e}", exc_info=True
-                    )
+        try:
+            async with asyncio.timeout(self.cleanup_timeout_seconds):
+                for tool_name, tool_instance in self.available_tools.tool_map.items():
+                    if hasattr(
+                        tool_instance, "cleanup"
+                    ) and asyncio.iscoroutinefunction(tool_instance.cleanup):
+                        try:
+                            logger.debug(f"🧼 Cleaning up tool: {tool_name}")
+                            await tool_instance.cleanup()
+                        except Exception as e:
+                            logger.error(
+                                f"🚨 Error cleaning up tool '{tool_name}': {e}",
+                                exc_info=True,
+                            )
+        except TimeoutError:
+            logger.warning(f"Cleanup timed out for agent '{self.name}'")
+            return
         logger.info(f"✨ Cleanup complete for agent '{self.name}'.")
 
     async def run(self, request: Optional[str] = None) -> str:
         """Run the agent with cleanup when done."""
+        self._run_deadline = (
+            asyncio.get_running_loop().time() + self.run_timeout_seconds
+        )
         self.pending_tool_calls.clear()
         self.closed_pending_call_ids.clear()
         self.tool_call_sources.clear()
@@ -772,12 +844,27 @@ class ToolCallAgent(ReActAgent):
         self.routing_clarification = None
         self.routing_run_id = uuid4().hex if self.routing_top_k is not None else None
         try:
-            return await super().run(request)
+            async with asyncio.timeout(
+                self.run_timeout_seconds + self.cleanup_timeout_seconds
+            ) as guard:
+                return await super().run(request)
+        except TimeoutError:
+            if not guard.expired():
+                raise
+            return (
+                "Status: unknown\nError: Agent execution deadline exceeded; "
+                "unfinished operation outcome unknown."
+            )
         finally:
+            self._run_deadline = None
             self.routing_original_task = None
             self.routing_clarification = None
             self.routing_run_id = None
             self.pending_tool_calls.clear()
             self.closed_pending_call_ids.clear()
             self.tool_call_sources.clear()
-            await self.cleanup()
+            try:
+                async with asyncio.timeout(self.cleanup_timeout_seconds):
+                    await self.cleanup()
+            except TimeoutError:
+                logger.warning(f"Cleanup timed out for agent '{self.name}'")
