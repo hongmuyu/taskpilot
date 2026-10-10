@@ -3,6 +3,7 @@ import copy
 import hashlib
 import json
 from dataclasses import dataclass
+from time import perf_counter
 from typing import Any, List, Optional, Union
 from uuid import uuid4
 
@@ -10,6 +11,7 @@ from pydantic import Field, PrivateAttr
 
 from app.agent.react import ReActAgent
 from app.exceptions import TokenLimitExceeded
+from app.llm import llm_attempt_scope
 from app.logger import logger
 from app.prompt.toolcall import NEXT_STEP_PROMPT, SYSTEM_PROMPT
 from app.schema import TOOL_CHOICE_TYPE, AgentState, Message, ToolCall, ToolChoice
@@ -19,6 +21,7 @@ from app.taskpilot.tool_embedding_index import (
     EmbeddingIndexError,
     InMemoryToolIndex,
     LocalTransformerEmbeddingBackend,
+    embedding_event_scope,
 )
 from app.tool import CreateChatCompletion, Terminate, ToolCollection
 from app.tool.ask_human import AskHuman
@@ -237,11 +240,18 @@ class ToolCallAgent(ReActAgent):
                         InMemoryToolIndex(LocalTransformerEmbeddingBackend())
                     )
                 try:
-                    retrieval = await self.routing_retriever.retrieve(
-                        self.routing_original_task,
-                        self.messages,
-                        ToolCollection(*business_tools),
-                    )
+
+                    def on_embedding(status: str, details: dict[str, Any]) -> None:
+                        self._trace_event("embedding", status, **details)
+
+                    with embedding_event_scope(
+                        on_embedding if self.execution_trace else None
+                    ):
+                        retrieval = await self.routing_retriever.retrieve(
+                            self.routing_original_task,
+                            self.messages,
+                            ToolCollection(*business_tools),
+                        )
                 except EmbeddingIndexError:
                     candidate_status = "index_error"
                     self.routing_clarification = "Tool retrieval is unavailable. Please retry or clarify the request."
@@ -355,27 +365,53 @@ class ToolCallAgent(ReActAgent):
                 self.state = AgentState.FINISHED
                 return True
 
+        llm_started = perf_counter()
+        llm_attempt = 0
+
+        def on_llm_attempt(status: str, details: dict[str, Any]) -> None:
+            nonlocal llm_attempt
+            if status.startswith("retry_wait_"):
+                self._trace_event(
+                    "llm_retry_wait", status.removeprefix("retry_wait_"), **details
+                )
+                return
+            llm_attempt += 1
+            self._trace_event(
+                "llm_provider_attempt", status, llm_attempt=llm_attempt, **details
+            )
+
         self._trace_event("llm", "started")
         try:
             # Get response with tool options
-            response = await self.llm.ask_tool(
-                messages=self.messages,
-                system_msgs=(
-                    [Message.system_message(self.system_prompt)]
-                    if self.system_prompt
-                    else None
-                ),
-                tools=tool_schemas,
-                tool_choice=self.tool_choices,
-            )
+            with llm_attempt_scope(on_llm_attempt if self.execution_trace else None):
+                response = await self.llm.ask_tool(
+                    messages=self.messages,
+                    system_msgs=(
+                        [Message.system_message(self.system_prompt)]
+                        if self.system_prompt
+                        else None
+                    ),
+                    tools=tool_schemas,
+                    tool_choice=self.tool_choices,
+                )
         except ValueError:
-            self._trace_event("llm", "failure")
+            self._trace_event(
+                "llm",
+                "failure",
+                duration_ms=(perf_counter() - llm_started) * 1000,
+                **({"usage_source": "unknown"} if not llm_attempt else {}),
+            )
             if routing_event is not None:
                 routing_event["selection_status"] = "llm_error"
                 self._log_routing_event(routing_event)
             raise
         except Exception as e:
-            self._trace_event("llm", "failure")
+            self._trace_event(
+                "llm",
+                "failure",
+                duration_ms=(perf_counter() - llm_started) * 1000,
+                **({"usage_source": "unknown"} if not llm_attempt else {}),
+            )
             if routing_event is not None:
                 routing_event["selection_status"] = "llm_error"
                 self._log_routing_event(routing_event)
@@ -391,6 +427,14 @@ class ToolCallAgent(ReActAgent):
                 self.state = AgentState.FINISHED
                 return False
             raise
+        except asyncio.CancelledError:
+            self._trace_event(
+                "llm",
+                "cancelled",
+                duration_ms=(perf_counter() - llm_started) * 1000,
+                **({"usage_source": "unknown"} if not llm_attempt else {}),
+            )
+            raise
 
         self.tool_calls = tool_calls = (
             response.tool_calls if response and response.tool_calls else []
@@ -402,13 +446,20 @@ class ToolCallAgent(ReActAgent):
                 not call_id or call_id in self.trace_seen_call_ids
                 for call_id in call_ids
             ) or len(call_ids) != len(set(call_ids)):
-                self._trace_event("llm", "failure", reason="duplicate_call")
+                self._trace_event(
+                    "llm",
+                    "failure",
+                    reason="duplicate_call",
+                    duration_ms=(perf_counter() - llm_started) * 1000,
+                )
                 raise ValueError("Missing or duplicate tool call ID")
             self.trace_seen_call_ids.update(call_ids)
         self._trace_event(
             "llm",
             "success" if response is not None else "failure",
             selected_count=len(tool_calls),
+            duration_ms=(perf_counter() - llm_started) * 1000,
+            **({"usage_source": "unknown"} if not llm_attempt else {}),
         )
         for selected_call in tool_calls:
             self._trace_event(
@@ -685,10 +736,29 @@ class ToolCallAgent(ReActAgent):
                                 "Use a JSON object with unique field names, or cancel."
                             )
                         )
+                        wait_started = perf_counter()
                         try:
                             reply = await AskHuman().execute(inquire=question)
                         except EOFError:
                             reply = "cancel"
+                        except BaseException as exc:
+                            self._trace_event(
+                                "clarification",
+                                "cancelled"
+                                if isinstance(exc, asyncio.CancelledError)
+                                else "unknown",
+                                call_id=command.id,
+                                tool_name=name,
+                                duration_ms=(perf_counter() - wait_started) * 1000,
+                            )
+                            raise
+                        self._trace_event(
+                            "clarification",
+                            "waited",
+                            call_id=command.id,
+                            tool_name=name,
+                            duration_ms=(perf_counter() - wait_started) * 1000,
+                        )
                         observation = await self.submit_clarification_reply(
                             command.id, reply, record_tool_message=False
                         )
@@ -768,14 +838,23 @@ class ToolCallAgent(ReActAgent):
             )
 
         active_attempt: Optional[int] = None
+        active_attempt_started: Optional[float] = None
 
         def on_tool_event(event: str, status: str, details: dict[str, Any]) -> None:
-            nonlocal active_attempt
+            nonlocal active_attempt, active_attempt_started
             if event == "tool_execution":
                 if status == "started":
                     active_attempt = details.get("attempt")
+                    active_attempt_started = perf_counter()
                 else:
+                    if active_attempt_started is not None:
+                        details = {
+                            **details,
+                            "duration_ms": (perf_counter() - active_attempt_started)
+                            * 1000,
+                        }
                     active_attempt = None
+                    active_attempt_started = None
             self._trace_event(event, status, call_id=call_id, tool_name=name, **details)
 
         try:
@@ -801,6 +880,11 @@ class ToolCallAgent(ReActAgent):
                 call_id=call_id,
                 tool_name=name,
                 error_kind="timeout",
+                **(
+                    {"duration_ms": (perf_counter() - active_attempt_started) * 1000}
+                    if active_attempt_started is not None
+                    else {}
+                ),
                 **({"attempt": active_attempt} if active_attempt else {}),
             )
             return ToolResult(
@@ -817,6 +901,11 @@ class ToolCallAgent(ReActAgent):
                 "cancelled",
                 call_id=call_id,
                 tool_name=name,
+                **(
+                    {"duration_ms": (perf_counter() - active_attempt_started) * 1000}
+                    if active_attempt_started is not None
+                    else {}
+                ),
                 **({"attempt": active_attempt} if active_attempt else {}),
             )
             raise
@@ -1088,6 +1177,7 @@ class ToolCallAgent(ReActAgent):
 
     async def run(self, request: Optional[str] = None) -> str:
         """Run the agent with cleanup when done."""
+        run_started = perf_counter()
         self.execution_trace = ExecutionTrace()
         self._trace_final_status = None
         self._trace_finish_source = "runtime_exit"
@@ -1153,4 +1243,5 @@ class ToolCallAgent(ReActAgent):
                     self._trace_final_status or "unknown",
                     finish_source=self._trace_finish_source,
                     business_outcome="not_verified",
+                    duration_ms=(perf_counter() - run_started) * 1000,
                 )

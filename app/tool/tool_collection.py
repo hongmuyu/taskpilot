@@ -252,7 +252,23 @@ class ToolCollection:
                     )
                     if delay >= deadline - loop.time():
                         return result
-                    await asyncio.sleep(delay)
+                    wait_started = loop.time()
+                    try:
+                        await asyncio.sleep(delay)
+                    except BaseException as exc:
+                        _emit_tool_event(
+                            "retry_wait",
+                            "cancelled"
+                            if isinstance(exc, asyncio.CancelledError)
+                            else "failure",
+                            duration_ms=(loop.time() - wait_started) * 1000,
+                        )
+                        raise
+                    _emit_tool_event(
+                        "retry_wait",
+                        "success",
+                        duration_ms=(loop.time() - wait_started) * 1000,
+                    )
         except TimeoutError:
             _emit_tool_event(
                 "tool_execution",

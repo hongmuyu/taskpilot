@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 7 — Productization
-- Current PR: PR-08a — Trace（T053–T054 DONE；未合并）
-- Next Task: 待后续授权；本轮不开始 T055
+- Current PR: PR-08a — Trace（T053–T055 DONE；未合并）
+- Next Task: 待后续授权；本轮不开始 T056
 - Total Tasks: 73
-- Completed: 38
-- TODO: 34
+- Completed: 39
+- TODO: 33
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 15
+- Remaining P0: 14
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
 - State verified: 2026-10-10；PR-08a 起点 main `1738ac7fdf49d9dd95875be33bcb3e197564d51c`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04 和 PR-05 已合并；PR-08a 当前仅实施 T053–T054。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04 和 PR-05 已合并；PR-08a 当前仅实施 T053–T055。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 38 + 34 + 1 + 0 + 0 = 73；剩余 15 + 19 + 1 = 35。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 39 + 33 + 1 + 0 + 0 = 73；剩余 14 + 19 + 1 = 34。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -918,7 +918,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** 三类只读调查、缺参、失败和取消的 trace 完整性；敏感值不落日志；若 Phase 5 已交付，再增加受控写 trace 用例。
 - **Out of Scope:** 大型 observability、记录模型隐藏推理。
 - **Notes:** 复用 GitHub 日志及 T027 交付的 routing 事件，补统一结构和全链路关联；不依赖 T046/T052，Advanced Memory 未完成不阻塞 Trace。
-- **Evidence (2026-10-10):** `app/taskpilot/execution_trace.py` 使用任务级 `run_id`、有序 `seq`、step 与原 `tool_call_id` 的 SHA-256 引用，Loguru 只输出允许的安全字段；复用 T027 routing event 的 run 关联、T031 `ToolResult` 状态及 T033 retry attempt。`ToolCallAgent` 和 `ToolCollection` 记录 task/step/routing/LLM/validation/clarification/tool/retry/Observation/finish，保留失败、取消与未知结果。`tests/taskpilot/test_execution_trace.py` 的 14 个隔离用例覆盖三类 GitHub 调查链、缺参恢复、重试、拒绝、timeout、取消、Top-K 关联及日志脱敏；TaskPilot + baseline + Browser MCP fixture 回归 **286 passed**。真实 provider/真实 GitHub Trace E2E **NOT VERIFIED**；任务 finish 的 success 表示 Agent 显式终止声明，不独立证明业务目标完成。T054 后续已完成；T055 仍 TODO。
+- **Evidence (2026-10-10):** `app/taskpilot/execution_trace.py` 使用任务级 `run_id`、有序 `seq`、step 与原 `tool_call_id` 的 SHA-256 引用，Loguru 只输出允许的安全字段；复用 T027 routing event 的 run 关联、T031 `ToolResult` 状态及 T033 retry attempt。`ToolCallAgent` 和 `ToolCollection` 记录 task/step/routing/LLM/validation/clarification/tool/retry/Observation/finish，保留失败、取消与未知结果。`tests/taskpilot/test_execution_trace.py` 的 14 个隔离用例覆盖三类 GitHub 调查链、缺参恢复、重试、拒绝、timeout、取消、Top-K 关联及日志脱敏；TaskPilot + baseline + Browser MCP fixture 回归 **286 passed**。真实 provider/真实 GitHub Trace E2E 在 T053 验收时 **NOT VERIFIED**，后续见 T055；任务 finish 的 success 表示 Agent 显式终止声明，不独立证明业务目标完成。T054/T055 后续已完成。
 
 ### T054 — Stable task / step / tool IDs and trace event schema
 
@@ -934,7 +934,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** schema 校验、重复/缺字段、重试/恢复链、连续任务 ID 隔离。
 - **Out of Scope:** 通用事件平台或消息队列。
 - **Notes:** 事件只表示真实发生动作；没有 fallback 就不生成虚假 fallback 事件。
-- **Evidence (2026-10-10):** `app/taskpilot/execution_trace.py` 定义 `TRACE_SCHEMA_VERSION=1.0` 和唯一 `TRACE_EVENT_SCHEMA`，记录前校验字段、状态与派生 ID，解析 JSON 时拒绝重复字段，全链校验拒绝重复序号/选择、缺失 step/attempt start、跨 run 串联和不一致工具身份。每次 `Agent.run` 生成独立 `task_id`/`run_id`；`step_id` 由 run 与 step 组成；Trace 中的 `tool_call_id` 为原模型 ID 的 run-scoped 脱敏引用，原值仍保留在 Tool message 协议；`attempt_id` 由同一调用及 attempt 序号派生。澄清恢复沿用原调用 ID，retry 只在第 2 次及后续真实 attempt 开始时记录。`finish_source` 区分 Agent 声明与运行时退出，`business_outcome=not_verified` 不把声明成功当成业务验收。`tests/taskpilot/test_trace_event_schema.py` 与扩展的 `test_execution_trace.py` 共 **24 passed**，TaskPilot + baseline + Browser MCP fixture 回归 **296 passed**。真实 provider/真实 GitHub Trace E2E **NOT VERIFIED**；T055 Token/Latency Attribution 未实施。
+- **Evidence (2026-10-10):** `app/taskpilot/execution_trace.py` 在 T054 定义 `TRACE_SCHEMA_VERSION=1.0` 和唯一 `TRACE_EVENT_SCHEMA`，记录前校验字段、状态与派生 ID，解析 JSON 时拒绝重复字段，全链校验拒绝重复序号/选择、缺失 step/attempt start、跨 run 串联和不一致工具身份。每次 `Agent.run` 生成独立 `task_id`/`run_id`；`step_id` 由 run 与 step 组成；Trace 中的 `tool_call_id` 为原模型 ID 的 run-scoped 脱敏引用，原值仍保留在 Tool message 协议；`attempt_id` 由同一调用及 attempt 序号派生。澄清恢复沿用原调用 ID，retry 只在第 2 次及后续真实 attempt 开始时记录。`finish_source` 区分 Agent 声明与运行时退出，`business_outcome=not_verified` 不把声明成功当成业务验收。`tests/taskpilot/test_trace_event_schema.py` 与扩展的 `test_execution_trace.py` 共 **24 passed**，TaskPilot + baseline + Browser MCP fixture 回归 **296 passed**。真实 provider/真实 GitHub Trace E2E 与 Token/Latency Attribution 在 T054 验收时 **NOT VERIFIED**，后续见 T055（Schema 1.1）。
 
 ### T055 — Token / latency attribution
 
@@ -942,14 +942,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Token / latency attribution
 - **Phase:** Phase 7
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T054
 - **Target PR:** PR-08a (Trace)
 - **Goal:** 按任务和调用归因成本。
 - **Acceptance Criteria:** provider usage 与估算分开；包含失败/重试/embedding，若启用摘要则计入摘要成本；端到端、LLM、工具、人类等待分别计量；缺失 usage 标未知。
 - **Tests:** 多 attempt、多个独立任务、部分无 usage、等待/取消的计时和汇总一致性；同实例连续 run 的增强测试随 T052 加入。
 - **Out of Scope:** 用共享 LLM 累计差当可靠并发计数、编造缺失 token。
-- **Notes:** 不建设多租户统计；为最终 Benchmark 提供可核验原始数据。
+- **Notes:** 2026-10-10 `TRACE_SCHEMA_VERSION=1.1` 在 T053/T054 事件上增加同一 `llm_call_id` 的 provider attempt、usage 来源、embedding 和实际等待耗时；只汇总 provider 本次响应明确报告的 input/output/total 字段，缺失即 `unknown`，不使用共享 LLM 累计差或 token 估算。端到端包含 cleanup；LLM 总耗时包含其内部退避，`retry` 桶单列 LLM/Tool 实际等待，因此各桶不能简单相加；Tool 桶只计 terminal attempt 一次，取消中的等待也保留。`tests/taskpilot/test_trace_cost_attribution.py` 12 passed，TaskPilot + baseline/Browser MCP 相关回归 **308 passed**。真实 [Provider + GitHub Investigation Trace E2E](evidence/t055_provider_github_trace.json) 使用 `deepseek-flash`、K=3、`FoundationAgents/OpenManus` 默认分支：66 条完整 Schema 合法事件，4 次 provider attempt 均返回 usage，任务 input/output/total = 16855/1267/18122；6 次真实 GitHub GET（5×200、1×404），7 次 Tool dispatch（含 terminate），404 被记录为失败 Observation 后 Agent 继续调查并声明 `finish(success)`。端到端/LLM/Embedding/Tool/Retry/人工等待分别为 13223.2/6930.3/3200.2/3081.3/0/0 ms；本次无真实 retry 或人工澄清等待，相关成本由 deterministic tests 覆盖。Provider revision **NOT AVAILABLE**；`business_outcome=not_verified` 保留，真实业务正确性不由 terminate 声明自动证明。真实 provider 故障退避、真实人工等待与并发负载的计量仍 **NOT VERIFIED**。不建设多租户统计；为最终 Benchmark 提供可核验原始数据。
 
 ### T056 — FastAPI service layer
 

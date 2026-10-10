@@ -27,6 +27,7 @@ with patch(
     from app.schema import Function, ToolCall
     from app.taskpilot.execution_trace import (
         TRACE_SCHEMA_VERSION,
+        summarize_trace_costs,
         validate_trace_events,
     )
     from app.taskpilot.github_tools import GitHubClient, RepositoryContext
@@ -229,6 +230,12 @@ async def test_trace_clarification_resume_keeps_call_link_and_zero_early_dispatc
         event["event"] == "clarification" and event["status"] == "merged"
         for event in linked
     )
+    assert any(
+        event["event"] == "clarification"
+        and event["status"] == "waited"
+        and event["duration_ms"] >= 0
+        for event in linked
+    )
     assert (
         len(
             [
@@ -299,6 +306,13 @@ async def test_trace_failure_and_retry_attempts_keep_original_call(monkeypatch):
         event["status"] == "started" and event["classification"] == "transient"
         for event in retry
     )
+    cost = summarize_trace_costs(agent.execution_trace.events)
+    waits = [event for event in linked if event["event"] == "retry_wait"]
+    assert len(waits) == 2
+    assert cost["latency_ms"]["retry"] == pytest.approx(
+        sum(event["duration_ms"] for event in waits)
+    )
+    assert cost["latency_ms"]["tool"] > 0
     assert any(
         event["event"] == "observation" and event["status"] == "failure"
         for event in linked
@@ -417,6 +431,7 @@ async def test_trace_timeout_remains_unknown(monkeypatch):
         if event["event"] == "tool_execution" and event["status"] == "unknown"
     )
     assert timed_out["attempt_id"] == started["attempt_id"]
+    assert timed_out["duration_ms"] >= 0
     assert any(
         event["event"] == "tool_execution"
         and event["status"] == "unknown"
@@ -465,6 +480,7 @@ async def test_trace_external_cancellation_is_not_success(monkeypatch):
         if event["event"] == "tool_execution" and event["status"] == "cancelled"
     )
     assert cancelled["attempt_id"] == started["attempt_id"]
+    assert cancelled["duration_ms"] >= 0
     assert any(
         event["event"] == "observation" and event["status"] == "cancelled"
         for event in linked
@@ -498,6 +514,10 @@ async def test_trace_cancelled_clarification_never_dispatches(monkeypatch):
         event["event"] == "clarification" and event["status"] == "cancelled"
         for event in linked
     )
+    assert (
+        summarize_trace_costs(agent.execution_trace.events)["latency_ms"]["human_wait"]
+        >= 0
+    )
     assert not any(event["event"] == "tool_execution" for event in linked)
     assert tool.calls == []
 
@@ -530,6 +550,10 @@ async def test_trace_routing_uses_same_run_and_links_selected_call(monkeypatch):
     await agent.run("Read repository documentation")
     events = agent.execution_trace.events
     routing = [event for event in events if event["event"] == "routing"]
+    assert [
+        event["embedding_phase"] for event in events if event["event"] == "embedding"
+    ][:2] == ["index", "query"]
+    assert summarize_trace_costs(events)["latency_ms"]["embedding"] > 0
     assert routing and all(
         event["run_id"] == agent.execution_trace.run_id for event in routing
     )

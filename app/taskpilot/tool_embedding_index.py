@@ -3,8 +3,11 @@
 import asyncio
 import hashlib
 import json
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
-from typing import Protocol, Sequence
+from time import perf_counter
+from typing import Any, Callable, Iterator, Protocol, Sequence
 
 import numpy as np
 
@@ -15,6 +18,20 @@ from app.tool.tool_collection import ToolCollection
 MODEL_ID = "sentence-transformers/paraphrase-MiniLM-L3-v2"
 MODEL_REVISION = "4ca70771034acceecb2e72475f72050fcdde4ddc"
 DOCUMENT_VERSION = "tool-metadata-json-v1/cosine-v1"
+_embedding_event_hook: ContextVar[
+    Callable[[str, dict[str, Any]], None] | None
+] = ContextVar("embedding_event_hook", default=None)
+
+
+@contextmanager
+def embedding_event_scope(
+    hook: Callable[[str, dict[str, Any]], None] | None,
+) -> Iterator[None]:
+    token = _embedding_event_hook.set(hook)
+    try:
+        yield
+    finally:
+        _embedding_event_hook.reset(token)
 
 
 class EmbeddingIndexError(RuntimeError):
@@ -142,6 +159,38 @@ class InMemoryToolIndex:
         self._vectors: np.ndarray | None = None
         self._lock = asyncio.Lock()
 
+    async def _embed(
+        self, texts: Sequence[str], phase: str
+    ) -> Sequence[Sequence[float]]:
+        started = perf_counter()
+        try:
+            vectors = await self.backend.embed(texts)
+        except BaseException as exc:
+            hook = _embedding_event_hook.get()
+            if hook is not None:
+                hook(
+                    "cancelled"
+                    if isinstance(exc, asyncio.CancelledError)
+                    else "unknown"
+                    if isinstance(exc, TimeoutError)
+                    else "failure",
+                    {
+                        "embedding_phase": phase,
+                        "duration_ms": (perf_counter() - started) * 1000,
+                    },
+                )
+            raise
+        hook = _embedding_event_hook.get()
+        if hook is not None:
+            hook(
+                "success",
+                {
+                    "embedding_phase": phase,
+                    "duration_ms": (perf_counter() - started) * 1000,
+                },
+            )
+        return vectors
+
     async def refresh(self, tools: ToolCollection) -> bool:
         """Return whether the current tool pool required a rebuild."""
         async with self._lock:
@@ -175,7 +224,7 @@ class InMemoryToolIndex:
                 return True
 
             try:
-                vectors = await self.backend.embed(documents)
+                vectors = await self._embed(documents, "index")
             except Exception as exc:
                 raise EmbeddingIndexError(f"Tool embedding failed: {exc}") from exc
             self._vectors = _normalized_vectors(vectors, len(metadata))
@@ -200,7 +249,7 @@ class InMemoryToolIndex:
         if not query.strip():
             raise EmbeddingIndexError("embedding query must not be empty")
         try:
-            query_vectors = await self.backend.embed([query])
+            query_vectors = await self._embed([query], "query")
         except Exception as exc:
             raise EmbeddingIndexError(f"Tool query embedding failed: {exc}") from exc
         query_vector = _normalized_vectors(query_vectors, 1)[0]
