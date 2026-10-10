@@ -4,7 +4,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from time import perf_counter
-from typing import Any, List, Optional, Union
+from typing import Any, Awaitable, Callable, List, Optional, Union
 from uuid import uuid4
 
 from pydantic import Field, PrivateAttr
@@ -128,6 +128,9 @@ class ToolCallAgent(ReActAgent):
     max_steps: int = 30
     max_observe: Optional[Union[int, bool]] = None
     interactive_clarification: bool = True
+    async_clarification_handler: Optional[
+        Callable[[str], Awaitable[Optional[str]]]
+    ] = Field(default=None, exclude=True, repr=False)
     run_timeout_seconds: float = Field(default=300.0, gt=0)
     cleanup_timeout_seconds: float = Field(default=10.0, gt=0)
     _run_deadline: Optional[float] = PrivateAttr(default=None)
@@ -718,6 +721,38 @@ class ToolCallAgent(ReActAgent):
                     if field not in self._trusted_required_fields()
                 ]
                 if missing:
+                    if self.async_clarification_handler is not None:
+                        self._trace_event(
+                            "clarification",
+                            "requested",
+                            call_id=command.id,
+                            tool_name=name,
+                            missing_count=len(missing),
+                        )
+                        observation = await self.async_clarification_handler(command.id)
+                        if observation is None:
+                            self._trace_event(
+                                "clarification",
+                                "unknown",
+                                call_id=command.id,
+                                tool_name=name,
+                                error_kind="timeout",
+                            )
+                            self._trace_event(
+                                "observation",
+                                "unknown",
+                                call_id=command.id,
+                                tool_name=name,
+                            )
+                            self._trace_step_status = "unknown"
+                            self._trace_final_status = "unknown"
+                            self.state = AgentState.FINISHED
+                            return (
+                                "Status: clarification_timeout\n"
+                                "Error: Required parameters were not supplied in time; "
+                                "original tool not executed."
+                            )
+                        return observation
                     if not self.interactive_clarification:
                         self._trace_event(
                             "clarification",

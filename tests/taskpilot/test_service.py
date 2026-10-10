@@ -33,7 +33,12 @@ async def wait_for_terminal(client: httpx.AsyncClient, task_id: str) -> dict:
         response = await client.get(f"/tasks/{task_id}")
         assert response.status_code == 200
         view = response.json()
-        if view["status"] not in {"queued", "running", "cancelling"}:
+        if view["status"] not in {
+            "queued",
+            "running",
+            "clarification_pending",
+            "cancelling",
+        }:
             return view
         await asyncio.sleep(0.01)
     raise AssertionError("Task did not finish")
@@ -152,7 +157,7 @@ async def test_parallel_tasks_keep_context_and_trace_isolated_and_cleanup_client
 
 
 @pytest.mark.asyncio
-async def test_missing_parameter_never_waits_for_cli_input_or_dispatches_github(
+async def test_missing_parameter_times_out_without_cli_input_or_github_dispatch(
     monkeypatch,
 ):
     def unexpected_input(*args, **kwargs):
@@ -193,7 +198,11 @@ async def test_missing_parameter_never_waits_for_cli_input_or_dispatches_github(
         agents.append(agent)
         return agent
 
-    app = create_app(agent_factory=make_agent, routing_top_k=None)
+    app = create_app(
+        agent_factory=make_agent,
+        routing_top_k=None,
+        clarification_timeout_seconds=0.02,
+    )
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app), base_url="http://test"
     ) as client:
@@ -203,8 +212,8 @@ async def test_missing_parameter_never_waits_for_cli_input_or_dispatches_github(
         assert started.status_code == 202
         view = await wait_for_terminal(client, started.json()["task_id"])
 
-    assert view["status"] == "clarification_unsupported"
-    assert view["error"] == "clarification_not_supported"
+    assert view["status"] == "clarification_timeout"
+    assert view["error"] == "clarification_timeout"
     assert view["business_outcome"] == "not_verified"
     assert view["cleanup_status"] == "complete"
     assert http_paths == []
@@ -212,7 +221,7 @@ async def test_missing_parameter_never_waits_for_cli_input_or_dispatches_github(
     call_ref = agents[0].execution_trace.call_ref("missing-path-1")
     assert any(
         event["event"] == "clarification"
-        and event["status"] == "pending"
+        and event["status"] == "requested"
         and event["tool_call_id"] == call_ref
         for event in events
     )

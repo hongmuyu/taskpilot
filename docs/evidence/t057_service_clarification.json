@@ -1,0 +1,45 @@
+{
+  "result": "PASS",
+  "run_at_utc": "2026-10-10T14:17:22.602278+00:00",
+  "model": "deepseek-flash",
+  "provider_revision": "NOT AVAILABLE",
+  "repository": "FoundationAgents/OpenManus",
+  "ref": "default_branch",
+  "routing_k_business": 3,
+  "omission_mode": "controlled_path_removal_after_real_model_tool_selection",
+  "model_selected_read_file": true,
+  "model_calls": 2,
+  "api_start_http_status": 202,
+  "api_reply_http_status": 202,
+  "pending_status": "clarification_pending",
+  "pending_missing_fields": [
+    "path"
+  ],
+  "final_status": "finished",
+  "finish_source": "agent_declaration",
+  "business_outcome": "not_verified",
+  "cleanup_status": "complete",
+  "original_tool_call_ref": "sha256:a753cf424ee0e8f565263d323b08756b077f8f784af4d7853b778d6033084b1b",
+  "pre_reply_original_dispatch_count": 0,
+  "pre_reply_http_count": 0,
+  "original_dispatch_count": 1,
+  "original_tool_message_count": 1,
+  "validation_statuses": [
+    "pending",
+    "success"
+  ],
+  "clarification_statuses": [
+    "requested",
+    "waited",
+    "merged"
+  ],
+  "github_http": [
+    {
+      "method": "GET",
+      "path": "/repos/FoundationAgents/OpenManus/contents/README.md",
+      "status": 200
+    }
+  ],
+  "trace_event_count": 31,
+  "trace_valid": true
+}
