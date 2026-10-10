@@ -1,9 +1,14 @@
+import asyncio
 import math
-from typing import Dict, List, Optional, Union
+from contextlib import contextmanager
+from contextvars import ContextVar
+from time import perf_counter
+from typing import Any, Callable, Dict, Iterator, List, Optional, Union
 
 import tiktoken
 from openai import (
     APIError,
+    APITimeoutError,
     AsyncAzureOpenAI,
     AsyncOpenAI,
     AuthenticationError,
@@ -40,6 +45,64 @@ MULTIMODAL_MODELS = [
     "claude-3-sonnet-20240229",
     "claude-3-haiku-20240307",
 ]
+
+_llm_attempt_hook: ContextVar[
+    Callable[[str, dict[str, Any]], None] | None
+] = ContextVar("llm_attempt_hook", default=None)
+
+
+@contextmanager
+def llm_attempt_scope(
+    hook: Callable[[str, dict[str, Any]], None] | None
+) -> Iterator[None]:
+    token = _llm_attempt_hook.set(hook)
+    try:
+        yield
+    finally:
+        _llm_attempt_hook.reset(token)
+
+
+def _emit_llm_attempt(status: str, started: float, usage: Any = None) -> None:
+    hook = _llm_attempt_hook.get()
+    if hook is None:
+        return
+    ended = perf_counter()
+    details: dict[str, Any] = {"duration_ms": (ended - started) * 1000}
+    for source, target in (
+        ("prompt_tokens", "input_tokens"),
+        ("completion_tokens", "output_tokens"),
+        ("total_tokens", "total_tokens"),
+    ):
+        value = getattr(usage, source, None)
+        if type(value) is int and value >= 0:
+            details[target] = value
+    details["usage_source"] = (
+        "provider"
+        if any(
+            key in details for key in ("input_tokens", "output_tokens", "total_tokens")
+        )
+        else "unknown"
+    )
+    hook(status, details)
+
+
+async def _trace_llm_retry_sleep(seconds: float) -> None:
+    started = perf_counter()
+    try:
+        await asyncio.sleep(seconds)
+    except BaseException as exc:
+        hook = _llm_attempt_hook.get()
+        if hook is not None:
+            hook(
+                "retry_wait_cancelled"
+                if isinstance(exc, asyncio.CancelledError)
+                else "retry_wait_failure",
+                {"duration_ms": (perf_counter() - started) * 1000},
+            )
+        raise
+    hook = _llm_attempt_hook.get()
+    if hook is not None:
+        hook("retry_wait_success", {"duration_ms": (perf_counter() - started) * 1000})
 
 
 class TokenCounter:
@@ -636,6 +699,7 @@ class LLM:
 
     @retry(
         wait=wait_random_exponential(min=1, max=60),
+        sleep=_trace_llm_retry_sleep,
         stop=stop_after_attempt(6),
         retry=retry_if_exception_type(
             (OpenAIError, Exception, ValueError)
@@ -729,9 +793,27 @@ class LLM:
                 )
 
             params["stream"] = False  # Always use non-streaming for tool requests
-            response: ChatCompletion = await self.client.chat.completions.create(
-                **params
-            )
+            started = perf_counter()
+            try:
+                client = (
+                    self.client.with_options(max_retries=0)
+                    if hasattr(self.client, "with_options")
+                    else self.client
+                )
+                response: ChatCompletion = await client.chat.completions.create(
+                    **params
+                )
+            except BaseException as exc:
+                _emit_llm_attempt(
+                    "cancelled"
+                    if isinstance(exc, asyncio.CancelledError)
+                    else "unknown"
+                    if isinstance(exc, (TimeoutError, APITimeoutError))
+                    else "failure",
+                    started,
+                )
+                raise
+            _emit_llm_attempt("success", started, response.usage)
 
             # Check if response is valid
             if not response.choices or not response.choices[0].message:
@@ -740,9 +822,14 @@ class LLM:
                 return None
 
             # Update token counts
-            self.update_token_count(
-                response.usage.prompt_tokens, response.usage.completion_tokens
-            )
+            if (
+                response.usage is not None
+                and response.usage.prompt_tokens is not None
+                and response.usage.completion_tokens is not None
+            ):
+                self.update_token_count(
+                    response.usage.prompt_tokens, response.usage.completion_tokens
+                )
 
             return response.choices[0].message
 
