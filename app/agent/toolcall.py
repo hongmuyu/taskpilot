@@ -127,6 +127,7 @@ class ToolCallAgent(ReActAgent):
 
     max_steps: int = 30
     max_observe: Optional[Union[int, bool]] = None
+    interactive_clarification: bool = True
     run_timeout_seconds: float = Field(default=300.0, gt=0)
     cleanup_timeout_seconds: float = Field(default=10.0, gt=0)
     _run_deadline: Optional[float] = PrivateAttr(default=None)
@@ -717,6 +718,28 @@ class ToolCallAgent(ReActAgent):
                     if field not in self._trusted_required_fields()
                 ]
                 if missing:
+                    if not self.interactive_clarification:
+                        self._trace_event(
+                            "clarification",
+                            "pending",
+                            call_id=command.id,
+                            tool_name=name,
+                            missing_count=len(missing),
+                        )
+                        self._trace_event(
+                            "observation",
+                            "pending",
+                            call_id=command.id,
+                            tool_name=name,
+                            reason="required_missing",
+                        )
+                        self._trace_step_status = "unknown"
+                        self.state = AgentState.FINISHED
+                        return (
+                            "Status: clarification_unsupported\n"
+                            "Error: Required parameters need interactive clarification; "
+                            "original tool not executed."
+                        )
                     for attempt in range(MAX_CLARIFICATION_ATTEMPTS):
                         self._trace_event(
                             "clarification",

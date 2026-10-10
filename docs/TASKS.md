@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 7 — Productization
-- Current PR: PR-08a — Trace（T053–T055 DONE；未合并）
-- Next Task: 待后续授权；本轮不开始 T056
+- Current PR: PR-08b — Service（仅 T056 DONE；未合并）
+- Next Task: 待后续授权；本轮不开始 T057/T058
 - Total Tasks: 73
-- Completed: 39
-- TODO: 33
+- Completed: 40
+- TODO: 32
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 14
+- Remaining P0: 13
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-10；PR-08a 起点 main `1738ac7fdf49d9dd95875be33bcb3e197564d51c`
+- State verified: 2026-10-10；PR-08b 起点 main `0c061473f2b6f00f5119a1473ef54045ab77ea41`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04 和 PR-05 已合并；PR-08a 当前仅实施 T053–T055。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05 和 PR-08a 已合并；PR-08b 当前仅实施 T056。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 39 + 33 + 1 + 0 + 0 = 73；剩余 14 + 19 + 1 = 34。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 40 + 32 + 1 + 0 + 0 = 73；剩余 13 + 19 + 1 = 33。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -957,7 +957,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** FastAPI service layer
 - **Phase:** Phase 7
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T021, T038, T054
 - **Target PR:** PR-08b (service/demo)
 - **Goal:** 提供薄任务服务，复用现有 Agent。
@@ -965,6 +965,8 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** API 生命周期、非法输入、异常/取消、隔离 Context 和真实只读任务 smoke。
 - **Out of Scope:** 重建 Runtime、多租户、Workflow Engine。
 - **Notes:** 保留 CLI；Core 可为每个任务创建独立 Agent，复用现有 Memory 与任务级参数状态，不要求 T052 的同实例连续 run hardening；非阻塞澄清需 T057 一起验收。
+- **Evidence (2026-10-10):** `app/taskpilot/service.py` 提供 `POST /tasks`（202 + task_id）、`GET /tasks/{task_id}`（状态/结果/Trace run ID）和 `DELETE /tasks/{task_id}`（本地取消）；请求先经严格 Pydantic 字段、repository/ref 校验，非法请求为 422、未建 Agent。每个已接受任务独立创建可信 `RepositoryContext(source=user_input)` 与现有 `RepositoryInvestigationAgent`，服务默认启用既有 K=3 routing；任务记录只在当前进程内存。API 将 `status`、Agent `execution_status`/`finish_source`、`business_outcome=not_verified` 与 `cleanup_status` 分开：`terminate(success)` 只表示 Agent 声明，未终止或预算耗尽为 unknown；取消仅表示本地执行取消。Agent 及服务 shutdown 均有有界清理；清理未完成不得显示 finished。服务设置 `interactive_clarification=False`，缺参原 Tool 零 dispatch、Trace 记录 pending，并以 `clarification_unsupported` 有界结束，不调用同步 `AskHuman.input`，不实现 T057 回复/恢复。`tests/taskpilot/test_service.py` **11 passed**；TaskPilot + baseline/Browser MCP 相关回归 **319 passed**。真实 [FastAPI + Provider + GitHub 只读 smoke](evidence/t056_service_github_smoke.json) 通过 ASGI API 启动 `deepseek-flash`、K=3、`FoundationAgents/OpenManus` 默认分支：API 202 后查询 200，6 次真实 GitHub GET（4×200、2×404），59 条合法 Trace 事件、3 条 routing 事件、7 次 Tool dispatch（含 2 条失败 Observation）；最终 `status=finished`、Agent `finish(success)`、`business_outcome=not_verified`、`cleanup_status=complete`。一次严格双路径门槛未通过的记录见 [smoke attempt](evidence/t056_service_github_smoke_strict_gate_not_verified.json)：当次 README 200、模型未选元数据工具，服务/清理正常；最终 smoke 只以仓库范围内真实 GET 200 验证服务链路，不声称任务业务正确。真实 HTTP 监听部署、服务端非阻塞补参/恢复、持久任务存储与独立业务成功判定 **NOT VERIFIED**；后续任务不得把本次 `finished` 当成业务成功验收。
+- **Full-suite limit:** 本轮额外尝试全量 `pytest -q --maxfail=1`，在既有 `tests/sandbox/test_client.py::test_sandbox_creation` 环境断言停止（测试预期 Python 3.10，当前运行 Python 3.12.14）；此项不计入上述 319 个通过的相关回归，未修改上游 sandbox。
 
 ### T057 — Non-blocking clarification / confirmation adapter
 
@@ -1332,4 +1334,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 当前完成 T053–T055，未合并。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 当前仅完成 T056，未合并，T057/T058 保持 TODO。

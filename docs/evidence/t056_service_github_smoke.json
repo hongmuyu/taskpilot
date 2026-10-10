@@ -1,0 +1,70 @@
+{
+  "result": "PASS",
+  "run_at_utc": "2026-10-10T13:58:41.684970+00:00",
+  "model": "deepseek-flash",
+  "provider_revision": "NOT AVAILABLE",
+  "embedding_model": "sentence-transformers/paraphrase-MiniLM-L3-v2",
+  "embedding_revision": "4ca70771034acceecb2e72475f72050fcdde4ddc",
+  "repository": "FoundationAgents/OpenManus",
+  "ref": "default_branch",
+  "routing_k_business": 3,
+  "api_http_statuses": [
+    202,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "task_status": "finished",
+  "agent_finish_status": "success",
+  "finish_source": "agent_declaration",
+  "business_outcome": "not_verified",
+  "failure_observation_count": 2,
+  "cleanup_status": "complete",
+  "trace_valid": true,
+  "trace_event_count": 59,
+  "routing_event_count": 3,
+  "tool_dispatch_count": 7,
+  "github_http": [
+    {
+      "method": "GET",
+      "path": "/repos/FoundationAgents/OpenManus/contents/README.md",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/repos/FoundationAgents/OpenManus/contents/pyproject.toml",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/repos/FoundationAgents/OpenManus/contents/.github/workflows/build.yml",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/repos/FoundationAgents/OpenManus",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/repos/FoundationAgents/OpenManus/contents/setup.py",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/repos/FoundationAgents/OpenManus/contents/requirements.txt",
+      "status": 200
+    }
+  ],
+  "repository_http_200": true,
+  "metadata_and_readme_http_200": true
+}
