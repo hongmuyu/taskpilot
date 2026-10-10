@@ -3,14 +3,14 @@
 ## Dashboard
 
 - Current Phase: Phase 4 — Reliability
-- Current PR: PR-05 — Reliability（T031–T033 DONE；未合并）
-- Next Task: T034 — Non-idempotent action safety（TODO，未授权）
+- Current PR: PR-05 — Reliability（T031–T033 DONE；T035 BLOCKED；T034 暂缓；未合并）
+- Next Task: T035 — MCP failure handling / connection and lifecycle validation（BLOCKED，待安全模型凭据）
 - Total Tasks: 73
 - Completed: 33
-- TODO: 39
+- TODO: 38
 - OPTIONAL: 1
 - IN_PROGRESS: 0
-- BLOCKED: 0
+- BLOCKED: 1
 - Remaining P0: 20
 - Remaining P1: 19
 - Remaining P2: 1
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 33 + 39 + 1 + 0 + 0 = 73；剩余 20 + 19 + 1 = 40。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 33 + 38 + 1 + 0 + 1 = 73；剩余 20 + 19 + 1 = 40。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -628,14 +628,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** MCP failure handling / connection and lifecycle validation
 - **Phase:** Phase 4
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** BLOCKED
 - **Depends On:** T031, T032, T033
 - **Target PR:** PR-05
 - **Goal:** 验证真实 MCP 的连接、发现、调用和清理。
 - **Acceptance Criteria:** 至少一种实际使用 transport 和真实无副作用 server 完成 connect、discovery、real server call、disconnect、reconnect；合法参数实际执行，缺参经澄清/合并/重新校验后执行；非法参数不抵达 server；断连状态明确，重连不重复或保留失效工具，schema 变化同步检索索引。
 - **Tests:** 真实 stdio 或 SSE server 的 connect/list/call/close、异常 cleanup、重连；真实模型参数补全及合法/非法调用 E2E；记录 server/SDK 版本。
 - **Out of Scope:** 声称所有 MCP server/transport 均兼容。
-- **Notes:** 承接 T020 的隔离 schema 测试，补验 PR-01/PR-02 中 NOT VERIFIED 的真实 MCP；真实参数调用与 failure E2E 由本项/T038 完成，测试 doubles 不替代真实 transport。
+- **Notes:** 2026-10-10 使用本地 MCP SDK 1.5.0 FastMCP fixture、真实 stdio transport，完成 connect → discovery → Agent/ToolCollection 调用 → disconnect → reconnect。v1/v2 工具列表各 5 个，旧工具移除、新工具加入，`echo_read` required schema 变化；非法 type/缺参/旧 schema 在 server dispatch 前被拦截，合法调用与 `isError` failure 抵达真实 server。强制终止 fixture 进程后 cleanup 有界并可重连；慢工具返回 unknown/timeout，server dispatch 仅一次，MCP 默认不重试；连接超时清除部分状态。`InMemoryToolIndex` 用 fixed vector fixture 与真实本地 `sentence-transformers/paraphrase-MiniLM-L3-v2` revision `4ca70771034acceecb2e72475f72050fcdde4ddc` 均验证 schema/工具变动后重建。脚本化用户回复的缺参 → 强制澄清 → merge → revalidation → 真实 MCP 调用完成，原 call ID 和来源保留；取消为零 dispatch。`tests/taskpilot/test_real_mcp_lifecycle.py` 6 passed，TaskPilot + baseline/Browser MCP 相关回归 268 passed。**BLOCKED:** 当前未提供安全的 `DEEPSEEK_API_KEY` 环境变量，真实模型产生缺参调用并完成澄清闭环 NOT VERIFIED；opt-in runner 不在命令行或日志中输出凭据。未声称其他 transport 兼容。
 
 ### T036 — Capability-equivalent fallback
 
