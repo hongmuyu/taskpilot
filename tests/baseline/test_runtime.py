@@ -168,7 +168,7 @@ async def test_terminate_stops_run_regardless_of_status(make_agent, status):
     result = await agent.run("finish")
 
     assert result == (
-        "Step 1: Observed output of cmd `terminate` executed:\n"
+        "Step 1: Status: unknown\nObserved output of cmd `terminate` executed:\n"
         f"The interaction has been completed with status: {status}"
     )
     assert len(requests) == 1

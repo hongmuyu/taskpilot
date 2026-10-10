@@ -1,11 +1,19 @@
 """Collection classes for managing multiple tools."""
+import asyncio
 from typing import Any, Dict, List
 
 from jsonschema import Draft7Validator
 from jsonschema.exceptions import SchemaError
 
 from app.exceptions import ToolError
-from app.tool.base import BaseTool, ToolFailure, ToolMetadata, ToolResult
+from app.logger import logger
+from app.tool.base import (
+    BaseTool,
+    ToolFailure,
+    ToolMetadata,
+    ToolResult,
+    normalize_tool_result,
+)
 
 
 _SUPPORTED_SCHEMA_KEYWORDS = {
@@ -23,6 +31,8 @@ _SUPPORTED_SCHEMA_KEYWORDS = {
     "default",
     "title",
 }
+_MAX_READ_ATTEMPTS = 3
+_RETRY_BASE_DELAY_SECONDS = 0.1
 
 
 class ToolValidationFailure(ToolFailure):
@@ -133,11 +143,75 @@ class ToolCollection:
             return ToolValidationFailure(
                 error=f"Tool '{name}' validation failed at {path}: {error.validator}"
             )
+        attempts: list[dict[str, Any]] = []
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + tool.timeout_seconds
         try:
-            result = await tool(**tool_input)
-            return result
+            async with asyncio.timeout_at(deadline):
+                for number in range(
+                    1, _MAX_READ_ATTEMPTS + 1 if tool.retry_safe_read else 2
+                ):
+                    result = normalize_tool_result(await tool(**tool_input))
+                    if not tool.retry_safe_read:
+                        return result
+                    classification = (
+                        result.retry_classification
+                        if result.status == "failure"
+                        else result.status
+                    ) or "permanent"
+                    attempts.append(
+                        {
+                            "number": number,
+                            "classification": classification,
+                            "http_status": result.http_status,
+                            "status": result.status,
+                        }
+                    )
+                    logger.info(
+                        "tool_retry_attempt name={} number={} classification={} http_status={} status={}",
+                        name,
+                        number,
+                        classification,
+                        result.http_status,
+                        result.status,
+                    )
+                    result = result.model_copy(update={"attempts": attempts.copy()})
+                    if (
+                        result.status != "failure"
+                        or result.retry_classification != "transient"
+                        or number == _MAX_READ_ATTEMPTS
+                    ):
+                        return result
+                    delay = max(
+                        _RETRY_BASE_DELAY_SECONDS * 2 ** (number - 1),
+                        result.retry_after_seconds or 0,
+                    )
+                    if delay >= deadline - loop.time():
+                        return result
+                    await asyncio.sleep(delay)
+        except TimeoutError:
+            return ToolResult(
+                error=(
+                    f"Tool '{name}' timed out after {tool.timeout_seconds:g} seconds; "
+                    "outcome unknown because the operation may still complete"
+                ),
+                status="unknown",
+                error_kind="timeout",
+                attempts=attempts,
+            )
         except ToolError as e:
-            return ToolFailure(error=e.message)
+            if tool.retry_safe_read:
+                attempts.append(
+                    {
+                        "number": number,
+                        "classification": "permanent",
+                        "http_status": None,
+                        "status": "failure",
+                    }
+                )
+            return normalize_tool_result(
+                ToolFailure(error=e.message, attempts=attempts)
+            )
 
     async def execute_all(self) -> List[ToolResult]:
         """Execute all tools in the collection sequentially."""

@@ -2,22 +2,22 @@
 
 ## Dashboard
 
-- Current Phase: Phase 3 — Tool Routing
-- Current PR: PR-04 — Tool Routing（T022–T030 DONE；交付状态见 GitHub PR）
-- Next Task: T031 — Tool result status normalization / MCP isError preservation（TODO，未授权）
+- Current Phase: Phase 4 — Reliability
+- Current PR: PR-05 — Reliability（T031–T033、T035、T037–T038 DONE；T034 暂缓；T036 TODO；未合并）
+- Next Task: 待后续授权；本轮不开始其他任务
 - Total Tasks: 73
-- Completed: 30
-- TODO: 42
+- Completed: 36
+- TODO: 36
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 23
+- Remaining P0: 17
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-09；PR-04 起点 main `8370495e5531fbefe76f56e93b428e01007dd491`
+- State verified: 2026-10-10；PR-05 起点 main `6af3c0c20c3a486ace91836f88170840d77300b9`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 已合并；PR-04 已实施并验收 T022–T030，交付状态见 GitHub PR。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 和 PR-04 已合并；PR-05 当前仅实施 T031–T033、T035、T037–T038。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 30 + 42 + 1 + 0 + 0 = 73；剩余 23 + 19 + 1 = 43。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 36 + 36 + 1 + 0 + 0 = 73；剩余 17 + 19 + 1 = 37。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -568,14 +568,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Tool result status normalization / MCP isError preservation
 - **Phase:** Phase 4
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T030
 - **Target PR:** PR-05
 - **Goal:** 保留真实成功、失败和未知状态。
 - **Acceptance Criteria:** Local 结果与 MCP isError 在字符串化前归一；业务失败不因未抛异常被记成功；Observation 保留必要错误类别。
 - **Tests:** ToolResult/string/dict、isError=true/false、异常、多内容响应和截断后状态回归。
 - **Out of Scope:** 重建结果框架、从日志文案判断成功。
-- **Notes:** 优先复用 ToolResult；不得等字符串化后再猜 isError。
+- **Notes:** 复用 ToolResult，在 ToolCollection 与 Agent Observation 前归一三态；MCP isError=true 为 failure，显式 false 为 success，缺失为 unknown；失败的控制工具不触发完成。deterministic tests 19 passed，TaskPilot/基线/Browser MCP 相关回归 224 passed（2026-10-09）。全套测试曾运行 245 passed、3 failed，失败均为无关 sandbox 环境断言/安装超时。真实 MCP server isError 与生命周期 NOT VERIFIED，留待 T038。
 
 ### T032 — Per-tool timeout policy
 
@@ -583,14 +583,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Per-tool timeout policy
 - **Phase:** Phase 4
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T031
 - **Target PR:** PR-05
 - **Goal:** 给实际启用工具明确执行预算。
 - **Acceptance Criteria:** 工具/连接 deadline 明确且有界；超时进入可判别 Observation；区分取消与结果未知；保持现有合理 HTTP 限制。
 - **Tests:** 慢 Local/MCP、连接超时、任务预算耗尽、cleanup 有界测试。
 - **Out of Scope:** 宣称 asyncio timeout 能终止所有同步代码或远端动作。
-- **Notes:** 公共策略增量；不为未启用的任意 Shell 扩大范围。
+- **Notes:** 实际 Tool 默认执行时限 30 秒、可逐 Tool 覆盖；MCP 连接 30 秒、断连 10 秒；Agent 单次运行预算 300 秒、cleanup 10 秒。运行截止时间传到首次调用及澄清恢复，耗尽后不再 dispatch；超时为 status=unknown/error_kind=timeout，取消为 unknown/cancelled 且传播取消。原 GitHub HTTP 20 秒限制保留。deterministic tests 16 passed，TaskPilot/基线/Browser MCP 相关回归 240 passed（2026-10-09）。真实 MCP 超时后远端动作是否停止 NOT VERIFIED；asyncio timeout 不能保证终止阻塞的同步代码。既有 CLI `AskHuman` 使用同步 `input()`，人工等待本身不会被 Agent deadline 中断；补参后的实际 Tool dispatch 仍检查剩余预算。
 
 ### T033 — Retry classification / idempotent read retry
 
@@ -598,14 +598,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Retry classification / idempotent read retry
 - **Phase:** Phase 4
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T032
 - **Target PR:** PR-05
 - **Goal:** 仅重试可恢复且幂等的读取。
 - **Acceptance Criteria:** transient 与 auth/schema/permission/预算错误分开；重试次数与总预算有界；遵守限流等待边界；永久错误不重复请求。
 - **Tests:** 429/5xx/网络中断、401/403、非法参数、耗尽预算；断言 attempts 与终态。
 - **Out of Scope:** 无限重试、隐式嵌套重试放大。
-- **Notes:** 核对上游 LLM retry 与 SDK attempt；复用已有能力，避免双重重试。
+- **Notes:** 仅五个 `GitHubReadOnlyTool` 显式声明 `retry_safe_read=True`；其他 Local 和 MCP 默认不重试。GitHub HTTP `get` 保持单次请求，当前默认 httpx transport 的 `retries=0`；上游 LLM retry 属于模型请求，不叠加在 Tool HTTP 层。429/500/502/503/504、连接/读取/远端协议故障归为 transient，401/403、其他业务/参数错误不重试；HTTP timeout 为 unknown，不重放。最多 3 attempts，指数退避 0.1/0.2 秒，429/503 尊重有界 `Retry-After`，Tool/Agent deadline 到期前不启动下一次。失败 attempt 的分类和可用 HTTP status、最终状态在 `ToolResult`/Observation 与无参数日志中保留；成功 attempt 不保证记录 HTTP status。`tests/taskpilot/test_tool_retry_policy.py` 22 passed；TaskPilot + baseline/Browser MCP 相关回归 262 passed（2026-10-10）。真实 GitHub 限流/网络故障和真实 MCP retry 生命周期 NOT VERIFIED。
 
 ### T034 — Non-idempotent action safety
 
@@ -628,14 +628,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** MCP failure handling / connection and lifecycle validation
 - **Phase:** Phase 4
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T031, T032, T033
 - **Target PR:** PR-05
 - **Goal:** 验证真实 MCP 的连接、发现、调用和清理。
 - **Acceptance Criteria:** 至少一种实际使用 transport 和真实无副作用 server 完成 connect、discovery、real server call、disconnect、reconnect；合法参数实际执行，缺参经澄清/合并/重新校验后执行；非法参数不抵达 server；断连状态明确，重连不重复或保留失效工具，schema 变化同步检索索引。
 - **Tests:** 真实 stdio 或 SSE server 的 connect/list/call/close、异常 cleanup、重连；真实模型参数补全及合法/非法调用 E2E；记录 server/SDK 版本。
 - **Out of Scope:** 声称所有 MCP server/transport 均兼容。
-- **Notes:** 承接 T020 的隔离 schema 测试，补验 PR-01/PR-02 中 NOT VERIFIED 的真实 MCP；真实参数调用与 failure E2E 由本项/T038 完成，测试 doubles 不替代真实 transport。
+- **Notes:** 2026-10-10 使用本地 MCP SDK 1.5.0 FastMCP fixture、真实 stdio transport，完成 connect → discovery → Agent/ToolCollection 调用 → disconnect → reconnect。v1/v2 工具列表各 5 个，旧工具移除、新工具加入，`echo_read` required schema 变化；非法 type/缺参/旧 schema 在 server dispatch 前被拦截，合法调用与 `isError` failure 抵达真实 server。强制终止 fixture 进程后 cleanup 有界并可重连；慢工具返回 unknown/timeout，server dispatch 仅一次，MCP 默认不重试；连接超时清除部分状态。`InMemoryToolIndex` 用 fixed vector fixture 与真实本地 `sentence-transformers/paraphrase-MiniLM-L3-v2` revision `4ca70771034acceecb2e72475f72050fcdde4ddc` 均验证 schema/工具变动后重建。脚本化用户回复的缺参 → 强制澄清 → merge → revalidation → 真实 MCP 调用完成，原 call ID 和来源保留；取消为零 dispatch。真实 `deepseek-flash` 在两个已发现的 MCP 工具中选择 `echo_read`；模型原本提供了 `text`，故在保留原 call ID 的待执行调用上受控移除此字段，再由执行层强制 AskHuman（脚本化用户回复）、merge、revalidation，真实 server 在澄清前零 dispatch、补全后恰好一次，结果与原 call ID 关联。脱敏记录见 [T035 real MCP E2E](evidence/t035_real_mcp_e2e.json)；TaskPilot + baseline/Browser MCP 相关回归 268 passed。首次以 `tool_choice=required` 请求返回 HTTP 400；改用 `auto` 后成功，未确定首次 400 的具体原因。自然模型缺参 NOT VERIFIED；其他 transport 兼容性 NOT VERIFIED。
 
 ### T036 — Capability-equivalent fallback
 
@@ -658,14 +658,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Reliability regression tests
 - **Phase:** Phase 4
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T031, T032, T033, T035
 - **Target PR:** PR-05
 - **Goal:** 固定基本可靠性失败矩阵。
 - **Acceptance Criteria:** Core P0 覆盖 result status、timeout、retry classification、MCP failures 和 read-only failures 的确定性断言；失败后 Agent 可继续或有界退出，不误报成功。
 - **Tests:** targeted unit/integration tests 和 TaskPilot/基线回归；T034 后续完成才加入非幂等动作测试，T036 完成才加入 fallback 回归。
 - **Out of Scope:** 只测 happy path、将测试注入视为真实网络 E2E。
-- **Notes:** 不硬依赖 T034/T036；单个失败不必让整任务失败，但最终结果需说明证据缺口。
+- **Notes:** 2026-10-10 [Core P0 回归矩阵](PR05_RELIABILITY_REGRESSION.md)覆盖结果状态/Observation、Local/MCP timeout/cancel/cleanup/预算、retry 分类与上限、真实 stdio fixture 的 `isError`/断连/重连状态、GitHub 只读失败与恢复、Agent 继续或有界退出，以及 Top-K + 强制澄清 + 重新校验 + retry + 原 call ID 组合。发现断连后旧 MCP 工具名在 Agent 早退分支只返回普通 `Error:`，以失败测试复现后改为 `Status: failure` Observation；旧工具零 server dispatch，重连新调用成功。可靠性聚焦模块 99 passed；TaskPilot + baseline/Browser MCP 相关回归 272 passed。全量 `pytest --maxfail=1` 在无关 sandbox 用例因预期 Python 3.10、实际 3.12.14 停止（9 passed、1 failed），其余全量 NOT VERIFIED。T034/T036 属 P1 不依赖；真实外部故障 E2E 证据见 T038。
 
 ### T038 — Real failure E2E
 
@@ -673,14 +673,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Real failure E2E
 - **Phase:** Phase 4
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T037
 - **Target PR:** PR-05
 - **Goal:** 在真实工具/transport 验证故障行为。
 - **Acceptance Criteria:** 真实 MCP server 返回 isError、断连/超时场景有记录；真实 GitHub 不存在资源等只读失败有记录；尝试有界且不误报成功。
 - **Tests:** 受控真实进程终止/慢响应及真实读取失败 E2E，记录 fault 注入方式和恢复/终止证据。
 - **Out of Scope:** 对不受控服务制造故障、写操作盲重试。
-- **Notes:** PR-05 出口；不得把 fixture 失败矩阵冒充真实 failure E2E。
+- **Notes:** 2026-10-10 [真实故障 E2E 证据](evidence/t038_real_failure_e2e.json)由 `tests/taskpilot/run_t038_real_failure_e2e.py` 产生：真实 FastMCP 1.5.0 stdio 进程返回 `isError=true`，Agent Observation 为 failure；500 ms 慢响应触发 50 ms Tool timeout，Observation 为 unknown/timeout，server audit 只有一次 dispatch；只终止受控 fixture PID 后调用在 30 s deadline 内以 unknown/timeout 结束，显式 disconnect 清除旧工具，stale call 为 failure 且零 dispatch，reconnect 后调用成功且仅一次 dispatch。真实 GitHub HTTPS 对已确认公开仓库 GET 返回 200，读取唯一不存在的路径返回 404，`Attempts: 1:permanent(404)`、Observation failure、最终 Agent terminate(failure)，原 tool_call_id 均关联正确。四个场景 PASS，TaskPilot + baseline/Browser MCP 相关回归 272 passed；GitHub Agent 工具选择为脚本化，HTTP 请求是真实 API。其他 MCP transport、非受控外部故障、真实模型在失败后的判断 NOT VERIFIED；全量 pytest 的无关 sandbox/Python 版本断言问题仍在 T037 Notes 中记录。
 
 ## Phase 5 — Controlled Developer Actions
 
@@ -1330,4 +1330,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，交付状态见 GitHub PR；T031 未授权。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 当前完成 T031–T033、T035、T037–T038，未合并；T034/T036 保持 P1 TODO。

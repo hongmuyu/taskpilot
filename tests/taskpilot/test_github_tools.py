@@ -18,6 +18,9 @@ with patch(
         "daytona": {"daytona_api_key": "unused-test"},
     },
 ):
+    from app.agent.repository_investigation import RepositoryInvestigationAgent
+    from app.llm import LLM
+    from app.schema import Function, ToolCall
     from app.taskpilot.github_tools import (
         GitHubClient,
         GitHubCodeSearch,
@@ -332,3 +335,131 @@ async def test_investigation_agent_exposes_only_read_only_github_tools_and_obser
         "terminate",
     }
     assert len(second_turn) == 1 and "MCP timeout" in second_turn[0].content
+
+
+@pytest.mark.asyncio
+async def test_agent_recovers_after_failed_read_and_preserves_retry_observations():
+    paths = []
+
+    def respond(request):
+        paths.append(request.url.path)
+        if request.url.path.endswith("/missing.py"):
+            return httpx.Response(404, json={"message": "Not Found"})
+        if paths.count(request.url.path) == 1:
+            return httpx.Response(503, json={"message": "Unavailable"})
+        return httpx.Response(
+            200,
+            json={
+                "path": "README.md",
+                "encoding": "base64",
+                "content": base64.b64encode(b"verified repository evidence").decode(),
+            },
+        )
+
+    calls = [
+        ToolCall(
+            id="read-missing",
+            function=Function(
+                name="github_read_file", arguments='{"path":"missing.py"}'
+            ),
+        ),
+        ToolCall(
+            id="read-corrected",
+            function=Function(
+                name="github_read_file", arguments='{"path":"README.md"}'
+            ),
+        ),
+        ToolCall(
+            id="finish-recovered",
+            function=Function(name="terminate", arguments='{"status":"success"}'),
+        ),
+    ]
+    model_messages = []
+
+    async def ask_tool(**kwargs):
+        model_messages.append(list(kwargs["messages"]))
+        return SimpleNamespace(
+            content=None, tool_calls=[calls[len(model_messages) - 1]]
+        )
+
+    llm = object.__new__(LLM)
+    llm.ask_tool = AsyncMock(side_effect=ask_tool)
+    agent = RepositoryInvestigationAgent.create(
+        RepositoryContext.parse("octo-org/sample-repo", source="user_input"),
+        client=api_client(respond),
+        llm=llm,
+        max_steps=4,
+    )
+
+    result = await agent.run("Read a repository file and recover if its path is wrong")
+
+    assert paths == [
+        "/repos/octo-org/sample-repo/contents/missing.py",
+        "/repos/octo-org/sample-repo/contents/README.md",
+        "/repos/octo-org/sample-repo/contents/README.md",
+    ]
+    observations = [message for message in agent.messages if message.role == "tool"]
+    assert [message.tool_call_id for message in observations] == [
+        "read-missing",
+        "read-corrected",
+        "finish-recovered",
+    ]
+    assert observations[0].content.startswith("Status: failure\n")
+    assert "404" in observations[0].content
+    assert observations[1].content.startswith(
+        "Status: success\nAttempts: 1:transient(503), 2:success\n"
+    )
+    assert "verified repository evidence" in observations[1].content
+    assert any(
+        message.tool_call_id == "read-missing"
+        and message.content.startswith("Status: failure\n")
+        for message in model_messages[1]
+    )
+    assert "completed with status: success" in result
+
+
+@pytest.mark.asyncio
+async def test_agent_exits_at_step_budget_after_permanent_github_read_error():
+    requests = []
+
+    def respond(request):
+        requests.append(request)
+        return httpx.Response(403, json={"message": "Forbidden"})
+
+    model_messages = []
+
+    async def ask_tool(**kwargs):
+        model_messages.append(list(kwargs["messages"]))
+        return SimpleNamespace(
+            content=None,
+            tool_calls=[
+                ToolCall(
+                    id=f"denied-read-{len(model_messages)}",
+                    function=Function(
+                        name="github_read_file", arguments='{"path":"README.md"}'
+                    ),
+                )
+            ],
+        )
+
+    llm = object.__new__(LLM)
+    llm.ask_tool = AsyncMock(side_effect=ask_tool)
+    agent = RepositoryInvestigationAgent.create(
+        RepositoryContext.parse("octo-org/sample-repo", source="user_input"),
+        client=api_client(respond),
+        llm=llm,
+        max_steps=2,
+    )
+
+    result = await agent.run("Read README.md")
+
+    assert len(requests) == 2
+    assert len(model_messages) == 2
+    assert any(
+        message.tool_call_id == "denied-read-1"
+        and message.content.startswith("Status: failure\n")
+        and "403" in message.content
+        for message in model_messages[1]
+    )
+    assert "Terminated: Reached max steps (2)" in result
+    assert "completed with status: success" not in result

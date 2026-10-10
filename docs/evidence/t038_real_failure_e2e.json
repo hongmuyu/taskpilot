@@ -1,0 +1,128 @@
+{
+  "cases": [
+    {
+      "agent_elapsed_ms": 2.4,
+      "agent_finished_after_failure": false,
+      "automatic_retry_count": 0,
+      "cleanup_elapsed_ms": 51.0,
+      "fault": "fixture raises ValueError",
+      "intentional_client_calls": 2,
+      "observation_attempts": null,
+      "observation_has_error": true,
+      "observation_status": "failure",
+      "raw_isError": true,
+      "raw_protocol_elapsed_ms": 1.0,
+      "result": "PASS",
+      "scenario": "mcp_isError_true",
+      "server_dispatch_count": 2,
+      "server_requests": [
+        {
+          "arguments": {},
+          "tool": "fail_read"
+        },
+        {
+          "arguments": {},
+          "tool": "fail_read"
+        }
+      ],
+      "tool_call_id_preserved": true
+    },
+    {
+      "agent_finished_after_timeout": false,
+      "automatic_retry_count": 0,
+      "cleanup_elapsed_ms": 504.6,
+      "elapsed_ms": 50.9,
+      "fault": "fixture slow_read waits 500 ms; tool deadline is 50 ms",
+      "observation_attempts": null,
+      "observation_error_kind_timeout": true,
+      "observation_status": "unknown",
+      "remote_outcome": "unknown",
+      "result": "PASS",
+      "scenario": "mcp_timeout",
+      "server_dispatch_count": 1,
+      "server_requests": [
+        {
+          "arguments": {
+            "wait_ms": 500
+          },
+          "tool": "slow_read"
+        }
+      ],
+      "tool_call_id_preserved": true
+    },
+    {
+      "agent_continued_after_failure": true,
+      "automatic_retry_count": 0,
+      "broken_attempts": null,
+      "broken_call_elapsed_ms": 30007.2,
+      "broken_call_id_preserved": true,
+      "broken_error_kind": "timeout",
+      "broken_status": "unknown",
+      "disconnect_elapsed_ms": 0.4,
+      "fault": "SIGKILL only the PID returned by the disposable stdio fixture",
+      "final_cleanup_elapsed_ms": 53.1,
+      "pid_probe_status": "success",
+      "recovered_attempts": null,
+      "recovered_call_elapsed_ms": 1.2,
+      "recovered_call_id_preserved": true,
+      "recovered_status": "success",
+      "result": "PASS",
+      "scenario": "mcp_disconnect_reconnect",
+      "server_dispatch_after_reconnect": 1,
+      "server_dispatch_after_stale_call": 0,
+      "server_dispatch_before_reconnect": 0,
+      "server_requests": [
+        {
+          "arguments": {
+            "text": "recovered"
+          },
+          "tool": "echo_read"
+        }
+      ],
+      "stale_attempts": null,
+      "stale_call_id_preserved": true,
+      "stale_status": "failure",
+      "state_cleared_after_disconnect": true
+    },
+    {
+      "agent_step_count": 3,
+      "elapsed_ms": 1429.5,
+      "fault": "unique synthetic nonexistent path in a confirmed public repository",
+      "final_agent_termination": "failure",
+      "http_request_count": 2,
+      "http_requests": [
+        {
+          "method": "GET",
+          "path": "/repos/FoundationAgents/OpenManus",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/repos/FoundationAgents/OpenManus/contents/__taskpilot_t038_missing__/f9993210fe9f4916bd9dd493d83dc841.txt",
+          "status": 404
+        }
+      ],
+      "missing_observation_attempts": "1:permanent(404)",
+      "missing_observation_status": "failure",
+      "missing_path": "__taskpilot_t038_missing__/f9993210fe9f4916bd9dd493d83dc841.txt",
+      "missing_resource_attempt_count": 1,
+      "repository": "FoundationAgents/OpenManus",
+      "repository_observation_status": "success",
+      "result": "PASS",
+      "scenario": "github_missing_resource",
+      "selection_source": "scripted Agent tool choices; real GitHub HTTP",
+      "tool_call_ids_preserved": true
+    }
+  ],
+  "github_transport": "real HTTPS via httpx; no MockTransport",
+  "mcp_sdk_version": "1.5.0",
+  "mcp_server": "local FastMCP read-only fixture",
+  "mcp_transport": "stdio",
+  "not_verified": [
+    "other MCP transports",
+    "uncontrolled external service failures",
+    "real model judgment after failure"
+  ],
+  "result": "PASS",
+  "run_date": "2026-10-10"
+}
