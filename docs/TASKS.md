@@ -590,7 +590,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Acceptance Criteria:** 工具/连接 deadline 明确且有界；超时进入可判别 Observation；区分取消与结果未知；保持现有合理 HTTP 限制。
 - **Tests:** 慢 Local/MCP、连接超时、任务预算耗尽、cleanup 有界测试。
 - **Out of Scope:** 宣称 asyncio timeout 能终止所有同步代码或远端动作。
-- **Notes:** 实际 Tool 默认执行时限 30 秒、可逐 Tool 覆盖；MCP 连接 30 秒、断连 10 秒；Agent 单次运行预算 300 秒、cleanup 10 秒。运行截止时间传到首次调用及澄清恢复，耗尽后不再 dispatch；超时为 status=unknown/error_kind=timeout，取消为 unknown/cancelled 且传播取消。原 GitHub HTTP 20 秒限制保留。deterministic tests 16 passed，TaskPilot/基线/Browser MCP 相关回归 240 passed（2026-10-09）。真实 MCP 超时后远端动作是否停止 NOT VERIFIED；asyncio timeout 不能保证终止阻塞的同步代码。
+- **Notes:** 实际 Tool 默认执行时限 30 秒、可逐 Tool 覆盖；MCP 连接 30 秒、断连 10 秒；Agent 单次运行预算 300 秒、cleanup 10 秒。运行截止时间传到首次调用及澄清恢复，耗尽后不再 dispatch；超时为 status=unknown/error_kind=timeout，取消为 unknown/cancelled 且传播取消。原 GitHub HTTP 20 秒限制保留。deterministic tests 16 passed，TaskPilot/基线/Browser MCP 相关回归 240 passed（2026-10-09）。真实 MCP 超时后远端动作是否停止 NOT VERIFIED；asyncio timeout 不能保证终止阻塞的同步代码。既有 CLI `AskHuman` 使用同步 `input()`，人工等待本身不会被 Agent deadline 中断；补参后的实际 Tool dispatch 仍检查剩余预算。
 
 ### T033 — Retry classification / idempotent read retry
 
@@ -605,7 +605,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Acceptance Criteria:** transient 与 auth/schema/permission/预算错误分开；重试次数与总预算有界；遵守限流等待边界；永久错误不重复请求。
 - **Tests:** 429/5xx/网络中断、401/403、非法参数、耗尽预算；断言 attempts 与终态。
 - **Out of Scope:** 无限重试、隐式嵌套重试放大。
-- **Notes:** 仅五个 `GitHubReadOnlyTool` 显式声明 `retry_safe_read=True`；其他 Local 和 MCP 默认不重试。GitHub HTTP `get` 保持单次请求，当前默认 httpx transport 的 `retries=0`；上游 LLM retry 属于模型请求，不叠加在 Tool HTTP 层。429/500/502/503/504、连接/读取/远端协议故障归为 transient，401/403、其他业务/参数错误不重试；HTTP timeout 为 unknown，不重放。最多 3 attempts，指数退避 0.1/0.2 秒，429/503 尊重有界 `Retry-After`，Tool/Agent deadline 到期前不启动下一次。每次 attempt 的分类、HTTP status 和最终状态在 `ToolResult`/Observation 与无参数日志中保留。`tests/taskpilot/test_tool_retry_policy.py` 22 passed；TaskPilot + baseline/Browser MCP 相关回归 262 passed（2026-10-10）。真实 GitHub 限流/网络故障和真实 MCP retry 生命周期 NOT VERIFIED。
+- **Notes:** 仅五个 `GitHubReadOnlyTool` 显式声明 `retry_safe_read=True`；其他 Local 和 MCP 默认不重试。GitHub HTTP `get` 保持单次请求，当前默认 httpx transport 的 `retries=0`；上游 LLM retry 属于模型请求，不叠加在 Tool HTTP 层。429/500/502/503/504、连接/读取/远端协议故障归为 transient，401/403、其他业务/参数错误不重试；HTTP timeout 为 unknown，不重放。最多 3 attempts，指数退避 0.1/0.2 秒，429/503 尊重有界 `Retry-After`，Tool/Agent deadline 到期前不启动下一次。失败 attempt 的分类和可用 HTTP status、最终状态在 `ToolResult`/Observation 与无参数日志中保留；成功 attempt 不保证记录 HTTP status。`tests/taskpilot/test_tool_retry_policy.py` 22 passed；TaskPilot + baseline/Browser MCP 相关回归 262 passed（2026-10-10）。真实 GitHub 限流/网络故障和真实 MCP retry 生命周期 NOT VERIFIED。
 
 ### T034 — Non-idempotent action safety
 
