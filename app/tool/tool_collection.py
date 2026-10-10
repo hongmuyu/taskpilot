@@ -179,6 +179,7 @@ class ToolCollection:
             )
         _emit_tool_event("validation", "success")
         attempts: list[dict[str, Any]] = []
+        current_attempt = 0
         loop = asyncio.get_running_loop()
         deadline = loop.time() + tool.timeout_seconds
         try:
@@ -200,6 +201,7 @@ class ToolCollection:
                             ),
                         )
                     _emit_tool_event("tool_execution", "started", attempt=number)
+                    current_attempt = number
                     result = normalize_tool_result(await tool(**tool_input))
                     _emit_tool_event(
                         "tool_execution",
@@ -213,6 +215,7 @@ class ToolCollection:
                             else {}
                         ),
                     )
+                    current_attempt = 0
                     if not tool.retry_safe_read:
                         return result
                     classification = (
@@ -251,7 +254,12 @@ class ToolCollection:
                         return result
                     await asyncio.sleep(delay)
         except TimeoutError:
-            _emit_tool_event("tool_execution", "unknown", error_kind="timeout")
+            _emit_tool_event(
+                "tool_execution",
+                "unknown",
+                error_kind="timeout",
+                **({"attempt": current_attempt} if current_attempt else {}),
+            )
             return ToolResult(
                 error=(
                     f"Tool '{name}' timed out after {tool.timeout_seconds:g} seconds; "
@@ -262,7 +270,11 @@ class ToolCollection:
                 attempts=attempts,
             )
         except ToolError as e:
-            _emit_tool_event("tool_execution", "failure")
+            _emit_tool_event(
+                "tool_execution",
+                "failure",
+                **({"attempt": current_attempt} if current_attempt else {}),
+            )
             if tool.retry_safe_read:
                 attempts.append(
                     {

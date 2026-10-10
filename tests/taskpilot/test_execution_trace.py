@@ -25,6 +25,10 @@ with patch(
     from app.llm import LLM
     from app.logger import logger
     from app.schema import Function, ToolCall
+    from app.taskpilot.execution_trace import (
+        TRACE_SCHEMA_VERSION,
+        validate_trace_events,
+    )
     from app.taskpilot.github_tools import GitHubClient, RepositoryContext
     from app.taskpilot.semantic_tool_retrieval import SemanticToolRetriever
     from app.taskpilot.tool_embedding_index import InMemoryToolIndex
@@ -45,7 +49,11 @@ def scripted_llm(calls, *, content=None):
     remaining = iter(calls)
 
     async def ask_tool(**kwargs):
-        return SimpleNamespace(content=content, tool_calls=[next(remaining)])
+        selected = next(remaining)
+        return SimpleNamespace(
+            content=content,
+            tool_calls=selected if isinstance(selected, list) else [selected],
+        )
 
     llm.ask_tool = AsyncMock(side_effect=ask_tool)
     return llm
@@ -124,11 +132,14 @@ async def test_trace_connects_three_investigation_chains(monkeypatch, business_c
     assert events[-1]["event"] == "finish" and events[-1]["status"] == "success"
     assert [event["seq"] for event in events] == list(range(1, len(events) + 1))
     assert {event["run_id"] for event in events} == {agent.execution_trace.run_id}
+    assert {event["task_id"] for event in events} == {agent.execution_trace.task_id}
+    assert {event["schema_version"] for event in events} == {TRACE_SCHEMA_VERSION}
+    validate_trace_events(events)
     for index in range(1, len(calls) + 1):
         linked = [
             event
             for event in events
-            if event.get("call_ref")
+            if event.get("tool_call_id")
             == agent.execution_trace.call_ref(
                 f"call-{index}" if index < len(calls) else "finish-call"
             )
@@ -204,7 +215,7 @@ async def test_trace_clarification_resume_keeps_call_link_and_zero_early_dispatc
     linked = [
         event
         for event in agent.execution_trace.events
-        if event.get("call_ref") == agent.execution_trace.call_ref("pending-1")
+        if event.get("tool_call_id") == agent.execution_trace.call_ref("pending-1")
     ]
     assert [event["status"] for event in linked if event["event"] == "validation"] == [
         "pending",
@@ -233,6 +244,10 @@ async def test_trace_clarification_resume_keeps_call_link_and_zero_early_dispatc
         for event in linked
     )
     assert tool.calls == [{"path": "README.md"}]
+    assert {event["tool_call_id"] for event in linked} == {
+        agent.execution_trace.call_ref("pending-1")
+    }
+    validate_trace_events(agent.execution_trace.events)
 
 
 @pytest.mark.asyncio
@@ -268,11 +283,18 @@ async def test_trace_failure_and_retry_attempts_keep_original_call(monkeypatch):
     linked = [
         event
         for event in agent.execution_trace.events
-        if event.get("call_ref") == agent.execution_trace.call_ref("retry-1")
+        if event.get("tool_call_id") == agent.execution_trace.call_ref("retry-1")
     ]
     retry = [event for event in linked if event["event"] == "retry"]
     assert attempts == 3
     assert [event["attempt"] for event in retry] == [2, 3]
+    assert {event["tool_call_id"] for event in retry} == {
+        agent.execution_trace.call_ref("retry-1")
+    }
+    assert {event["attempt_id"] for event in retry} == {
+        f"{agent.execution_trace.call_ref('retry-1')}:attempt:{attempt}"
+        for attempt in (2, 3)
+    }
     assert all(
         event["status"] == "started" and event["classification"] == "transient"
         for event in retry
@@ -282,6 +304,7 @@ async def test_trace_failure_and_retry_attempts_keep_original_call(monkeypatch):
         for event in linked
     )
     assert agent.execution_trace.events[-1]["status"] == "failure"
+    validate_trace_events(agent.execution_trace.events)
 
 
 @pytest.mark.asyncio
@@ -301,7 +324,7 @@ async def test_trace_rejected_arguments_never_dispatch(monkeypatch):
     linked = [
         event
         for event in agent.execution_trace.events
-        if event.get("call_ref") == agent.execution_trace.call_ref("bad-1")
+        if event.get("tool_call_id") == agent.execution_trace.call_ref("bad-1")
     ]
     assert any(
         event["event"] == "validation" and event["status"] == "failure"
@@ -335,7 +358,7 @@ async def test_trace_schema_rejection_has_no_execution_event(monkeypatch):
     linked = [
         event
         for event in agent.execution_trace.events
-        if event.get("call_ref") == agent.execution_trace.call_ref("schema-1")
+        if event.get("tool_call_id") == agent.execution_trace.call_ref("schema-1")
     ]
     assert any(
         event["event"] == "validation"
@@ -381,8 +404,19 @@ async def test_trace_timeout_remains_unknown(monkeypatch):
     linked = [
         event
         for event in agent.execution_trace.events
-        if event.get("call_ref") == agent.execution_trace.call_ref("timeout-1")
+        if event.get("tool_call_id") == agent.execution_trace.call_ref("timeout-1")
     ]
+    started = next(
+        event
+        for event in linked
+        if event["event"] == "tool_execution" and event["status"] == "started"
+    )
+    timed_out = next(
+        event
+        for event in linked
+        if event["event"] == "tool_execution" and event["status"] == "unknown"
+    )
+    assert timed_out["attempt_id"] == started["attempt_id"]
     assert any(
         event["event"] == "tool_execution"
         and event["status"] == "unknown"
@@ -413,19 +447,29 @@ async def test_trace_external_cancellation_is_not_success(monkeypatch):
         await task
     assert agent.execution_trace.events[-1]["event"] == "finish"
     assert agent.execution_trace.events[-1]["status"] == "cancelled"
+    assert agent.execution_trace.events[-1]["finish_source"] == "runtime_exit"
+    assert agent.execution_trace.events[-1]["business_outcome"] == "not_verified"
     linked = [
         event
         for event in agent.execution_trace.events
-        if event.get("call_ref") == agent.execution_trace.call_ref("cancel-1")
+        if event.get("tool_call_id") == agent.execution_trace.call_ref("cancel-1")
     ]
-    assert any(
-        event["event"] == "tool_execution" and event["status"] == "cancelled"
+    started = next(
+        event
         for event in linked
+        if event["event"] == "tool_execution" and event["status"] == "started"
     )
+    cancelled = next(
+        event
+        for event in linked
+        if event["event"] == "tool_execution" and event["status"] == "cancelled"
+    )
+    assert cancelled["attempt_id"] == started["attempt_id"]
     assert any(
         event["event"] == "observation" and event["status"] == "cancelled"
         for event in linked
     )
+    validate_trace_events(agent.execution_trace.events)
 
 
 @pytest.mark.asyncio
@@ -448,7 +492,7 @@ async def test_trace_cancelled_clarification_never_dispatches(monkeypatch):
     linked = [
         event
         for event in agent.execution_trace.events
-        if event.get("call_ref") == agent.execution_trace.call_ref("pending-1")
+        if event.get("tool_call_id") == agent.execution_trace.call_ref("pending-1")
     ]
     assert any(
         event["event"] == "clarification" and event["status"] == "cancelled"
@@ -492,12 +536,12 @@ async def test_trace_routing_uses_same_run_and_links_selected_call(monkeypatch):
     assert routing[0]["k_business"] == 1 and routing[0]["k_total"] == 2
     assert any(
         event["event"] == "llm_selection"
-        and event.get("call_ref") == agent.execution_trace.call_ref("routed-1")
+        and event.get("tool_call_id") == agent.execution_trace.call_ref("routed-1")
         for event in events
     )
     assert any(
         event["event"] == "observation"
-        and event.get("call_ref") == agent.execution_trace.call_ref("routed-1")
+        and event.get("tool_call_id") == agent.execution_trace.call_ref("routed-1")
         for event in events
     )
 
@@ -534,7 +578,8 @@ async def test_trace_and_existing_logs_redact_task_parameters_results_and_model_
         for event in agent.execution_trace.events
     )
     assert all(
-        event.get("call_ref") != "secret-call" for event in agent.execution_trace.events
+        event.get("tool_call_id") != "secret-call"
+        for event in agent.execution_trace.events
     )
 
 
@@ -602,3 +647,193 @@ async def test_cleanup_exception_text_is_not_logged():
         logger.remove(sink)
     assert records
     assert secret not in "".join(records)
+
+
+@pytest.mark.asyncio
+async def test_parallel_calls_share_step_but_keep_distinct_call_and_attempt_ids(
+    monkeypatch,
+):
+    monkeypatch.setattr("app.agent.base.SANDBOX_CLIENT.cleanup", AsyncMock())
+    tool = PathTool()
+    agent = ToolCallAgent(
+        llm=scripted_llm(
+            [
+                [
+                    call("path_tool", {"path": "a.py"}, "parallel-a"),
+                    call("path_tool", {"path": "b.py"}, "parallel-b"),
+                ],
+                call("terminate", {"status": "success"}, "finish-1"),
+            ]
+        ),
+        available_tools=ToolCollection(tool, Terminate()),
+        next_step_prompt="",
+        max_steps=3,
+    )
+    await agent.run("Read two paths")
+
+    starts = [
+        event
+        for event in agent.execution_trace.events
+        if event["event"] == "tool_execution"
+        and event["status"] == "started"
+        and event["tool"] == "path_tool"
+    ]
+    assert tool.calls == [{"path": "a.py"}, {"path": "b.py"}]
+    assert len(starts) == 2
+    assert {event["step_id"] for event in starts} == {
+        f"{agent.execution_trace.run_id}:step:1"
+    }
+    assert len({event["tool_call_id"] for event in starts}) == 2
+    assert len({event["attempt_id"] for event in starts}) == 2
+    assert {event["tool"] for event in starts} == {"path_tool"}
+    validate_trace_events(agent.execution_trace.events)
+
+
+@pytest.mark.asyncio
+async def test_duplicate_provider_call_ids_fail_before_dispatch(monkeypatch):
+    monkeypatch.setattr("app.agent.base.SANDBOX_CLIENT.cleanup", AsyncMock())
+    tool = PathTool()
+    agent = ToolCallAgent(
+        llm=scripted_llm(
+            [
+                [
+                    call("path_tool", {"path": "a.py"}, "same"),
+                    call("path_tool", {"path": "b.py"}, "same"),
+                ]
+            ]
+        ),
+        available_tools=ToolCollection(tool),
+        next_step_prompt="",
+        max_steps=2,
+    )
+    with pytest.raises(ValueError, match="duplicate tool call ID"):
+        await agent.run("Read two paths")
+    assert tool.calls == []
+    assert not any(
+        event["event"] == "tool_execution" for event in agent.execution_trace.events
+    )
+    assert agent.execution_trace.events[-1]["status"] == "failure"
+    assert agent.execution_trace.events[-1]["finish_source"] == "runtime_exit"
+    validate_trace_events(agent.execution_trace.events)
+
+
+@pytest.mark.asyncio
+async def test_reused_provider_call_id_in_later_step_cannot_dispatch_twice(monkeypatch):
+    monkeypatch.setattr("app.agent.base.SANDBOX_CLIENT.cleanup", AsyncMock())
+    tool = PathTool()
+    agent = ToolCallAgent(
+        llm=scripted_llm(
+            [
+                call("path_tool", {"path": "a.py"}, "reused-id"),
+                call("path_tool", {"path": "b.py"}, "reused-id"),
+            ]
+        ),
+        available_tools=ToolCollection(tool),
+        next_step_prompt="",
+        max_steps=3,
+    )
+    with pytest.raises(ValueError, match="duplicate tool call ID"):
+        await agent.run("Read two paths")
+    assert tool.calls == [{"path": "a.py"}]
+    assert (
+        len(
+            [
+                event
+                for event in agent.execution_trace.events
+                if event["event"] == "tool_execution" and event["status"] == "started"
+            ]
+        )
+        == 1
+    )
+    validate_trace_events(agent.execution_trace.events)
+
+
+@pytest.mark.asyncio
+async def test_separate_tasks_and_abnormal_exit_keep_ids_isolated(monkeypatch):
+    monkeypatch.setattr("app.agent.base.SANDBOX_CLIENT.cleanup", AsyncMock())
+
+    def make_agent(llm):
+        return ToolCallAgent(
+            llm=llm,
+            available_tools=ToolCollection(PathTool(), Terminate()),
+            next_step_prompt="",
+            max_steps=3,
+        )
+
+    first = make_agent(
+        scripted_llm(
+            [
+                call("path_tool", {"path": "a.py"}, "shared-provider-id"),
+                call("terminate", {"status": "success"}, "finish-1"),
+            ]
+        )
+    )
+    await first.run("First task")
+
+    second = make_agent(
+        scripted_llm(
+            [
+                call("path_tool", {"path": "b.py"}, "shared-provider-id"),
+                call("terminate", {"status": "success"}, "finish-1"),
+            ]
+        )
+    )
+    await second.run("Second task")
+
+    broken_llm = object.__new__(LLM)
+    broken_llm.ask_tool = AsyncMock(side_effect=RuntimeError("fixture model failure"))
+    third = make_agent(broken_llm)
+    with pytest.raises(RuntimeError, match="fixture model failure"):
+        await third.run("Third task")
+
+    assert first.execution_trace.task_id != second.execution_trace.task_id
+    assert first.execution_trace.run_id != second.execution_trace.run_id
+    assert first.execution_trace.call_ref(
+        "shared-provider-id"
+    ) != second.execution_trace.call_ref("shared-provider-id")
+    assert {
+        event["tool_call_id"]
+        for event in first.execution_trace.events
+        if event.get("tool") == "path_tool" and event.get("tool_call_id")
+    } == {first.execution_trace.call_ref("shared-provider-id")}
+    assert {
+        event["tool_call_id"]
+        for event in second.execution_trace.events
+        if event.get("tool") == "path_tool" and event.get("tool_call_id")
+    } == {second.execution_trace.call_ref("shared-provider-id")}
+    assert first.execution_trace.events[-1]["finish_source"] == "agent_declaration"
+    assert first.execution_trace.events[-1]["business_outcome"] == "not_verified"
+    assert third.execution_trace.events[-1]["status"] == "failure"
+    assert third.execution_trace.events[-1]["finish_source"] == "runtime_exit"
+    assert third.execution_trace.events[-1]["business_outcome"] == "not_verified"
+    validate_trace_events(first.execution_trace.events)
+    validate_trace_events(second.execution_trace.events)
+    validate_trace_events(third.execution_trace.events)
+
+
+@pytest.mark.asyncio
+async def test_same_agent_consecutive_runs_start_new_trace_ids(monkeypatch):
+    monkeypatch.setattr("app.agent.base.SANDBOX_CLIENT.cleanup", AsyncMock())
+    agent = ToolCallAgent(
+        llm=scripted_llm(
+            [
+                call("terminate", {"status": "success"}, "reused-provider-id"),
+                call("terminate", {"status": "success"}, "reused-provider-id"),
+            ]
+        ),
+        available_tools=ToolCollection(Terminate()),
+        next_step_prompt="",
+        max_steps=3,
+    )
+    await agent.run("First task")
+    first = agent.execution_trace
+    await agent.run("Second task")
+    second = agent.execution_trace
+
+    assert first.task_id != second.task_id
+    assert first.run_id != second.run_id
+    assert first.call_ref("reused-provider-id") != second.call_ref("reused-provider-id")
+    assert first.events[0]["step"] == second.events[0]["step"] == 0
+    assert first.events[-1]["event"] == second.events[-1]["event"] == "finish"
+    validate_trace_events(first.events)
+    validate_trace_events(second.events)

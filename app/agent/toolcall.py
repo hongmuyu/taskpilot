@@ -119,6 +119,7 @@ class ToolCallAgent(ReActAgent):
     execution_trace: Optional[ExecutionTrace] = Field(
         default=None, exclude=True, repr=False
     )
+    trace_seen_call_ids: set[str] = Field(default_factory=set, exclude=True, repr=False)
     _current_base64_image: Optional[str] = None
 
     max_steps: int = 30
@@ -127,6 +128,7 @@ class ToolCallAgent(ReActAgent):
     cleanup_timeout_seconds: float = Field(default=10.0, gt=0)
     _run_deadline: Optional[float] = PrivateAttr(default=None)
     _trace_final_status: Optional[str] = PrivateAttr(default=None)
+    _trace_finish_source: str = PrivateAttr(default="runtime_exit")
     _trace_step_status: str = PrivateAttr(default="success")
 
     def _trace_event(
@@ -143,7 +145,7 @@ class ToolCallAgent(ReActAgent):
         self.execution_trace.record(
             event,
             status,
-            step=self.current_step,
+            step=0 if event == "task" else self.current_step,
             call_id=call_id,
             tool=self._routing_tool_label(tool_name) if tool_name else None,
             **details,
@@ -394,6 +396,15 @@ class ToolCallAgent(ReActAgent):
             response.tool_calls if response and response.tool_calls else []
         )
         content = response.content if response and response.content else ""
+        if self.execution_trace is not None:
+            call_ids = [selected_call.id for selected_call in tool_calls]
+            if any(
+                not call_id or call_id in self.trace_seen_call_ids
+                for call_id in call_ids
+            ) or len(call_ids) != len(set(call_ids)):
+                self._trace_event("llm", "failure", reason="duplicate_call")
+                raise ValueError("Missing or duplicate tool call ID")
+            self.trace_seen_call_ids.update(call_ids)
         self._trace_event(
             "llm",
             "success" if response is not None else "failure",
@@ -705,9 +716,6 @@ class ToolCallAgent(ReActAgent):
 
             return await self._observe_tool_result(name, result, call_id=command.id)
         except asyncio.CancelledError:
-            self._trace_event(
-                "tool_execution", "cancelled", call_id=command.id, tool_name=name
-            )
             observation = await self._observe_tool_result(
                 name,
                 ToolResult(
@@ -759,7 +767,15 @@ class ToolCallAgent(ReActAgent):
                 error_kind="timeout",
             )
 
+        active_attempt: Optional[int] = None
+
         def on_tool_event(event: str, status: str, details: dict[str, Any]) -> None:
+            nonlocal active_attempt
+            if event == "tool_execution":
+                if status == "started":
+                    active_attempt = details.get("attempt")
+                else:
+                    active_attempt = None
             self._trace_event(event, status, call_id=call_id, tool_name=name, **details)
 
         try:
@@ -776,6 +792,7 @@ class ToolCallAgent(ReActAgent):
                 and arguments.get("status") in {"success", "failure"}
             ):
                 self._trace_final_status = arguments["status"]
+                self._trace_finish_source = "agent_declaration"
             return result
         except TimeoutError:
             self._trace_event(
@@ -784,6 +801,7 @@ class ToolCallAgent(ReActAgent):
                 call_id=call_id,
                 tool_name=name,
                 error_kind="timeout",
+                **({"attempt": active_attempt} if active_attempt else {}),
             )
             return ToolResult(
                 error=(
@@ -793,6 +811,15 @@ class ToolCallAgent(ReActAgent):
                 status="unknown",
                 error_kind="timeout",
             )
+        except asyncio.CancelledError:
+            self._trace_event(
+                "tool_execution",
+                "cancelled",
+                call_id=call_id,
+                tool_name=name,
+                **({"attempt": active_attempt} if active_attempt else {}),
+            )
+            raise
 
     def _trusted_context_arguments(self, tool_name: str) -> dict[str, Any]:
         return {}
@@ -1063,6 +1090,8 @@ class ToolCallAgent(ReActAgent):
         """Run the agent with cleanup when done."""
         self.execution_trace = ExecutionTrace()
         self._trace_final_status = None
+        self._trace_finish_source = "runtime_exit"
+        self.trace_seen_call_ids.clear()
         self._trace_event(
             "task",
             "started",
@@ -1087,18 +1116,22 @@ class ToolCallAgent(ReActAgent):
                 return await super().run(request)
         except asyncio.CancelledError:
             self._trace_final_status = "cancelled"
+            self._trace_finish_source = "runtime_exit"
             raise
         except TimeoutError:
             if not guard.expired():
                 self._trace_final_status = "failure"
+                self._trace_finish_source = "runtime_exit"
                 raise
             self._trace_final_status = "unknown"
+            self._trace_finish_source = "runtime_exit"
             return (
                 "Status: unknown\nError: Agent execution deadline exceeded; "
                 "unfinished operation outcome unknown."
             )
         except Exception:
             self._trace_final_status = "failure"
+            self._trace_finish_source = "runtime_exit"
             raise
         finally:
             self._run_deadline = None
@@ -1108,10 +1141,16 @@ class ToolCallAgent(ReActAgent):
             self.pending_tool_calls.clear()
             self.closed_pending_call_ids.clear()
             self.tool_call_sources.clear()
+            self.trace_seen_call_ids.clear()
             try:
                 async with asyncio.timeout(self.cleanup_timeout_seconds):
                     await self.cleanup()
             except TimeoutError:
                 logger.warning(f"Cleanup timed out for agent '{self.name}'")
             finally:
-                self._trace_event("finish", self._trace_final_status or "unknown")
+                self._trace_event(
+                    "finish",
+                    self._trace_final_status or "unknown",
+                    finish_source=self._trace_finish_source,
+                    business_outcome="not_verified",
+                )
