@@ -271,3 +271,62 @@ async def test_real_stdio_connect_timeout_clears_partial_state(tmp_path):
 
     assert clients.sessions == clients.exit_stacks == clients.tool_map == {}
     assert clients.tools == ()
+
+
+@pytest.mark.asyncio
+async def test_disconnected_tool_has_failure_observation_and_reconnects(tmp_path):
+    audit = tmp_path / "calls.jsonl"
+    clients = MCPClients(connect_timeout_seconds=5, cleanup_timeout_seconds=1)
+    agent = ToolCallAgent(available_tools=clients)
+    try:
+        await connect(clients, audit)
+        agent.tool_calls = [
+            ToolCall(
+                id="server-error",
+                function=Function(name="mcp_fixture_fail_read", arguments="{}"),
+            )
+        ]
+        failed = await agent.act()
+        assert failed.startswith("Status: failure\n")
+        assert "controlled fixture failure" in failed
+        assert agent.memory.messages[-1].tool_call_id == "server-error"
+        assert audit_entries(audit) == [{"tool": "fail_read", "arguments": {}}]
+
+        await clients.disconnect("fixture")
+        agent.tool_calls = [
+            ToolCall(
+                id="stale-call",
+                function=Function(
+                    name="mcp_fixture_echo_read",
+                    arguments=json.dumps({"text": "stale"}),
+                ),
+            )
+        ]
+
+        stale = await agent.act()
+
+        assert stale.startswith("Status: failure\n")
+        assert "Unknown tool" in stale
+        assert agent.memory.messages[-1].tool_call_id == "stale-call"
+        assert audit_entries(audit) == [{"tool": "fail_read", "arguments": {}}]
+
+        await connect(clients, audit)
+        agent.tool_calls = [
+            ToolCall(
+                id="fresh-call",
+                function=Function(
+                    name="mcp_fixture_echo_read",
+                    arguments=json.dumps({"text": "fresh"}),
+                ),
+            )
+        ]
+        fresh = await agent.act()
+
+        assert fresh.startswith("Status: success\n")
+        assert agent.memory.messages[-1].tool_call_id == "fresh-call"
+        assert audit_entries(audit) == [
+            {"tool": "fail_read", "arguments": {}},
+            {"tool": "echo_read", "arguments": {"text": "fresh"}}
+        ]
+    finally:
+        await clients.disconnect()

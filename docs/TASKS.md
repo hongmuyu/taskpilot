@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 4 — Reliability
-- Current PR: PR-05 — Reliability（T031–T033、T035 DONE；T034 暂缓；未合并）
-- Next Task: 待后续授权（T034 暂缓；T036–T038 未开始）
+- Current PR: PR-05 — Reliability（T031–T033、T035、T037 DONE；T034 暂缓；T036 TODO；未合并）
+- Next Task: T038 — Real failure E2E（TODO，未开始，待后续授权）
 - Total Tasks: 73
-- Completed: 34
-- TODO: 38
+- Completed: 35
+- TODO: 37
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 19
+- Remaining P0: 18
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
 - State verified: 2026-10-10；PR-05 起点 main `6af3c0c20c3a486ace91836f88170840d77300b9`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 和 PR-04 已合并；PR-05 当前仅实施 T031–T033、T035。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 和 PR-04 已合并；PR-05 当前仅实施 T031–T033、T035、T037。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 34 + 38 + 1 + 0 + 0 = 73；剩余 19 + 19 + 1 = 39。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 35 + 37 + 1 + 0 + 0 = 73；剩余 18 + 19 + 1 = 38。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -658,14 +658,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Reliability regression tests
 - **Phase:** Phase 4
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T031, T032, T033, T035
 - **Target PR:** PR-05
 - **Goal:** 固定基本可靠性失败矩阵。
 - **Acceptance Criteria:** Core P0 覆盖 result status、timeout、retry classification、MCP failures 和 read-only failures 的确定性断言；失败后 Agent 可继续或有界退出，不误报成功。
 - **Tests:** targeted unit/integration tests 和 TaskPilot/基线回归；T034 后续完成才加入非幂等动作测试，T036 完成才加入 fallback 回归。
 - **Out of Scope:** 只测 happy path、将测试注入视为真实网络 E2E。
-- **Notes:** 不硬依赖 T034/T036；单个失败不必让整任务失败，但最终结果需说明证据缺口。
+- **Notes:** 2026-10-10 [Core P0 回归矩阵](PR05_RELIABILITY_REGRESSION.md)覆盖结果状态/Observation、Local/MCP timeout/cancel/cleanup/预算、retry 分类与上限、真实 stdio fixture 的 `isError`/断连/重连状态、GitHub 只读失败与恢复、Agent 继续或有界退出，以及 Top-K + 强制澄清 + 重新校验 + retry + 原 call ID 组合。发现断连后旧 MCP 工具名在 Agent 早退分支只返回普通 `Error:`，以失败测试复现后改为 `Status: failure` Observation；旧工具零 server dispatch，重连新调用成功。可靠性聚焦模块 99 passed；TaskPilot + baseline/Browser MCP 相关回归 272 passed。全量 `pytest --maxfail=1` 在无关 sandbox 用例因预期 Python 3.10、实际 3.12.14 停止（9 passed、1 failed），其余全量 NOT VERIFIED。T034/T036 属 P1 不依赖；真实外部故障 E2E 留待 T038，NOT VERIFIED。
 
 ### T038 — Real failure E2E
 

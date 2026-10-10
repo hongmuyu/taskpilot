@@ -237,3 +237,50 @@ async def test_routing_disabled_keeps_original_full_registry_behavior():
 
     assert exposed_names(agent) == ["issue_tool", "ask_human", "terminate"]
     assert backend.calls == []
+
+
+@pytest.mark.asyncio
+async def test_top_k_clarification_revalidation_and_retry_keep_original_call_id():
+    class RetryingRead(ProbeTool):
+        retry_safe_read: bool = True
+
+        async def execute(self, **kwargs):
+            self.calls.append(kwargs)
+            if len(self.calls) == 1:
+                return ToolResult(
+                    error="temporary read failure",
+                    retry_classification="transient",
+                    http_status=503,
+                )
+            return ToolResult(output="issue evidence")
+
+    issue = RetryingRead()
+    other = ProbeTool(name="file_tool", description="Read source files")
+    agent, _ = make_agent(issue, other, Terminate(), k=1)
+    registry_before = agent.available_tools.to_params()
+    agent.llm.ask_tool.return_value = SimpleNamespace(
+        content=None, tool_calls=[call("issue_tool", {}, "routed-missing")]
+    )
+
+    async def answer(self, *, inquire):
+        assert "query" in inquire
+        assert issue.calls == []
+        return json.dumps({"query": "crash"})
+
+    with patch.object(AskHuman, "execute", new=answer):
+        observation = await agent.step()
+
+    assert exposed_names(agent) == ["issue_tool", "terminate"]
+    assert observation.startswith(
+        "Status: success\nAttempts: 1:transient(503), 2:success\n"
+    )
+    assert issue.calls == [{"query": "crash"}, {"query": "crash"}]
+    assert other.calls == []
+    assert agent.tool_call_sources["routed-missing"] == {"query": "user_clarification"}
+    assert agent.memory.messages[-1].tool_call_id == "routed-missing"
+    assert agent.available_tools.to_params() == registry_before
+    assert set(agent.available_tools.tool_map) == {
+        "issue_tool",
+        "file_tool",
+        "terminate",
+    }

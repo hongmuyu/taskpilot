@@ -467,7 +467,9 @@ class ToolCallAgent(ReActAgent):
 
         name = command.function.name
         if name not in self.available_tools.tool_map:
-            return f"Error: Unknown tool '{name}'"
+            return await self._observe_tool_result(
+                name, ToolFailure(error=f"Unknown tool '{name}'")
+            )
 
         try:
             args = json.loads(
