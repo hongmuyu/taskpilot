@@ -1,0 +1,25 @@
+{
+  "clarification_required_field": "text",
+  "clarification_triggered": true,
+  "dispatch_before_clarification": 0,
+  "final_status": "success",
+  "mcp_sdk_version": "1.5.0",
+  "mcp_tool": "mcp_fixture_echo_read",
+  "missing_parameter_mode": "controlled_injection_removed_text",
+  "model": "deepseek-flash",
+  "model_argument_keys": [
+    "text"
+  ],
+  "model_revision": "NOT AVAILABLE",
+  "model_selected_tool": "mcp_fixture_echo_read",
+  "original_tool_name": "echo_read",
+  "parameter_source": "user_clarification",
+  "result": "PASS",
+  "revalidation_and_dispatch_succeeded": true,
+  "run_date": "2026-10-10",
+  "server": "FastMCP disposable read-only fixture",
+  "server_dispatch_count": 1,
+  "tool_call_id_preserved": true,
+  "transport": "stdio",
+  "user_reply": "scripted AskHuman response"
+}
