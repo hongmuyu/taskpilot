@@ -1,8 +1,12 @@
 import base64
 import json
+import math
 import os
 import re
 import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from typing import Any, Literal, Optional
 from urllib.parse import quote
 
@@ -98,11 +102,31 @@ class GitHubClient:
                 detail = exc.response.json().get("message", "")
             except (ValueError, AttributeError):
                 detail = exc.response.reason_phrase
+            code = exc.response.status_code
             return _ApiError(
-                f"GitHub API returned {exc.response.status_code} for {tool_name}: {detail}"
+                f"GitHub API returned {code} for {tool_name}: {detail}",
+                "transient" if code in {429, 500, 502, 503, 504} else "permanent",
+                http_status=code,
+                retry_after_seconds=(
+                    _retry_after_seconds(exc.response.headers.get("Retry-After"))
+                    if code in {429, 503}
+                    else None
+                ),
+            )
+        except (httpx.ConnectError, httpx.ReadError, httpx.RemoteProtocolError) as exc:
+            return _ApiError(
+                f"GitHub request failed for {tool_name}: {exc}", "transient"
+            )
+        except httpx.TimeoutException as exc:
+            return _ApiError(
+                f"GitHub request timed out for {tool_name}: {exc}",
+                "unknown",
+                error_kind="timeout",
             )
         except (httpx.HTTPError, ValueError) as exc:
-            return _ApiError(f"GitHub request failed for {tool_name}: {exc}")
+            return _ApiError(
+                f"GitHub request failed for {tool_name}: {exc}", "permanent"
+            )
         finally:
             logger.info(
                 "github_tool name={} arguments={} status={} http_status={} latency_ms={} observation_success={}",
@@ -115,11 +139,36 @@ class GitHubClient:
             )
 
 
-class _ApiError(str):
-    pass
+@dataclass(frozen=True)
+class _ApiError:
+    message: str
+    classification: Literal["transient", "permanent", "unknown"]
+    http_status: Optional[int] = None
+    retry_after_seconds: Optional[float] = None
+    error_kind: Optional[Literal["timeout"]] = None
+
+    def __str__(self) -> str:
+        return self.message
+
+
+def _retry_after_seconds(value: Optional[str]) -> Optional[float]:
+    if not value:
+        return None
+    try:
+        seconds = float(value)
+        return max(0.0, seconds) if math.isfinite(seconds) else None
+    except ValueError:
+        try:
+            date = parsedate_to_datetime(value)
+            if date.tzinfo is None:
+                return None
+            return max(0.0, (date - datetime.now(timezone.utc)).total_seconds())
+        except (TypeError, ValueError, OverflowError):
+            return None
 
 
 class GitHubReadOnlyTool(BaseTool):
+    retry_safe_read: bool = True
     context: RepositoryContext
     client: GitHubClient = Field(exclude=True)
 
@@ -134,7 +183,14 @@ class GitHubReadOnlyTool(BaseTool):
             params=params,
         )
         if isinstance(result, _ApiError):
-            return self.fail_response(str(result))
+            return self.fail_response(str(result)).model_copy(
+                update={
+                    "retry_classification": result.classification,
+                    "retry_after_seconds": result.retry_after_seconds,
+                    "http_status": result.http_status,
+                    "error_kind": result.error_kind,
+                }
+            )
         return self.success_response(result)
 
 

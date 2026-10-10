@@ -46,6 +46,10 @@ class ToolResult(BaseModel):
     system: Optional[str] = Field(default=None)
     status: Optional[Literal["success", "failure", "unknown"]] = Field(default=None)
     error_kind: Optional[Literal["timeout", "cancelled"]] = Field(default=None)
+    retry_classification: Optional[Literal["transient", "permanent", "unknown"]] = None
+    retry_after_seconds: Optional[float] = None
+    http_status: Optional[int] = None
+    attempts: list[dict[str, Any]] = Field(default_factory=list)
 
     class Config:
         arbitrary_types_allowed = True
@@ -178,6 +182,7 @@ class BaseTool(ABC, BaseModel):
     description: str
     parameters: Optional[dict] = None
     timeout_seconds: float = Field(default=30.0, gt=0)
+    retry_safe_read: bool = False
     capabilities: tuple[str, ...] = ()
     examples: tuple[str, ...] = ()
     # _schemas: Dict[str, List[ToolSchema]] = {}

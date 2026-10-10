@@ -633,6 +633,13 @@ class ToolCallAgent(ReActAgent):
         status_header = f"Status: {result.status}\n"
         if result.error_kind:
             status_header += f"Error kind: {result.error_kind}\n"
+        if result.attempts:
+            summary = ", ".join(
+                f"{item['number']}:{item['classification']}"
+                + (f"({item['http_status']})" if item['http_status'] else "")
+                for item in result.attempts
+            )
+            status_header += f"Attempts: {summary}\n"
         return (
             f"{status_header}Observed output of cmd `{name}` executed:\n{str(result)}"
             if result

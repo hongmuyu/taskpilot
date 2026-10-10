@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 4 — Reliability
-- Current PR: PR-05 — Reliability（T031–T032 DONE；未合并）
-- Next Task: T033 — Retry classification / idempotent read retry（TODO，未授权）
+- Current PR: PR-05 — Reliability（T031–T033 DONE；未合并）
+- Next Task: T034 — Non-idempotent action safety（TODO，未授权）
 - Total Tasks: 73
-- Completed: 32
-- TODO: 40
+- Completed: 33
+- TODO: 39
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 21
+- Remaining P0: 20
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-09；PR-05 起点 main `6af3c0c20c3a486ace91836f88170840d77300b9`
+- State verified: 2026-10-10；PR-05 起点 main `6af3c0c20c3a486ace91836f88170840d77300b9`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 和 PR-04 已合并；PR-05 当前仅实施 T031–T032。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 和 PR-04 已合并；PR-05 当前仅实施 T031–T033。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 32 + 40 + 1 + 0 + 0 = 73；剩余 21 + 19 + 1 = 41。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 33 + 39 + 1 + 0 + 0 = 73；剩余 20 + 19 + 1 = 40。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -598,14 +598,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Retry classification / idempotent read retry
 - **Phase:** Phase 4
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T032
 - **Target PR:** PR-05
 - **Goal:** 仅重试可恢复且幂等的读取。
 - **Acceptance Criteria:** transient 与 auth/schema/permission/预算错误分开；重试次数与总预算有界；遵守限流等待边界；永久错误不重复请求。
 - **Tests:** 429/5xx/网络中断、401/403、非法参数、耗尽预算；断言 attempts 与终态。
 - **Out of Scope:** 无限重试、隐式嵌套重试放大。
-- **Notes:** 核对上游 LLM retry 与 SDK attempt；复用已有能力，避免双重重试。
+- **Notes:** 仅五个 `GitHubReadOnlyTool` 显式声明 `retry_safe_read=True`；其他 Local 和 MCP 默认不重试。GitHub HTTP `get` 保持单次请求，当前默认 httpx transport 的 `retries=0`；上游 LLM retry 属于模型请求，不叠加在 Tool HTTP 层。429/500/502/503/504、连接/读取/远端协议故障归为 transient，401/403、其他业务/参数错误不重试；HTTP timeout 为 unknown，不重放。最多 3 attempts，指数退避 0.1/0.2 秒，429/503 尊重有界 `Retry-After`，Tool/Agent deadline 到期前不启动下一次。每次 attempt 的分类、HTTP status 和最终状态在 `ToolResult`/Observation 与无参数日志中保留。`tests/taskpilot/test_tool_retry_policy.py` 22 passed；TaskPilot + baseline/Browser MCP 相关回归 262 passed（2026-10-10）。真实 GitHub 限流/网络故障和真实 MCP retry 生命周期 NOT VERIFIED。
 
 ### T034 — Non-idempotent action safety
 
