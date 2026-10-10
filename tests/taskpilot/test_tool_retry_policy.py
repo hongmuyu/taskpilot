@@ -6,6 +6,7 @@ import httpx
 import pytest
 from mcp import ClientSession
 
+
 with patch(
     "tomllib.load",
     return_value={

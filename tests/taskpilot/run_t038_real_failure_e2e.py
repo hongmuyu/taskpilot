@@ -30,7 +30,9 @@ from app.tool.mcp import MCPClients
 
 
 SERVER = Path(__file__).parent / "fixtures" / "stdio_mcp_server.py"
-EVIDENCE = Path(__file__).parents[2] / "docs" / "evidence" / "t038_real_failure_e2e.json"
+EVIDENCE = (
+    Path(__file__).parents[2] / "docs" / "evidence" / "t038_real_failure_e2e.json"
+)
 
 
 def elapsed_ms(started: float) -> float:
@@ -45,7 +47,11 @@ def call(name: str, arguments: dict, call_id: str) -> ToolCall:
 
 
 def audit_entries(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text().splitlines()] if path.exists() else []
+    return (
+        [json.loads(line) for line in path.read_text().splitlines()]
+        if path.exists()
+        else []
+    )
 
 
 def status(observation: str) -> str:
@@ -56,7 +62,11 @@ def status(observation: str) -> str:
 def observation_field(observation: str, name: str) -> str | None:
     prefix = f"{name}: "
     return next(
-        (line.removeprefix(prefix) for line in observation.splitlines() if line.startswith(prefix)),
+        (
+            line.removeprefix(prefix)
+            for line in observation.splitlines()
+            if line.startswith(prefix)
+        ),
         None,
     )
 
@@ -102,17 +112,22 @@ async def mcp_is_error(directory: Path) -> dict:
             observation_attempts=observation_field(observation, "Attempts"),
             agent_finished_after_failure=(agent.state == AgentState.FINISHED),
         )
-        case["result"] = "PASS" if (
-            raw.isError is True
-            and status(observation) == "failure"
-            and case["observation_has_error"]
-            and case["tool_call_id_preserved"]
-            and entries == [
-                {"tool": "fail_read", "arguments": {}},
-                {"tool": "fail_read", "arguments": {}},
-            ]
-            and agent.state != AgentState.FINISHED
-        ) else "FAIL"
+        case["result"] = (
+            "PASS"
+            if (
+                raw.isError is True
+                and status(observation) == "failure"
+                and case["observation_has_error"]
+                and case["tool_call_id_preserved"]
+                and entries
+                == [
+                    {"tool": "fail_read", "arguments": {}},
+                    {"tool": "fail_read", "arguments": {}},
+                ]
+                and agent.state != AgentState.FINISHED
+            )
+            else "FAIL"
+        )
     finally:
         started = time.perf_counter()
         await clients.disconnect()
@@ -151,15 +166,17 @@ async def mcp_timeout(directory: Path) -> dict:
             ),
             agent_finished_after_timeout=(agent.state == AgentState.FINISHED),
         )
-        case["result"] = "PASS" if (
-            status(observation) == "unknown"
-            and case["observation_error_kind_timeout"]
-            and case["tool_call_id_preserved"]
-            and entries == [
-                {"tool": "slow_read", "arguments": {"wait_ms": 500}}
-            ]
-            and agent.state != AgentState.FINISHED
-        ) else "FAIL"
+        case["result"] = (
+            "PASS"
+            if (
+                status(observation) == "unknown"
+                and case["observation_error_kind_timeout"]
+                and case["tool_call_id_preserved"]
+                and entries == [{"tool": "slow_read", "arguments": {"wait_ms": 500}}]
+                and agent.state != AgentState.FINISHED
+            )
+            else "FAIL"
+        )
     finally:
         started = time.perf_counter()
         await clients.disconnect()
@@ -176,9 +193,7 @@ async def mcp_disconnect_reconnect(directory: Path) -> dict:
     }
     try:
         await connect(clients, audit)
-        pid_result = await clients.execute(
-            name="mcp_fixture_server_pid", tool_input={}
-        )
+        pid_result = await clients.execute(name="mcp_fixture_server_pid", tool_input={})
         if pid_result.status != "success":
             raise RuntimeError("fixture PID probe failed")
         pid = int(pid_result.output.strip())
@@ -240,24 +255,27 @@ async def mcp_disconnect_reconnect(directory: Path) -> dict:
             automatic_retry_count=0,
             agent_continued_after_failure=(agent.state != AgentState.FINISHED),
         )
-        case["result"] = "PASS" if (
-            status(broken) != "success"
-            and status(stale) == "failure"
-            and status(recovered) == "success"
-            and all(
-                case[name]
-                for name in (
-                    "broken_call_id_preserved",
-                    "stale_call_id_preserved",
-                    "recovered_call_id_preserved",
-                    "state_cleared_after_disconnect",
+        case["result"] = (
+            "PASS"
+            if (
+                status(broken) != "success"
+                and status(stale) == "failure"
+                and status(recovered) == "success"
+                and all(
+                    case[name]
+                    for name in (
+                        "broken_call_id_preserved",
+                        "stale_call_id_preserved",
+                        "recovered_call_id_preserved",
+                        "state_cleared_after_disconnect",
+                    )
                 )
+                and broken_dispatches == stale_dispatches == 0
+                and entries
+                == [{"tool": "echo_read", "arguments": {"text": "recovered"}}]
             )
-            and broken_dispatches == stale_dispatches == 0
-            and entries == [
-                {"tool": "echo_read", "arguments": {"text": "recovered"}}
-            ]
-        ) else "FAIL"
+            else "FAIL"
+        )
     finally:
         started = time.perf_counter()
         await clients.disconnect()
@@ -294,9 +312,7 @@ async def github_missing_resource() -> dict:
 
     async def ask_tool(**kwargs):
         selections.append(len(kwargs["messages"]))
-        return SimpleNamespace(
-            content=None, tool_calls=[calls[len(selections) - 1]]
-        )
+        return SimpleNamespace(content=None, tool_calls=[calls[len(selections) - 1]])
 
     llm.ask_tool = AsyncMock(side_effect=ask_tool)
     agent = RepositoryInvestigationAgent.create(
@@ -322,9 +338,7 @@ async def github_missing_resource() -> dict:
     repo = observations.get("github-repository-call", "")
     missing = observations.get("github-missing-call", "")
     finish = observations.get("github-finish-call", "")
-    missing_http = [
-        item for item in http_events if item["path"].endswith(missing_path)
-    ]
+    missing_http = [item for item in http_events if item["path"].endswith(missing_path)]
     case = {
         "scenario": "github_missing_resource",
         "fault": "unique synthetic nonexistent path in a confirmed public repository",
@@ -342,7 +356,8 @@ async def github_missing_resource() -> dict:
         "final_agent_termination": (
             "failure" if "completed with status: failure" in finish else "other"
         ),
-        "tool_call_ids_preserved": set(observations) == {
+        "tool_call_ids_preserved": set(observations)
+        == {
             "github-repository-call",
             "github-missing-call",
             "github-finish-call",
@@ -350,18 +365,22 @@ async def github_missing_resource() -> dict:
         "agent_step_count": len(selections),
         "elapsed_ms": elapsed,
     }
-    case["result"] = "PASS" if (
-        [event["status"] for event in http_events] == [200, 404]
-        and [event["method"] for event in http_events] == ["GET", "GET"]
-        and status(repo) == "success"
-        and status(missing) == "failure"
-        and len(missing_http) == 1
-        and case["missing_observation_attempts"] == "1:permanent(404)"
-        and case["final_agent_termination"] == "failure"
-        and case["tool_call_ids_preserved"]
-        and len(selections) == 3
-        and "completed with status: failure" in result
-    ) else "FAIL"
+    case["result"] = (
+        "PASS"
+        if (
+            [event["status"] for event in http_events] == [200, 404]
+            and [event["method"] for event in http_events] == ["GET", "GET"]
+            and status(repo) == "success"
+            and status(missing) == "failure"
+            and len(missing_http) == 1
+            and case["missing_observation_attempts"] == "1:permanent(404)"
+            and case["final_agent_termination"] == "failure"
+            and case["tool_call_ids_preserved"]
+            and len(selections) == 3
+            and "completed with status: failure" in result
+        )
+        else "FAIL"
+    )
     return case
 
 
@@ -380,7 +399,11 @@ async def main() -> int:
                 cases.append(await action())
             except Exception as exc:
                 cases.append(
-                    {"scenario": name, "result": "NOT VERIFIED", "error_type": type(exc).__name__}
+                    {
+                        "scenario": name,
+                        "result": "NOT VERIFIED",
+                        "error_type": type(exc).__name__,
+                    }
                 )
 
     passed = all(case["result"] == "PASS" for case in cases)

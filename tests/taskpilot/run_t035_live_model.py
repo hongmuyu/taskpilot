@@ -73,7 +73,9 @@ async def main() -> int:
             except ValueError:
                 print("NOT VERIFIED: model tool arguments were invalid JSON")
                 return 1
-            if model_command.function.name != tool.name or not isinstance(arguments, dict):
+            if model_command.function.name != tool.name or not isinstance(
+                arguments, dict
+            ):
                 print("NOT VERIFIED: model did not select the expected MCP tool")
                 return 1
             argument_keys = sorted(arguments)
@@ -145,7 +147,9 @@ async def main() -> int:
             }
             if passed:
                 EVIDENCE.parent.mkdir(parents=True, exist_ok=True)
-                EVIDENCE.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n")
+                EVIDENCE.write_text(
+                    json.dumps(evidence, indent=2, sort_keys=True) + "\n"
+                )
             print(json.dumps(evidence, sort_keys=True))
             return 0 if passed else 1
         finally:

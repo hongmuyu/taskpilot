@@ -638,7 +638,7 @@ class ToolCallAgent(ReActAgent):
         if result.attempts:
             summary = ", ".join(
                 f"{item['number']}:{item['classification']}"
-                + (f"({item['http_status']})" if item['http_status'] else "")
+                + (f"({item['http_status']})" if item["http_status"] else "")
                 for item in result.attempts
             )
             status_header += f"Attempts: {summary}\n"

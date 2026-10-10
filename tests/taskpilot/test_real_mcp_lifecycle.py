@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
+
 with patch(
     "tomllib.load",
     return_value={
@@ -190,9 +191,7 @@ async def test_real_stdio_tool_timeout_is_unknown_and_not_retried(tmp_path):
         tool = clients.tool_map["mcp_fixture_slow_read"]
         tool.timeout_seconds = 0.05
 
-        result = await clients.execute(
-            name=tool.name, tool_input={"wait_ms": 500}
-        )
+        result = await clients.execute(name=tool.name, tool_input={"wait_ms": 500})
 
         assert result.status == "unknown"
         assert result.error_kind == "timeout"
@@ -229,8 +228,7 @@ async def test_real_stdio_missing_parameter_clarifies_before_server_dispatch(tmp
         assert "echo:confirmed answer" in observation
         assert agent.memory.messages[-1].tool_call_id == "clarify-real-mcp"
         assert (
-            agent.tool_call_sources["clarify-real-mcp"]["text"]
-            == "user_clarification"
+            agent.tool_call_sources["clarify-real-mcp"]["text"] == "user_clarification"
         )
         assert audit_entries(audit) == [
             {"tool": "echo_read", "arguments": {"text": "confirmed answer"}}
@@ -326,7 +324,7 @@ async def test_disconnected_tool_has_failure_observation_and_reconnects(tmp_path
         assert agent.memory.messages[-1].tool_call_id == "fresh-call"
         assert audit_entries(audit) == [
             {"tool": "fail_read", "arguments": {}},
-            {"tool": "echo_read", "arguments": {"text": "fresh"}}
+            {"tool": "echo_read", "arguments": {"text": "fresh"}},
         ]
     finally:
         await clients.disconnect()
