@@ -269,7 +269,7 @@ class BaseTool(ABC, BaseModel):
         Returns:
             ToolResult with success=False and error message
         """
-        logger.debug(f"Tool {self.__class__.__name__} returned failed result: {msg}")
+        logger.debug(f"Tool {self.__class__.__name__} returned failed result")
         return ToolResult(error=msg)
 
 

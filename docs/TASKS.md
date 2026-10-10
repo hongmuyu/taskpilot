@@ -2,22 +2,22 @@
 
 ## Dashboard
 
-- Current Phase: Phase 4 — Reliability
-- Current PR: PR-05 — Reliability（T031–T033、T035、T037–T038 DONE；T034 暂缓；T036 TODO；未合并）
-- Next Task: 待后续授权；本轮不开始其他任务
+- Current Phase: Phase 7 — Productization
+- Current PR: PR-08a — Trace（仅 T053 DONE；未合并）
+- Next Task: 待后续授权；本轮不开始 T054/T055
 - Total Tasks: 73
-- Completed: 36
-- TODO: 36
+- Completed: 37
+- TODO: 35
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 17
+- Remaining P0: 16
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-10；PR-05 起点 main `6af3c0c20c3a486ace91836f88170840d77300b9`
+- State verified: 2026-10-10；PR-08a 起点 main `1738ac7fdf49d9dd95875be33bcb3e197564d51c`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03 和 PR-04 已合并；PR-05 当前仅实施 T031–T033、T035、T037–T038。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04 和 PR-05 已合并；PR-08a 当前仅实施 T053。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 36 + 36 + 1 + 0 + 0 = 73；剩余 17 + 19 + 1 = 37。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 37 + 35 + 1 + 0 + 0 = 73；剩余 16 + 19 + 1 = 36。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -72,8 +72,8 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 0：T001–T003，Foundation，PR-00 / PR-01，DONE。
 - Phase 1：T004–T012，Real Business Loop，PR-02，DONE。
 - Phase 2：T013–T021，Reliable Parameter Execution，PR-03，任务 DONE；GitHub PR #13。
-- Phase 3：T022–T030，Tool Routing，PR-04，T022–T030 DONE；待最终合并评审。
-- Phase 4：T031–T038，Reliability，PR-05。
+- Phase 3：T022–T030，Tool Routing，PR-04，T022–T030 DONE；已合并。
+- Phase 4：T031–T038，Reliability，PR-05，P0 任务 DONE；T034/T036 保持 P1 TODO；已合并。
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
 - Phase 7：T053–T064，Productization，PR-08 或按依赖拆成小 PR。
@@ -910,7 +910,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Structured Execution Trace
 - **Phase:** Phase 7
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T021, T030, T038
 - **Target PR:** PR-08a (Trace)
 - **Goal:** 将真实执行事件串成可审计任务记录。
@@ -918,6 +918,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** 三类只读调查、缺参、失败和取消的 trace 完整性；敏感值不落日志；若 Phase 5 已交付，再增加受控写 trace 用例。
 - **Out of Scope:** 大型 observability、记录模型隐藏推理。
 - **Notes:** 复用 GitHub 日志及 T027 交付的 routing 事件，补统一结构和全链路关联；不依赖 T046/T052，Advanced Memory 未完成不阻塞 Trace。
+- **Evidence (2026-10-10):** `app/taskpilot/execution_trace.py` 使用任务级 `run_id`、有序 `seq`、step 与原 `tool_call_id` 的 SHA-256 引用，Loguru 只输出允许的安全字段；复用 T027 routing event 的 run 关联、T031 `ToolResult` 状态及 T033 retry attempt。`ToolCallAgent` 和 `ToolCollection` 记录 task/step/routing/LLM/validation/clarification/tool/retry/Observation/finish，保留失败、取消与未知结果。`tests/taskpilot/test_execution_trace.py` 的 14 个隔离用例覆盖三类 GitHub 调查链、缺参恢复、重试、拒绝、timeout、取消、Top-K 关联及日志脱敏；TaskPilot + baseline + Browser MCP fixture 回归 **286 passed**。真实 provider/真实 GitHub Trace E2E **NOT VERIFIED**；T054 的正式事件契约与 T055 的成本归因仍 TODO，任务 finish 的 success 表示 Agent 显式终止声明，不独立证明业务目标完成。
 
 ### T054 — Stable task / step / tool IDs and trace event schema
 
@@ -1330,4 +1331,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 当前完成 T031–T033、T035、T037–T038，未合并；T034/T036 保持 P1 TODO。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 当前仅完成 T053，未合并。

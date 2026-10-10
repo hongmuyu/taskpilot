@@ -13,6 +13,7 @@ from app.exceptions import TokenLimitExceeded
 from app.logger import logger
 from app.prompt.toolcall import NEXT_STEP_PROMPT, SYSTEM_PROMPT
 from app.schema import TOOL_CHOICE_TYPE, AgentState, Message, ToolCall, ToolChoice
+from app.taskpilot.execution_trace import ExecutionTrace
 from app.taskpilot.semantic_tool_retrieval import SemanticToolRetriever
 from app.taskpilot.tool_embedding_index import (
     EmbeddingIndexError,
@@ -22,7 +23,11 @@ from app.taskpilot.tool_embedding_index import (
 from app.tool import CreateChatCompletion, Terminate, ToolCollection
 from app.tool.ask_human import AskHuman
 from app.tool.base import ToolFailure, ToolResult, normalize_tool_result
-from app.tool.tool_collection import MissingParameterFailure, ToolValidationFailure
+from app.tool.tool_collection import (
+    MissingParameterFailure,
+    ToolValidationFailure,
+    tool_event_scope,
+)
 
 
 TOOL_CALL_REQUIRED = "Tool calls required but none provided"
@@ -111,6 +116,9 @@ class ToolCallAgent(ReActAgent):
     tool_call_sources: dict[str, dict[str, str]] = Field(
         default_factory=dict, exclude=True, repr=False
     )
+    execution_trace: Optional[ExecutionTrace] = Field(
+        default=None, exclude=True, repr=False
+    )
     _current_base64_image: Optional[str] = None
 
     max_steps: int = 30
@@ -118,14 +126,55 @@ class ToolCallAgent(ReActAgent):
     run_timeout_seconds: float = Field(default=300.0, gt=0)
     cleanup_timeout_seconds: float = Field(default=10.0, gt=0)
     _run_deadline: Optional[float] = PrivateAttr(default=None)
+    _trace_final_status: Optional[str] = PrivateAttr(default=None)
+    _trace_step_status: str = PrivateAttr(default="success")
 
-    @staticmethod
-    def _log_routing_event(event: dict[str, Any]) -> None:
+    def _trace_event(
+        self,
+        event: str,
+        status: str,
+        *,
+        call_id: Optional[str] = None,
+        tool_name: Optional[str] = None,
+        **details: Any,
+    ) -> None:
+        if self.execution_trace is None:
+            return
+        self.execution_trace.record(
+            event,
+            status,
+            step=self.current_step,
+            call_id=call_id,
+            tool=self._routing_tool_label(tool_name) if tool_name else None,
+            **details,
+        )
+        if event == "observation" and status in {"failure", "unknown", "cancelled"}:
+            self._trace_step_status = status
+
+    def _log_routing_event(self, event: dict[str, Any]) -> None:
         logger.info(
             "tool_routing_event "
             + json.dumps(
                 event, ensure_ascii=False, sort_keys=True, separators=(",", ":")
             )
+        )
+        selection = event["selection_status"]
+        self._trace_event(
+            "routing",
+            "failure"
+            if selection in {"llm_error", "no_response"}
+            else "success"
+            if selection == "selected"
+            else "unknown",
+            candidate_count=len(event["candidates"]),
+            selected_count=len(event["selected_tools"]),
+            k_business=event["k_business"],
+            k_total=event["k_total"],
+            **(
+                {"reason": event["candidate_status"]}
+                if event["candidate_status"] != "ready"
+                else {}
+            ),
         )
 
     def _routing_tool_label(self, name: str) -> str:
@@ -139,6 +188,7 @@ class ToolCallAgent(ReActAgent):
     async def think(self) -> bool:
         """Process current state and decide next actions using tools"""
         if self._remaining_run_seconds() == 0:
+            self._trace_step_status = "unknown"
             self.routing_clarification = (
                 "Status: unknown\nError: Agent execution budget exhausted; "
                 "no new tool calls started."
@@ -294,6 +344,7 @@ class ToolCallAgent(ReActAgent):
                 "selection_status": "not_called",
             }
             if self.routing_clarification:
+                self._trace_step_status = "unknown"
                 self._log_routing_event(routing_event)
                 self.tool_calls = []
                 self.memory.add_message(
@@ -302,6 +353,7 @@ class ToolCallAgent(ReActAgent):
                 self.state = AgentState.FINISHED
                 return True
 
+        self._trace_event("llm", "started")
         try:
             # Get response with tool options
             response = await self.llm.ask_tool(
@@ -315,20 +367,20 @@ class ToolCallAgent(ReActAgent):
                 tool_choice=self.tool_choices,
             )
         except ValueError:
+            self._trace_event("llm", "failure")
             if routing_event is not None:
                 routing_event["selection_status"] = "llm_error"
                 self._log_routing_event(routing_event)
             raise
         except Exception as e:
+            self._trace_event("llm", "failure")
             if routing_event is not None:
                 routing_event["selection_status"] = "llm_error"
                 self._log_routing_event(routing_event)
             # Check if this is a RetryError containing TokenLimitExceeded
             if hasattr(e, "__cause__") and isinstance(e.__cause__, TokenLimitExceeded):
                 token_limit_error = e.__cause__
-                logger.error(
-                    f"🚨 Token limit error (from RetryError): {token_limit_error}"
-                )
+                logger.error("Token limit error from model request")
                 self.memory.add_message(
                     Message.assistant_message(
                         f"Maximum token limit reached, cannot continue execution: {str(token_limit_error)}"
@@ -342,6 +394,18 @@ class ToolCallAgent(ReActAgent):
             response.tool_calls if response and response.tool_calls else []
         )
         content = response.content if response and response.content else ""
+        self._trace_event(
+            "llm",
+            "success" if response is not None else "failure",
+            selected_count=len(tool_calls),
+        )
+        for selected_call in tool_calls:
+            self._trace_event(
+                "llm_selection",
+                "success",
+                call_id=selected_call.id,
+                tool_name=selected_call.function.name,
+            )
 
         # Log response info
         if routing_event is not None:
@@ -360,15 +424,14 @@ class ToolCallAgent(ReActAgent):
                 routing_event["selection_status"] = "not_selected"
             self._log_routing_event(routing_event)
         else:
-            logger.info(f"✨ {self.name}'s thoughts: {content}")
+            logger.info(f"✨ {self.name} received a model response")
             logger.info(
                 f"🛠️ {self.name} selected {len(tool_calls) if tool_calls else 0} tools to use"
             )
         if tool_calls and routing_event is None:
             logger.info(
-                f"🧰 Tools being prepared: {[call.function.name for call in tool_calls]}"
+                f"🧰 Tools being prepared: {[self._routing_tool_label(call.function.name) for call in tool_calls]}"
             )
-            logger.info(f"🔧 Tool arguments: {tool_calls[0].function.arguments}")
 
         try:
             if response is None:
@@ -402,13 +465,27 @@ class ToolCallAgent(ReActAgent):
 
             return bool(self.tool_calls)
         except Exception as e:
-            logger.error(f"🚨 Oops! The {self.name}'s thinking process hit a snag: {e}")
+            logger.error(f"🚨 {self.name}'s response processing failed")
             self.memory.add_message(
                 Message.assistant_message(
                     f"Error encountered while processing: {str(e)}"
                 )
             )
             return False
+
+    async def step(self) -> str:
+        self._trace_step_status = "success"
+        self._trace_event("step", "started")
+        try:
+            result = await super().step()
+        except asyncio.CancelledError:
+            self._trace_event("step", "cancelled")
+            raise
+        except Exception:
+            self._trace_event("step", "failure")
+            raise
+        self._trace_event("step", self._trace_step_status)
+        return result
 
     async def act(self) -> str:
         """Execute tool calls and handle their results"""
@@ -434,7 +511,7 @@ class ToolCallAgent(ReActAgent):
 
             if self.routing_top_k is None:
                 logger.info(
-                    f"🎯 Tool '{command.function.name}' completed its mission! Result: {result}"
+                    f"🎯 Tool '{self._routing_tool_label(command.function.name)}' completed"
                 )
             else:
                 logger.info(
@@ -460,6 +537,15 @@ class ToolCallAgent(ReActAgent):
         self.memory.add_messages(image_messages)
         return "\n\n".join(results)
 
+    def _reject_tool_call(
+        self, command: ToolCall, name: str, message: str, reason: str
+    ) -> str:
+        self._trace_event(
+            "validation", "failure", call_id=command.id, tool_name=name, reason=reason
+        )
+        self._trace_event("observation", "failure", call_id=command.id, tool_name=name)
+        return message
+
     async def execute_tool(self, command: ToolCall) -> str:
         """Execute a single tool call with robust error handling"""
         if not command or not command.function or not command.function.name:
@@ -467,8 +553,15 @@ class ToolCallAgent(ReActAgent):
 
         name = command.function.name
         if name not in self.available_tools.tool_map:
+            self._trace_event(
+                "validation",
+                "failure",
+                call_id=command.id,
+                tool_name=name,
+                reason="unknown_tool",
+            )
             return await self._observe_tool_result(
-                name, ToolFailure(error=f"Unknown tool '{name}'")
+                name, ToolFailure(error=f"Unknown tool '{name}'"), call_id=command.id
             )
 
         try:
@@ -477,20 +570,43 @@ class ToolCallAgent(ReActAgent):
             )
         except ValueError:
             logger.warning(f"Invalid JSON arguments for tool '{name}'")
-            return f"Error: Error parsing arguments for {name}: Invalid JSON format"
+            return self._reject_tool_call(
+                command,
+                name,
+                f"Error: Error parsing arguments for {name}: Invalid JSON format",
+                "invalid_json",
+            )
 
         if not isinstance(args, dict):
-            return f"Error: Arguments for {name} must be a JSON object"
+            return self._reject_tool_call(
+                command,
+                name,
+                f"Error: Arguments for {name} must be a JSON object",
+                "invalid_arguments",
+            )
 
         if command.id in self.closed_pending_call_ids:
-            return f"Error: Tool call ID '{command.id}' is already resolved"
+            return self._reject_tool_call(
+                command,
+                name,
+                f"Error: Tool call ID '{command.id}' is already resolved",
+                "duplicate_call",
+            )
         pending = self.pending_tool_calls.get(command.id)
         if pending:
             if (
                 pending.tool_name != name
                 or pending.original_arguments_json != command.function.arguments
             ):
-                return f"Error: Tool call ID '{command.id}' already has a different pending call"
+                return self._reject_tool_call(
+                    command,
+                    name,
+                    f"Error: Tool call ID '{command.id}' already has a different pending call",
+                    "duplicate_call",
+                )
+            self._trace_event(
+                "clarification", "pending", call_id=command.id, tool_name=name
+            )
             return f"Error: Clarification pending for '{name}'; original tool not executed."
 
         context_arguments = self._trusted_context_arguments(name)
@@ -500,10 +616,15 @@ class ToolCallAgent(ReActAgent):
             if field in args and args[field] != value
         ]
         if conflicts:
-            return (
-                f"Error: Tool '{name}' arguments conflict with confirmed repository "
-                f"context: {', '.join(conflicts)}. Explicitly switch context or correct "
-                "the call; original tool not executed."
+            return self._reject_tool_call(
+                command,
+                name,
+                (
+                    f"Error: Tool '{name}' arguments conflict with confirmed repository "
+                    f"context: {', '.join(conflicts)}. Explicitly switch context or correct "
+                    "the call; original tool not executed."
+                ),
+                "context_conflict",
             )
         sources = {field: "tool_call" for field in args}
         for field, value in context_arguments.items():
@@ -515,7 +636,7 @@ class ToolCallAgent(ReActAgent):
         try:
             logged_name = self._routing_tool_label(name) if self.routing_top_k else name
             logger.info(f"🔧 Activating tool: '{logged_name}'...")
-            result = await self._execute_with_budget(name, args)
+            result = await self._execute_with_budget(name, args, call_id=command.id)
             if isinstance(result, MissingParameterFailure):
                 original = json.loads(command.function.arguments)
                 pending = PendingToolCall(
@@ -535,6 +656,13 @@ class ToolCallAgent(ReActAgent):
                 ]
                 if missing:
                     for attempt in range(MAX_CLARIFICATION_ATTEMPTS):
+                        self._trace_event(
+                            "clarification",
+                            "requested",
+                            call_id=command.id,
+                            tool_name=name,
+                            missing_count=len(missing),
+                        )
                         question = (
                             f"Tool '{name}' needs required parameters: "
                             f"{', '.join(missing)}. "
@@ -563,13 +691,23 @@ class ToolCallAgent(ReActAgent):
                         ):
                             break
                     return observation
+                self._trace_event(
+                    "observation",
+                    "pending",
+                    call_id=command.id,
+                    tool_name=name,
+                    reason="required_missing",
+                )
                 return (
                     f"Error: Tool '{name}' validation failed: required parameters are "
                     "available in trusted context; original tool not executed."
                 )
 
-            return await self._observe_tool_result(name, result)
+            return await self._observe_tool_result(name, result, call_id=command.id)
         except asyncio.CancelledError:
+            self._trace_event(
+                "tool_execution", "cancelled", call_id=command.id, tool_name=name
+            )
             observation = await self._observe_tool_result(
                 name,
                 ToolResult(
@@ -580,6 +718,7 @@ class ToolCallAgent(ReActAgent):
                     status="unknown",
                     error_kind="cancelled",
                 ),
+                call_id=command.id,
             )
             self.memory.add_message(
                 Message.tool_message(
@@ -589,8 +728,10 @@ class ToolCallAgent(ReActAgent):
             raise
         except Exception as e:
             error_msg = f"⚠️ Tool '{name}' encountered a problem: {str(e)}"
-            logger.exception(error_msg)
-            return await self._observe_tool_result(name, ToolFailure(error=error_msg))
+            logger.error("Tool '{}' encountered an exception", logged_name)
+            return await self._observe_tool_result(
+                name, ToolFailure(error=error_msg), call_id=command.id
+            )
 
     def _trusted_required_fields(self) -> set[str]:
         return set()
@@ -600,20 +741,50 @@ class ToolCallAgent(ReActAgent):
             return None
         return max(0.0, self._run_deadline - asyncio.get_running_loop().time())
 
-    async def _execute_with_budget(self, name: str, arguments: dict) -> ToolResult:
+    async def _execute_with_budget(
+        self, name: str, arguments: dict, *, call_id: Optional[str] = None
+    ) -> ToolResult:
         remaining = self._remaining_run_seconds()
         if remaining == 0:
+            self._trace_event(
+                "tool_execution",
+                "unknown",
+                call_id=call_id,
+                tool_name=name,
+                reason="budget_exhausted",
+            )
             return ToolResult(
                 error="Agent execution budget exhausted; tool not started",
                 status="unknown",
                 error_kind="timeout",
             )
+
+        def on_tool_event(event: str, status: str, details: dict[str, Any]) -> None:
+            self._trace_event(event, status, call_id=call_id, tool_name=name, **details)
+
         try:
-            async with asyncio.timeout(remaining):
-                return await self.available_tools.execute(
-                    name=name, tool_input=arguments
-                )
+            with tool_event_scope(on_tool_event if self.execution_trace else None):
+                async with asyncio.timeout(remaining):
+                    result = await self.available_tools.execute(
+                        name=name, tool_input=arguments
+                    )
+            if (
+                name == Terminate().name
+                and not isinstance(result, ToolValidationFailure)
+                and result.status != "failure"
+                and result.error_kind is None
+                and arguments.get("status") in {"success", "failure"}
+            ):
+                self._trace_final_status = arguments["status"]
+            return result
         except TimeoutError:
+            self._trace_event(
+                "tool_execution",
+                "unknown",
+                call_id=call_id,
+                tool_name=name,
+                error_kind="timeout",
+            )
             return ToolResult(
                 error=(
                     "Agent execution budget exhausted during tool execution; "
@@ -626,8 +797,17 @@ class ToolCallAgent(ReActAgent):
     def _trusted_context_arguments(self, tool_name: str) -> dict[str, Any]:
         return {}
 
-    async def _observe_tool_result(self, name: str, result: Any) -> str:
+    async def _observe_tool_result(
+        self, name: str, result: Any, *, call_id: Optional[str] = None
+    ) -> str:
         result = normalize_tool_result(result)
+        self._trace_event(
+            "observation",
+            "cancelled" if result.error_kind == "cancelled" else result.status,
+            call_id=call_id,
+            tool_name=name,
+            **({"error_kind": result.error_kind} if result.error_kind else {}),
+        )
         if result.status != "failure" and result.error_kind is None:
             await self._handle_special_tool(name=name, result=result)
         if hasattr(result, "base64_image") and result.base64_image:
@@ -669,6 +849,12 @@ class ToolCallAgent(ReActAgent):
         self, tool_call_id: str, reply: str, *, record_tool_message: bool = True
     ) -> str:
         if self._remaining_run_seconds() == 0:
+            self._trace_event(
+                "clarification",
+                "unknown",
+                call_id=tool_call_id,
+                reason="budget_exhausted",
+            )
             return (
                 "Status: unknown\nError: Agent execution budget exhausted; "
                 "pending tool not resumed."
@@ -682,9 +868,25 @@ class ToolCallAgent(ReActAgent):
             return f"Error: Tool call ID '{tool_call_id}' is already resuming"
 
         status = self._merge_clarification_reply(tool_call_id, reply)
+        self._trace_event(
+            "clarification",
+            "merged"
+            if status == "merged"
+            else "cancelled"
+            if status == "cancelled"
+            else "pending",
+            call_id=tool_call_id,
+            tool_name=pending.tool_name,
+        )
         if status == "merged":
             self.tool_call_sources[tool_call_id] = pending.sources.copy()
         if status != "merged":
+            self._trace_event(
+                "observation",
+                "cancelled" if status == "cancelled" else "failure",
+                call_id=tool_call_id,
+                tool_name=pending.tool_name,
+            )
             observation = (
                 f"Error: Tool '{pending.tool_name}' validation failed: required "
                 f"parameters missing. Clarification {status}; original tool not executed."
@@ -694,13 +896,22 @@ class ToolCallAgent(ReActAgent):
             self._current_base64_image = None
             try:
                 result = await self._execute_with_budget(
-                    pending.tool_name, copy.deepcopy(pending.arguments)
+                    pending.tool_name,
+                    copy.deepcopy(pending.arguments),
+                    call_id=tool_call_id,
                 )
             except Exception as e:
                 self.pending_tool_calls.pop(tool_call_id, None)
                 self.closed_pending_call_ids.add(tool_call_id)
-                logger.exception(
-                    f"Tool '{pending.tool_name}' failed during resume: {e}"
+                logger.error(
+                    "Tool '{}' failed during resume",
+                    self._routing_tool_label(pending.tool_name),
+                )
+                self._trace_event(
+                    "observation",
+                    "failure",
+                    call_id=tool_call_id,
+                    tool_name=pending.tool_name,
                 )
                 observation = (
                     f"Error: Tool '{pending.tool_name}' failed during resume: {e}"
@@ -714,11 +925,19 @@ class ToolCallAgent(ReActAgent):
                         f"Error: Clarification pending for '{pending.tool_name}': "
                         f"{result}; original tool not executed."
                     )
+                    self._trace_event(
+                        "observation",
+                        "pending"
+                        if isinstance(result, MissingParameterFailure)
+                        else "failure",
+                        call_id=tool_call_id,
+                        tool_name=pending.tool_name,
+                    )
                 else:
                     self.pending_tool_calls.pop(tool_call_id, None)
                     self.closed_pending_call_ids.add(tool_call_id)
                     observation = await self._observe_tool_result(
-                        pending.tool_name, result
+                        pending.tool_name, result, call_id=tool_call_id
                     )
 
         if record_tool_message:
@@ -831,10 +1050,9 @@ class ToolCallAgent(ReActAgent):
                         try:
                             logger.debug(f"🧼 Cleaning up tool: {tool_name}")
                             await tool_instance.cleanup()
-                        except Exception as e:
+                        except Exception:
                             logger.error(
-                                f"🚨 Error cleaning up tool '{tool_name}': {e}",
-                                exc_info=True,
+                                f"🚨 Error cleaning up tool '{self._routing_tool_label(tool_name)}'"
                             )
         except TimeoutError:
             logger.warning(f"Cleanup timed out for agent '{self.name}'")
@@ -843,6 +1061,14 @@ class ToolCallAgent(ReActAgent):
 
     async def run(self, request: Optional[str] = None) -> str:
         """Run the agent with cleanup when done."""
+        self.execution_trace = ExecutionTrace()
+        self._trace_final_status = None
+        self._trace_event(
+            "task",
+            "started",
+            task_sha256=hashlib.sha256((request or "").encode("utf-8")).hexdigest(),
+            task_chars=len(request or ""),
+        )
         self._run_deadline = (
             asyncio.get_running_loop().time() + self.run_timeout_seconds
         )
@@ -851,19 +1077,29 @@ class ToolCallAgent(ReActAgent):
         self.tool_call_sources.clear()
         self.routing_original_task = request
         self.routing_clarification = None
-        self.routing_run_id = uuid4().hex if self.routing_top_k is not None else None
+        self.routing_run_id = (
+            self.execution_trace.run_id if self.routing_top_k is not None else None
+        )
         try:
             async with asyncio.timeout(
                 self.run_timeout_seconds + self.cleanup_timeout_seconds
             ) as guard:
                 return await super().run(request)
+        except asyncio.CancelledError:
+            self._trace_final_status = "cancelled"
+            raise
         except TimeoutError:
             if not guard.expired():
+                self._trace_final_status = "failure"
                 raise
+            self._trace_final_status = "unknown"
             return (
                 "Status: unknown\nError: Agent execution deadline exceeded; "
                 "unfinished operation outcome unknown."
             )
+        except Exception:
+            self._trace_final_status = "failure"
+            raise
         finally:
             self._run_deadline = None
             self.routing_original_task = None
@@ -877,3 +1113,5 @@ class ToolCallAgent(ReActAgent):
                     await self.cleanup()
             except TimeoutError:
                 logger.warning(f"Cleanup timed out for agent '{self.name}'")
+            finally:
+                self._trace_event("finish", self._trace_final_status or "unknown")

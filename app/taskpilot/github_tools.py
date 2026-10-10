@@ -129,9 +129,9 @@ class GitHubClient:
             )
         finally:
             logger.info(
-                "github_tool name={} arguments={} status={} http_status={} latency_ms={} observation_success={}",
+                "github_tool name={} argument_count={} status={} http_status={} latency_ms={} observation_success={}",
                 tool_name,
-                json.dumps(arguments, sort_keys=True),
+                len(arguments),
                 status,
                 http_status,
                 round((time.perf_counter() - started) * 1000, 1),

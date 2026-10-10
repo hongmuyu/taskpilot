@@ -1,6 +1,8 @@
 """Collection classes for managing multiple tools."""
 import asyncio
-from typing import Any, Dict, List
+from contextlib import contextmanager
+from contextvars import ContextVar
+from typing import Any, Callable, Dict, Iterator, List
 
 from jsonschema import Draft7Validator
 from jsonschema.exceptions import SchemaError
@@ -33,6 +35,26 @@ _SUPPORTED_SCHEMA_KEYWORDS = {
 }
 _MAX_READ_ATTEMPTS = 3
 _RETRY_BASE_DELAY_SECONDS = 0.1
+_tool_event_hook: ContextVar[
+    Callable[[str, str, dict[str, Any]], None] | None
+] = ContextVar("tool_event_hook", default=None)
+
+
+@contextmanager
+def tool_event_scope(
+    hook: Callable[[str, str, dict[str, Any]], None] | None,
+) -> Iterator[None]:
+    token = _tool_event_hook.set(hook)
+    try:
+        yield
+    finally:
+        _tool_event_hook.reset(token)
+
+
+def _emit_tool_event(event: str, status: str, **details: Any) -> None:
+    hook = _tool_event_hook.get()
+    if hook is not None:
+        hook(event, status, details)
 
 
 class ToolValidationFailure(ToolFailure):
@@ -93,11 +115,13 @@ class ToolCollection:
     async def execute(self, *, name: str, tool_input: Any = None) -> ToolResult:
         tool = self.tool_map.get(name)
         if not tool:
+            _emit_tool_event("validation", "failure", reason="unknown_tool")
             return ToolValidationFailure(error=f"Tool {name} is invalid")
         if (
             not isinstance(tool.parameters, dict)
             or tool.parameters.get("type") != "object"
         ):
+            _emit_tool_event("validation", "failure", reason="schema_rejected")
             return ToolValidationFailure(
                 error=(
                     f"Tool '{name}' validation failed: unsupported parameter schema "
@@ -105,6 +129,7 @@ class ToolCollection:
                 )
             )
         if not isinstance(tool_input, dict):
+            _emit_tool_event("validation", "failure", reason="invalid_arguments")
             return ToolValidationFailure(
                 error=(
                     f"Tool '{name}' validation failed: arguments must be "
@@ -114,11 +139,13 @@ class ToolCollection:
         try:
             Draft7Validator.check_schema(tool.parameters)
         except SchemaError:
+            _emit_tool_event("validation", "failure", reason="schema_rejected")
             return ToolValidationFailure(
                 error=f"Tool '{name}' has an invalid parameter schema"
             )
         unsupported = _unsupported_schema_keyword(tool.parameters)
         if unsupported:
+            _emit_tool_event("validation", "failure", reason="schema_rejected")
             return ToolValidationFailure(
                 error=f"Tool '{name}' has unsupported schema keyword: {unsupported}"
             )
@@ -133,16 +160,24 @@ class ToolCollection:
             )
         )
         if missing_fields:
+            _emit_tool_event(
+                "validation",
+                "pending",
+                reason="required_missing",
+                missing_count=len(missing_fields),
+            )
             return MissingParameterFailure(
                 error=f"Tool '{name}' validation failed: required parameters missing",
                 missing_fields=missing_fields,
             )
         if errors:
+            _emit_tool_event("validation", "failure", reason="schema_rejected")
             error = errors[0]
             path = "$" + "".join(f"[{part!r}]" for part in error.absolute_path)
             return ToolValidationFailure(
                 error=f"Tool '{name}' validation failed at {path}: {error.validator}"
             )
+        _emit_tool_event("validation", "success")
         attempts: list[dict[str, Any]] = []
         loop = asyncio.get_running_loop()
         deadline = loop.time() + tool.timeout_seconds
@@ -151,7 +186,33 @@ class ToolCollection:
                 for number in range(
                     1, _MAX_READ_ATTEMPTS + 1 if tool.retry_safe_read else 2
                 ):
+                    if number > 1:
+                        previous = attempts[-1]
+                        _emit_tool_event(
+                            "retry",
+                            "started",
+                            attempt=number,
+                            classification=previous["classification"],
+                            **(
+                                {"http_status": previous["http_status"]}
+                                if previous["http_status"]
+                                else {}
+                            ),
+                        )
+                    _emit_tool_event("tool_execution", "started", attempt=number)
                     result = normalize_tool_result(await tool(**tool_input))
+                    _emit_tool_event(
+                        "tool_execution",
+                        "cancelled"
+                        if result.error_kind == "cancelled"
+                        else result.status,
+                        attempt=number,
+                        **(
+                            {"error_kind": result.error_kind}
+                            if result.error_kind
+                            else {}
+                        ),
+                    )
                     if not tool.retry_safe_read:
                         return result
                     classification = (
@@ -190,6 +251,7 @@ class ToolCollection:
                         return result
                     await asyncio.sleep(delay)
         except TimeoutError:
+            _emit_tool_event("tool_execution", "unknown", error_kind="timeout")
             return ToolResult(
                 error=(
                     f"Tool '{name}' timed out after {tool.timeout_seconds:g} seconds; "
@@ -200,6 +262,7 @@ class ToolCollection:
                 attempts=attempts,
             )
         except ToolError as e:
+            _emit_tool_event("tool_execution", "failure")
             if tool.retry_safe_read:
                 attempts.append(
                     {
