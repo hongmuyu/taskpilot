@@ -117,18 +117,28 @@ def retry_attempts(log_text: str) -> list[dict]:
 
 
 def trace_valid(events: list[dict], run_id: str, container_id: str) -> bool:
-    linked = bool(events) and all(
-        item.get("schema_version") == "1.1"
-        and item.get("run_id") == run_id
-        and item.get("seq") == seq
-        and item.get("event_id") == f"{run_id}:{seq}"
-        for seq, item in enumerate(events, 1)
-    ) and events[0]["event"] == "task" and events[-1]["event"] == "finish"
+    linked = (
+        bool(events)
+        and all(
+            item.get("schema_version") == "1.1"
+            and item.get("run_id") == run_id
+            and item.get("seq") == seq
+            and item.get("event_id") == f"{run_id}:{seq}"
+            for seq, item in enumerate(events, 1)
+        )
+        and events[0]["event"] == "task"
+        and events[-1]["event"] == "finish"
+    )
     if not linked:
         return False
     validator = subprocess.run(
         [
-            "docker", "exec", "-i", container_id, "python", "-c",
+            "docker",
+            "exec",
+            "-i",
+            container_id,
+            "python",
+            "-c",
             "import json,sys; from app.taskpilot.execution_trace import "
             "validate_trace_events; validate_trace_events(json.load(sys.stdin))",
         ],
@@ -202,9 +212,7 @@ def case_result(case: str, *, port: int, container_id: str) -> dict:
     call_events = []
     if pending and pending.get("clarification") and run_id:
         raw_id = pending["clarification"]["tool_call_id"]
-        call_ref = "sha256:" + hashlib.sha256(
-            f"{run_id}:{raw_id}".encode()
-        ).hexdigest()
+        call_ref = "sha256:" + hashlib.sha256(f"{run_id}:{raw_id}".encode()).hexdigest()
         call_events = [item for item in events if item.get("tool_call_id") == call_ref]
     validation = [
         item["status"] for item in call_events if item["event"] == "validation"
@@ -238,8 +246,7 @@ def case_result(case: str, *, port: int, container_id: str) -> dict:
         for item in events
     )
     not_found_retries = sum(
-        item["event"] == "retry"
-        and item.get("tool_call_id") in not_found_call_refs
+        item["event"] == "retry" and item.get("tool_call_id") in not_found_call_refs
         for item in events
     )
     valid_trace = trace_valid(events, run_id, container_id)
@@ -297,7 +304,8 @@ def case_result(case: str, *, port: int, container_id: str) -> dict:
             and not_found_attempts == 1
             and not_found_retries == 0
             and sum(
-                item == {
+                item
+                == {
                     "tool": "github_read_file",
                     "number": 1,
                     "classification": "permanent",
@@ -305,7 +313,8 @@ def case_result(case: str, *, port: int, container_id: str) -> dict:
                     "status": "failure",
                 }
                 for item in attempts
-            ) == 1
+            )
+            == 1
         )
     return {
         "result": "PASS" if passed else "FAIL",
