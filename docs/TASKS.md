@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 7 — Productization
-- Current PR: PR-08c — Docker delivery（T059 DONE，待评审）
-- Next Task: 待后续授权；本轮不开始 T060
+- Current PR: PR-08c — Core delivery docs（T059–T060 DONE，待评审）
+- Next Task: 待后续授权；本轮不开始 T062 或其他任务
 - Total Tasks: 73
-- Completed: 42
-- TODO: 30
+- Completed: 43
+- TODO: 29
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 11
+- Remaining P0: 10
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
 - State verified: 2026-10-11；PR-08c 起点 main `f88d0ca`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a 和 PR-08b 已合并；PR-08c 已完成 T059，尚未合并。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a 和 PR-08b 已合并；PR-08c 已完成 T059–T060，尚未合并。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 42 + 30 + 1 + 0 + 0 = 73；剩余 11 + 19 + 1 = 31。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 43 + 29 + 1 + 0 + 0 = 73；剩余 10 + 19 + 1 = 30。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -1020,14 +1020,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Final README / architecture docs
 - **Phase:** Phase 7
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T055, T057, T059
 - **Target PR:** PR-08c (delivery)
 - **Goal:** 交付与实际功能一致的使用和架构说明。
 - **Acceptance Criteria:** README 含安装/配置/启动/示例/限制/测试/评测入口；架构说明当前链路和安全边界；保留上游来源和许可证；文档链接可用。
 - **Tests:** 从 clean checkout 按 README 复现；链接/命令核查；架构对照已合并实现。
 - **Out of Scope:** 复制 PRD、改写历史分析以伪装当时已实现。
-- **Notes:** 评测完成后由 T073 补真实数字；不提前填写结果。
+- **Notes:** [主 README](../README.md) 覆盖定位、真实只读能力、本地安装、配置、CLI/API/Docker、三类调查示例、测试/评测入口、边界、上游来源和 MIT 许可；[当前架构](TASKPILOT_ARCHITECTURE.md)对照源码解释 Agent Loop、Top-K、参数澄清、Local/MCP Tool、Reliability、Trace 1.1 与 FastAPI。2026-10-11 从当前 T059 HEAD 导出无 `.venv`/配置的干净目录，加入待验收文档后按 README 使用 `uv 0.10.9`、Python 3.12.13 安装 68 个锁定运行包和固定测试依赖；CLI `--help`、实际 HTTP `/health` 200、非法仓库请求 422、服务正常停机、相关回归 **340 passed**。新文档相对链接 0 缺失，API 路径/配置键与源码一致；T059 的真实 Docker/Provider/GitHub smoke 证据仍见 T059。初稿误将本地 Python patch 固定为 3.12.14，干净复现发现 uv 无对应解释器/下载项后改为本地 3.12.x 并复测通过；Docker 仍固定 3.12.14。T029/T030 只列阶段性实验，不预填 Phase 8 数字；最终评测由 T073 补。
 
 ### T061 — Public demo safety restrictions
 
@@ -1335,4 +1335,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 已完成 T056–T057 并合并，T058 保持 TODO；PR-08c 已完成 T059，尚未合并，T060 保持 TODO。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 已完成 T056–T057 并合并，T058 保持 TODO；PR-08c 已完成 T059–T060，尚未合并，T062 保持 TODO。
