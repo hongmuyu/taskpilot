@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 7 — Productization
-- Current PR: PR-08b — Service（T056–T057 DONE）
-- Next Task: 待后续授权；本轮不开始 T058
+- Current PR: PR-08c — Docker delivery（T059 DONE，待评审）
+- Next Task: 待后续授权；本轮不开始 T060
 - Total Tasks: 73
-- Completed: 41
-- TODO: 31
+- Completed: 42
+- TODO: 30
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 12
+- Remaining P0: 11
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-11；PR-08b 起点 main `0c061473f2b6f00f5119a1473ef54045ab77ea41`
+- State verified: 2026-10-11；PR-08c 起点 main `f88d0ca`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05 和 PR-08a 已合并；PR-08b 已完成 T056–T057。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a 和 PR-08b 已合并；PR-08c 已完成 T059，尚未合并。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 41 + 31 + 1 + 0 + 0 = 73；剩余 12 + 19 + 1 = 32。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 42 + 30 + 1 + 0 + 0 = 73；剩余 11 + 19 + 1 = 31。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -1005,14 +1005,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Docker / reproducible startup
 - **Phase:** Phase 7
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T056, T057
 - **Target PR:** PR-08c (delivery)
 - **Goal:** 在干净环境运行 TaskPilot。
 - **Acceptance Criteria:** 固定依赖/运行条件；外部注入凭据；镜像不含 secrets；文档命令从 clean checkout 启动并可完成真实只读任务。
 - **Tests:** 干净镜像 build/run、健康检查、缺配置错误、启动/停止及真实 GitHub smoke；不依赖宿主 .venv。
 - **Out of Scope:** Kubernetes、把上游 Dockerfile 存在当验证通过。
-- **Notes:** 明确支持的平台；记录构建版本、配置键名和运行证据，不提交值。
+- **Notes:** Linux amd64；Python 3.12.14、68 个锁定依赖、固定 CPU embedding revision。干净镜像构建、缺配置/模型下载失败、冷下载、离线缓存复用、容器健康/停止/重启和真实 HTTP + Provider + GitHub 只读 smoke 已验证：[启动说明](T059_DOCKER.md)、[交付证据](evidence/t059_docker_delivery.json)、[真实任务证据](evidence/t059_docker_github_smoke.json)。Docker bridge 无法访问本机 loopback proxy 时，使用文档中的同镜像临时容器预热空 volume；公网部署及独立业务结果验证仍 NOT VERIFIED。
 
 ### T060 — Final README / architecture docs
 
@@ -1335,4 +1335,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 已完成 T056–T057，T058 保持 TODO。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 已完成 T056–T057 并合并，T058 保持 TODO；PR-08c 已完成 T059，尚未合并，T060 保持 TODO。

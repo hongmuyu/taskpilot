@@ -1,0 +1,32 @@
+{
+  "result": "PASS",
+  "run_at_utc": "2026-10-11T02:36:08.739331+00:00",
+  "image_id": "sha256:40a7e0b7a4e3a11b86d45b6e2ae4197320ab2ec0a80fcd27023104a3d2f8912a",
+  "model": "deepseek-flash",
+  "provider_revision": "NOT AVAILABLE",
+  "repository": "FoundationAgents/OpenManus",
+  "ref": "default_branch",
+  "transport": "real HTTP to Docker-published FastAPI port",
+  "health_http_status": 200,
+  "start_http_status": 202,
+  "poll_http_status": 200,
+  "poll_count": 12,
+  "clarification_reply_http_status": null,
+  "task_id_ref": "sha256:451ee6870e231d697beb5fe425737221b04b19f544c7d89a8f432ca549ed9b39",
+  "run_id_ref": "sha256:7aa066265fc1f578b5702d9c669daeb7753bb774a0221f735aa3e6ec8f733eb8",
+  "task_status": "finished",
+  "execution_status": "success",
+  "finish_source": "agent_declaration",
+  "business_outcome": "not_verified",
+  "result_present": true,
+  "cleanup_status": "complete",
+  "trace_valid": true,
+  "trace_event_count": 32,
+  "routing_event_count": 2,
+  "tool_dispatch_count": 3,
+  "github_http_statuses_from_container_log": [
+    200,
+    200
+  ],
+  "duration_seconds": 15.933
+}

@@ -1,0 +1,76 @@
+{
+  "result": "PASS",
+  "run_at_utc": "2026-10-11T02:37:58.514100+00:00",
+  "platform": "linux/amd64",
+  "docker_engine": "29.2.1",
+  "docker_compose": "v5.0.2",
+  "base_image": "python:3.12.14-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e",
+  "image_tag": "taskpilot-service:t059",
+  "image_id": "sha256:40a7e0b7a4e3a11b86d45b6e2ae4197320ab2ec0a80fcd27023104a3d2f8912a",
+  "image_size_bytes": 331253442,
+  "locked_package_count": 68,
+  "build": {
+    "initial_no_cache_build": "PASS",
+    "final_68_package_dependency_layer": "rebuilt_from_registry",
+    "host_venv_in_context": false,
+    "local_config_in_image": false
+  },
+  "startup_command": "TASKPILOT_MODEL_CONFIG=<read-only host file> TASKPILOT_PORT=18059 HF_HUB_OFFLINE=1 docker compose -p taskpilot-t059-final -f compose.taskpilot.yaml up -d --no-build",
+  "model": {
+    "id": "sentence-transformers/paraphrase-MiniLM-L3-v2",
+    "revision": "4ca70771034acceecb2e72475f72050fcdde4ddc",
+    "cold_download_from_empty_docker_volume_seconds": 54.5,
+    "cold_download_mode": "temporary same-image Docker container with host network and proxy variable names",
+    "offline_cache_reuse": "PASS",
+    "offline_vector_dimensions": 384,
+    "bridge_cold_start_without_host_proxy": "FAIL: model source unreachable; explicit startup error"
+  },
+  "startup_validation": {
+    "missing_config": "exit 1, explicit safe error",
+    "malformed_config": "exit 1, explicit safe error",
+    "placeholder_key": "exit 1, explicit safe error",
+    "empty_offline_cache": "exit 1, explicit embedding error, HTTP not started"
+  },
+  "health": {
+    "docker_status": "healthy",
+    "real_http_status": 200,
+    "offline_warm_start_wait_seconds": 5.37
+  },
+  "lifecycle": {
+    "stop": "PASS",
+    "cache_retained_after_stop": true,
+    "offline_restart_http_status": 200,
+    "offline_restart_wait_seconds": 8.29,
+    "final_container_stopped": true
+  },
+  "real_github_smoke": {
+    "evidence": "t059_docker_github_smoke.json",
+    "result": "PASS",
+    "github_http_statuses": [
+      200,
+      200
+    ],
+    "trace_valid": true,
+    "trace_event_count": 32,
+    "cleanup_status": "complete",
+    "business_outcome": "not_verified"
+  },
+  "prior_failures": [
+    {
+      "evidence": "t059_docker_first_attempt_not_verified.json",
+      "cause": "missing mcp package in first service lock",
+      "resolution": "added pinned mcp and rebuilt; agent construction and E2E passed"
+    },
+    {
+      "cause": "host urllib routed localhost through host proxy and received HTTP 502",
+      "resolution": "smoke runner now bypasses proxy for local HTTP; rerun passed"
+    }
+  ],
+  "security": {
+    "current_model_key_in_changed_files": false,
+    "token_shape_hits_in_changed_files": 0,
+    "current_model_key_in_image_export": false,
+    "config_bind_read_only": true,
+    "image_contains_only_example_config": true
+  }
+}
