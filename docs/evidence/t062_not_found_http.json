@@ -1,0 +1,56 @@
+{
+  "result": "PASS",
+  "case": "not_found",
+  "run_at_utc": "2026-10-11T06:58:17.945806+00:00",
+  "repository": "FoundationAgents/OpenManus",
+  "ref": "default_branch",
+  "transport": "real HTTP to Docker-published localhost FastAPI port",
+  "model_selection": "real provider",
+  "omission_mode": "none",
+  "health_http_status": 200,
+  "start_http_status": 202,
+  "poll_http_status": 200,
+  "poll_count": 5,
+  "reply_http_status": null,
+  "reply_preserved_original_tool_call_id": null,
+  "pending_status": null,
+  "pending_missing_fields": null,
+  "pre_reply_dispatch_count": null,
+  "pre_reply_github_http_count": null,
+  "original_tool_call_ref": null,
+  "original_call_validation_statuses": [],
+  "original_call_clarification_statuses": [],
+  "original_call_dispatch_count": null,
+  "task_status": "finished",
+  "execution_status": "success",
+  "finish_source": "agent_declaration",
+  "business_outcome": "not_verified",
+  "failure_observation_count": 1,
+  "not_found_attempts": 1,
+  "not_found_retries": 0,
+  "cleanup_status": "complete",
+  "task_id_ref": "sha256:5290e495b48f92a85a5d5136e78f74285ca3d02c5659945f98709eef7dab33c9",
+  "run_id_ref": "sha256:2b1727ff3a571dc225b90ca3290e39ade7bebfae37d9a5758d5c6309fed972a2",
+  "trace_schema_version": "1.1",
+  "trace_valid": true,
+  "trace_event_count": 27,
+  "routing_event_count": 2,
+  "tool_dispatch_count": 2,
+  "github_requests": [
+    {
+      "tool": "github_read_file",
+      "status": "error",
+      "http_status": 404
+    }
+  ],
+  "read_attempts": [
+    {
+      "tool": "github_read_file",
+      "number": 1,
+      "classification": "permanent",
+      "http_status": 404,
+      "status": "failure"
+    }
+  ],
+  "duration_seconds": 4.648
+}

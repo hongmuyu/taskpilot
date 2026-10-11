@@ -1,0 +1,16 @@
+{
+  "result": "PASS",
+  "run_at_utc": "2026-10-11T07:00:14.553220+00:00",
+  "start_http_status": 202,
+  "pre_restart_task_status": "finished",
+  "pre_restart_cleanup_status": "complete",
+  "task_id_ref": "sha256:87b044d105d24665618c226f7e66317de168cf5e45c65970963e5c0135a38b60",
+  "compose_down_exit": 0,
+  "http_unavailable_while_stopped": true,
+  "cache_volume_retained": true,
+  "compose_up_exit": 0,
+  "restart_http_healthy": true,
+  "restart_seconds": 8.01,
+  "old_task_http_after_restart": 404,
+  "image_id_unchanged": true
+}

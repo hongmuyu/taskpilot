@@ -3,15 +3,15 @@
 ## Dashboard
 
 - Current Phase: Phase 7 — Productization
-- Current PR: PR-08c — Core delivery docs（T059–T060 DONE，待评审）
-- Next Task: 待后续授权；本轮不开始 T062 或其他任务
+- Current PR: PR-08c — Core delivery（T059–T060、T062 DONE，待评审）
+- Next Task: 待后续授权；本轮不开始其他任务
 - Total Tasks: 73
-- Completed: 43
-- TODO: 29
+- Completed: 44
+- TODO: 28
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 10
+- Remaining P0: 9
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 43 + 29 + 1 + 0 + 0 = 73；剩余 10 + 19 + 1 = 30。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 44 + 28 + 1 + 0 + 0 = 73；剩余 9 + 19 + 1 = 29。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -1050,14 +1050,14 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Title:** Reproducible deployment
 - **Phase:** Phase 7
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T059, T060
 - **Target PR:** PR-08c (delivery)
 - **Goal:** 交付 local/server reproducible deployment，满足 Core MVP 运行出口。
 - **Acceptance Criteria:** 有明确的构建/启动/配置/停机/清理命令和验证记录；第三方干净环境可运行；部署版本和限制可追踪。Core 为本地或受限访问的只读服务，不要求公网开放。
-- **Tests:** 按文档在干净容器环境完整启动并完成真实只读调查、缺参澄清和失败状态验收；不要求受控文件写。
+- **Tests:** 干净 checkout Docker 构建、空卷冷预热与离线启动；真实 HTTP + Provider + GitHub 正常调查、受控缺参澄清恢复、真实 404 永久错误；停止/重启/清理，Trace 关联；TaskPilot 相关回归 340 passed。脱敏证据见 [T062 部署记录](T062_DEPLOYMENT.md)及 [E2E 总记录](evidence/t062_reproducible_deployment.json)。不要求受控文件写。
 - **Out of Scope:** 生产级 SRE、多区域容灾、自动生产部署 Agent。
-- **Notes:** P0 必须完成 reproducible deployment，不依赖 T061；公开上线才要求 T061/T063，不因未购买托管或未交付 P1 阻塞 Core。
+- **Notes:** 已在 Linux amd64 本机受限服务完成上述验收。模型 `path` 缺失由真实模型选工具后受控注入，不等同自然漏参；Agent finish 声明与业务成功分离。当前 Docker BuildKit 的 `build --no-cache` 在 snapshot 导出失败，同一干净 checkout 的锁定依赖常规构建与实际容器 E2E 通过；本轮无缓存导出、其他平台/主机及公网部署均 NOT VERIFIED。P0 不依赖 T061；公开上线才要求 T061/T063。
 
 ### T063 — Online deployment
 
@@ -1335,4 +1335,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 已完成 T056–T057 并合并，T058 保持 TODO；PR-08c 已完成 T059–T060，尚未合并，T062 保持 TODO。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 已完成 T056–T057 并合并，T058 保持 TODO；PR-08c 已完成 T059–T060、T062，尚未合并。

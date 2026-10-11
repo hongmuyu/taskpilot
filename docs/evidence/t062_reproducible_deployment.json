@@ -1,0 +1,122 @@
+{
+  "task": "T062",
+  "result": "PASS",
+  "recorded_at_utc": "2026-10-11T07:03:13.538641+00:00",
+  "clean_checkout": {
+    "source_branch": "codex/pr-08c-t059",
+    "source_head": "c3f82b697ea9832c04154390f4608d1154528842",
+    "clone_mode": "git clone --no-local --single-branch from current branch",
+    "tracked_checkout_clean": true,
+    "host_venv_absent": true,
+    "local_model_config_absent": true,
+    "host_model_cache_not_mounted": true
+  },
+  "platform": {
+    "host_os": "Ubuntu 22.04.5 LTS",
+    "architecture": "linux/amd64",
+    "docker_engine": "29.2.1",
+    "docker_compose": "5.0.2",
+    "container_python": "3.12.14",
+    "base_image": "python:3.12.14-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e"
+  },
+  "build": {
+    "no_cache_attempt": "FAIL",
+    "no_cache_failure_category": "Docker BuildKit extraction snapshot parent missing",
+    "clean_checkout_build_with_docker_layer_cache": "PASS",
+    "image_tag": "taskpilot-service:t059",
+    "image_id": "sha256:344b0f197559ff00eefa7a9f4bce238919a103deabc117da8409df331c56f1d0",
+    "image_config_toml_absent": true,
+    "image_venv_absent": true,
+    "lockfile_package_count": 68,
+    "all_lockfile_packages_pinned": true,
+    "lockfile_sha256": "172e14feba0d52802cc84c12b3c2ab753628d55abb5546567ba8172d5fdd2864"
+  },
+  "configuration": {
+    "source": "external git-ignored config.toml mounted read-only",
+    "required_llm_keys_present": [
+      "model",
+      "base_url",
+      "api_key"
+    ],
+    "provider_model": "deepseek-flash",
+    "provider_revision": "NOT AVAILABLE",
+    "missing_config_rejected": true,
+    "github_token_passed_to_compose": false,
+    "http_bind": "127.0.0.1:18062"
+  },
+  "embedding": {
+    "model": "sentence-transformers/paraphrase-MiniLM-L3-v2",
+    "revision": "4ca70771034acceecb2e72475f72050fcdde4ddc",
+    "new_volume_absent_before": true,
+    "new_volume_empty_at_create": true,
+    "cold_download_mode": "same-image temporary Docker container, host network, proxy variable names only",
+    "cold_download_seconds": 65.06,
+    "offline_cache_reuse": "PASS",
+    "offline_cache_reuse_seconds": 7.21,
+    "vector_dimensions": 384,
+    "service_start_with_HF_HUB_OFFLINE": "PASS",
+    "initial_http_health_seconds": 4.01
+  },
+  "http_cases": {
+    "normal": {
+      "result": "PASS",
+      "evidence_file": "t062_normal_http.json",
+      "real_github_http_statuses": [
+        200,
+        200
+      ],
+      "trace_valid": true,
+      "cleanup_status": "complete",
+      "business_outcome": "not_verified"
+    },
+    "clarification": {
+      "result": "PASS",
+      "evidence_file": "t062_clarification_http.json",
+      "real_github_http_statuses": [
+        200
+      ],
+      "trace_valid": true,
+      "cleanup_status": "complete",
+      "business_outcome": "not_verified"
+    },
+    "not_found": {
+      "result": "PASS",
+      "evidence_file": "t062_not_found_http.json",
+      "real_github_http_statuses": [
+        404
+      ],
+      "trace_valid": true,
+      "cleanup_status": "complete",
+      "business_outcome": "not_verified"
+    }
+  },
+  "restart": {
+    "result": "PASS",
+    "evidence_file": "t062_restart.json",
+    "http_unavailable_while_stopped": true,
+    "cache_volume_retained": true,
+    "restart_http_healthy": true,
+    "old_task_http_after_restart": 404,
+    "image_id_unchanged": true
+  },
+  "final_cleanup": {
+    "test_container_removed": true,
+    "compose_container_removed": true,
+    "network_removed": true,
+    "model_volume_removed": true,
+    "published_ports_unavailable": true
+  },
+  "credential_audit": {
+    "active_key_literal_in_changed_files_diff_evidence_or_container_logs": false,
+    "shape_match": "one static test fixture with test marker; different from configured key",
+    "credential_value_recorded": false
+  },
+  "not_verified": [
+    "Successful --no-cache image export in this T062 run; BuildKit snapshot failure, cached-layer build passed",
+    "Natural model omission of path; clarification used controlled path removal after real model tool selection",
+    "Independent business success assessment beyond tool/HTTP evidence",
+    "Other host OS/architectures and direct registry access from the default Docker bridge",
+    "Provider revision",
+    "Public exposure and hosted deployment (T061/T063)"
+  ]
+}

@@ -19,10 +19,15 @@ cp config/config.example-baseline.toml config/config.toml
 chmod 600 config/config.toml
 # Edit config/config.toml locally; never commit or paste its key.
 export TASKPILOT_MODEL_CONFIG="$PWD/config/config.toml"
-docker compose -f compose.taskpilot.yaml build --no-cache
+docker compose -f compose.taskpilot.yaml build
 docker compose -f compose.taskpilot.yaml up -d --no-build
 curl --fail http://127.0.0.1:8000/health
 ```
+
+The clean-checkout build and real HTTP deployment check are recorded in
+[T062](T062_DEPLOYMENT.md). An optional `build --no-cache` attempt in that run
+failed during a Docker BuildKit snapshot export; the normal pinned-dependency
+build and all runtime checks passed.
 
 The first start downloads the pinned
 `sentence-transformers/paraphrase-MiniLM-L3-v2` revision before serving HTTP.
