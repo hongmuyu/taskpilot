@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 8 — Final Evaluation
-- Current PR: PR-09 — T065/T066（本分支待评审）
-- Next Task: 待后续授权；本轮不开始 T067–T073
+- Current PR: PR-09 — T065/T066/T067（本分支待评审）
+- Next Task: 待后续授权；本轮不开始 T068–T073
 - Total Tasks: 73
-- Completed: 46
-- TODO: 26
+- Completed: 47
+- TODO: 25
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 7
+- Remaining P0: 6
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-11；PR-09 起点 main `f80dffb`
+- State verified: 2026-10-11；PR-09 起点 main `f80dffb`，T067 full-tools 原始记录已核验
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a、PR-08b 和 PR-08c 已合并；PR-09 的 T065 在本分支完成，尚未合并。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a、PR-08b 和 PR-08c 已合并；PR-09 的 T065–T067 在本分支完成，尚未合并。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 46 + 26 + 1 + 0 + 0 = 73；剩余 7 + 19 + 1 = 27。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 47 + 25 + 1 + 0 + 0 = 73；剩余 6 + 19 + 1 = 26。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -77,7 +77,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
 - Phase 7：T053–T064，Productization，PR-08 或按依赖拆成小 PR。
-- Phase 8：T065–T073，Final Evaluation，PR-09 已完成 T065 数据集和 T066 上游基线；T067–T073 尚待授权与验收。
+- Phase 8：T065–T073，Final Evaluation，PR-09 已完成 T065 数据集、T066 上游基线和 T067 同工具池 full-tools 基线；T068–T073 尚待授权与验收。
 
 后续 Task 的 Acceptance Criteria 和 Tests 是验收要求，不是已通过的结果；实施完成时必须附具体命令、版本、结果和脱敏证据位置。未验收不得将 TODO 改为 DONE。
 
@@ -1129,14 +1129,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Same-tool-pool full-tool baseline
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T030, T065
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 隔离路由候选裁剪的影响。
 - **Acceptance Criteria:** 与 TaskPilot 使用同模型、任务、工具池、参数校验、可靠性和 Memory，仅关闭 semantic candidate filtering；记录控制工具、预算和配置差异。
 - **Tests:** 真实执行并断言全部允许工具 schema 被发送；多次运行使用相同口径和数据版本。
 - **Out of Scope:** 与原始 OpenManus baseline 混为一组。
-- **Notes:** 与 T066 分开报告；这组用于路由因果对照。
+- **Notes:** 2026-10-11 以冻结 v1.0.0 的全部 21 条 Holdout 执行真实 TaskPilot full-tools 组，独立于 T066；[原始 21 条记录](../eval/results/t067_full_tools_v1.jsonl)、[逐项证据复核](../eval/results/t067_full_tools_review.json)及[环境、配置、失败与复现](T067_FULL_TOOL_BASELINE.md)已保存。12 条自然任务调用真实 DeepSeek，9 条冻结受控边界/故障任务执行真实 GitHub REST/MCP stdio 或零 dispatch 校验；每条均为独立 Agent/LLM/Context/Trace，8/8 Issue 与 11/11 pinned file 来源复核匹配。`routing_top_k=None` 且无 Retriever/Embedding，44/44 次实际 LLM Tool Calling 收到当前 profile 全部 6 个 schema；21/21 Trace 校验与 cleanup 完成。逐项复核为 19 success、2 NOT VERIFIED（`core-005`/`006` 的关键代码在 12k 文件截断后，Code Search 403）；这是证据状态数量，不是 T069–T071 的正式指标。初始 MCP preflight 的 runner LLM singleton 复用失败及修正复测均保留；未改冻结数据、评分口径或 T066 结果。真实模型 revision、自然缺参/人工等待、外部提供方重复运行仍 NOT VERIFIED；不在本轮运行 K=3。
 
 ### T068 — TaskPilot comparison runs
 
