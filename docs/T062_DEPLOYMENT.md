@@ -31,7 +31,7 @@ HF_HUB_OFFLINE=1 docker compose -p taskpilot-t062 -f compose.taskpilot.yaml up -
 curl --fail http://127.0.0.1:18062/health
 ```
 
-这次 `build --no-cache` 在 Docker BuildKit 导出阶段因父 snapshot 不存在而退出 1；相同干净 checkout 的常规 `build` 成功，依赖层由 Docker 缓存复用。**本轮不能声称无缓存镜像导出成功**。构建后的镜像经实际冷模型卷、离线启动和 HTTP E2E 验证；T059 的先前镜像构建证据另见 [T059 交付记录](evidence/t059_docker_delivery.json)。本轮没有修改 Dockerfile 或锁定依赖来掩盖 BuildKit 错误。
+原 `build --no-cache` 在默认 BuildKit 的镜像导出/提取阶段因父 snapshot 不存在而退出 1；相同干净 checkout 的常规 `build` 成功，依赖层由 Docker 缓存复用。PR 最终复核另建隔离的 `docker-container` builder（BuildKit v0.33.1），通过宿主网络和标准代理 build args 从零安装全部 68 个锁定依赖，成功导出 OCI 镜像并导入 Docker：退出码 0、耗时 252 秒。新镜像可导入服务模块，Python 为 3.12.14，且不含本地 `config.toml` 或 `.venv`。见[无缓存构建复核](evidence/t062_no_cache_builder_review.json)。这证明产品镜像能够从零构建；默认 builder 的 snapshot 故障仍保留为该环境的限制，默认 builder 路径未复测成功。先前构建镜像的实际冷模型卷、离线启动和 HTTP E2E 证据仍见下文；T059 的构建证据另见 [T059 交付记录](evidence/t059_docker_delivery.json)。未修改 Dockerfile 或锁定依赖来掩盖故障。
 
 ## 真实 HTTP 验收
 
@@ -45,6 +45,6 @@ curl --fail http://127.0.0.1:18062/health
 
 ## 限制
 
-- 本轮无缓存镜像导出未通过；BuildKit snapshot 故障已保留。其他主机 OS/架构、默认 bridge 直接下载模型和公网部署未验证。
+- 默认 builder 的无缓存镜像导出仍有 snapshot 故障；隔离 builder 的无缓存构建与导出已通过。其他主机 OS/架构、默认 bridge 直接下载模型和公网部署未验证。
 - 自然模型漏掉 `path`、Provider revision、独立业务成功判定未验证。公开入口及托管部署分别属于未实施的 T061/T063。
 - 活动模型 Key 的字面量未出现在本轮新增文件、分支 diff、证据或当时容器日志。通用形态扫描唯一命中现有静态测试标记，已核对与活动 Key 不同；证据文件不含原始提示、Tool 参数、模型回答或凭据。

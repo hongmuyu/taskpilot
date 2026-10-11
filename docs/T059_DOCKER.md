@@ -25,9 +25,10 @@ curl --fail http://127.0.0.1:8000/health
 ```
 
 The clean-checkout build and real HTTP deployment check are recorded in
-[T062](T062_DEPLOYMENT.md). An optional `build --no-cache` attempt in that run
-failed during a Docker BuildKit snapshot export; the normal pinned-dependency
-build and all runtime checks passed.
+[T062](T062_DEPLOYMENT.md). The default builder's optional `build --no-cache`
+attempt failed during a Docker BuildKit snapshot export. A later isolated
+builder [reproduced the pinned image from zero](evidence/t062_no_cache_builder_review.json);
+the normal build and all runtime checks passed.
 
 The first start downloads the pinned
 `sentence-transformers/paraphrase-MiniLM-L3-v2` revision before serving HTTP.

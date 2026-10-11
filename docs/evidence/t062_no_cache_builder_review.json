@@ -1,0 +1,38 @@
+{
+  "task": "T062 PR-08c final no-cache build review",
+  "recorded_at_utc": "2026-10-11T07:20:07.317173+00:00",
+  "source_head": "70a37611fcd5baff3895725f23db2d1b198e4bdd",
+  "platform": "linux/amd64",
+  "docker_engine": "29.2.1",
+  "original_attempt": {
+    "builder": "default docker driver / BuildKit v0.27.1",
+    "result": "FAIL",
+    "stage": "export/extraction snapshot after dependency installation",
+    "error_category": "parent snapshot missing"
+  },
+  "isolated_attempt": {
+    "builder": "taskpilot-pr08c-host",
+    "driver": "docker-container",
+    "buildkit_version": "v0.33.1",
+    "no_cache": true,
+    "proxy_handling": "host-local proxy forwarded through standard build args; values omitted",
+    "command": "docker buildx build --builder taskpilot-pr08c-host --no-cache --network host --allow network.host --build-arg http_proxy --build-arg https_proxy --load --progress plain -t taskpilot-service:pr08c-nocache -f Dockerfile.taskpilot .",
+    "result": "PASS",
+    "exit_code": 0,
+    "duration_seconds": 252,
+    "dependency_count": 68,
+    "lockfile_sha256": "172e14feba0d52802cc84c12b3c2ab753628d55abb5546567ba8172d5fdd2864",
+    "oci_export": "PASS",
+    "docker_import": "PASS",
+    "image_id": "sha256:98326c8c546dbefee79e45d3665439aa4862fa3c64d2a3317730224e5370e2a1",
+    "image_size_bytes": 331230068,
+    "python_version": "3.12.14",
+    "fastapi_version": "0.115.14",
+    "uvicorn_version": "0.34.3",
+    "service_import": "PASS",
+    "config_toml_absent": true,
+    "host_venv_absent": true
+  },
+  "credential_literal_in_build_log": false,
+  "conclusion": "Pinned product image builds from zero with an isolated builder; the earlier default-builder snapshot error is environment-specific. Default-builder no-cache export remains unverified for success."
+}

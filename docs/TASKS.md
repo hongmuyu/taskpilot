@@ -1055,9 +1055,9 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Target PR:** PR-08c (delivery)
 - **Goal:** 交付 local/server reproducible deployment，满足 Core MVP 运行出口。
 - **Acceptance Criteria:** 有明确的构建/启动/配置/停机/清理命令和验证记录；第三方干净环境可运行；部署版本和限制可追踪。Core 为本地或受限访问的只读服务，不要求公网开放。
-- **Tests:** 干净 checkout Docker 构建、空卷冷预热与离线启动；真实 HTTP + Provider + GitHub 正常调查、受控缺参澄清恢复、真实 404 永久错误；停止/重启/清理，Trace 关联；TaskPilot 相关回归 340 passed。脱敏证据见 [T062 部署记录](T062_DEPLOYMENT.md)及 [E2E 总记录](evidence/t062_reproducible_deployment.json)。不要求受控文件写。
+- **Tests:** 干净 checkout Docker 构建、空卷冷预热与离线启动；隔离 builder 无缓存构建与导出；真实 HTTP + Provider + GitHub 正常调查、受控缺参澄清恢复、真实 404 永久错误；停止/重启/清理，Trace 关联；TaskPilot 相关回归 340 passed。脱敏证据见 [T062 部署记录](T062_DEPLOYMENT.md)、[E2E 总记录](evidence/t062_reproducible_deployment.json)及[无缓存构建复核](evidence/t062_no_cache_builder_review.json)。不要求受控文件写。
 - **Out of Scope:** 生产级 SRE、多区域容灾、自动生产部署 Agent。
-- **Notes:** 已在 Linux amd64 本机受限服务完成上述验收。模型 `path` 缺失由真实模型选工具后受控注入，不等同自然漏参；Agent finish 声明与业务成功分离。当前 Docker BuildKit 的 `build --no-cache` 在 snapshot 导出失败，同一干净 checkout 的锁定依赖常规构建与实际容器 E2E 通过；本轮无缓存导出、其他平台/主机及公网部署均 NOT VERIFIED。P0 不依赖 T061；公开上线才要求 T061/T063。
+- **Notes:** 已在 Linux amd64 本机受限服务完成上述验收。模型 `path` 缺失由真实模型选工具后受控注入，不等同自然漏参；Agent finish 声明与业务成功分离。默认 Docker BuildKit 的 `build --no-cache` 曾在 snapshot 导出失败；PR 最终复核用独立 BuildKit v0.33.1 和宿主代理从零构建并导出相同锁定镜像成功，未修改 Dockerfile/依赖。默认 builder 的无缓存路径、其他平台/主机及公网部署仍 NOT VERIFIED。P0 不依赖 T061；公开上线才要求 T061/T063。
 
 ### T063 — Online deployment
 

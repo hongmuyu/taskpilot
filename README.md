@@ -94,7 +94,7 @@ curl --fail http://127.0.0.1:8000/health
 docker compose -f compose.taskpilot.yaml down
 ```
 
-镜像固定 Python 3.12.14、CPU 依赖和 embedding revision；配置只读挂载，镜像不包含本地 key。首次启动会将模型下载到 Docker 命名卷，后续复用缓存；下载失败会明确退出，HTTP 不会假装就绪。当前主机的代理只监听宿主 loopback，Docker bridge 无法直接访问它；已验证使用**同一镜像的临时容器**预热空卷，再以 `HF_HUB_OFFLINE=1` 启动。命令和冷/热启动说明见 [T059 Docker 指南](docs/T059_DOCKER.md)，干净 checkout 的实际 HTTP 验收、停止/重启及本轮 BuildKit `--no-cache` 导出失败见 [T062 部署记录](docs/T062_DEPLOYMENT.md)。Compose 默认只绑定 `127.0.0.1`，不传入 `GITHUB_TOKEN`，不是公开部署配置。
+镜像固定 Python 3.12.14、CPU 依赖和 embedding revision；配置只读挂载，镜像不包含本地 key。首次启动会将模型下载到 Docker 命名卷，后续复用缓存；下载失败会明确退出，HTTP 不会假装就绪。当前主机的代理只监听宿主 loopback，Docker bridge 无法直接访问它；已验证使用**同一镜像的临时容器**预热空卷，再以 `HF_HUB_OFFLINE=1` 启动。命令和冷/热启动说明见 [T059 Docker 指南](docs/T059_DOCKER.md)，干净 checkout 的实际 HTTP 验收、停止/重启及隔离 builder 无缓存构建复核见 [T062 部署记录](docs/T062_DEPLOYMENT.md)。默认 builder 曾有 BuildKit snapshot 导出故障，详见该记录。Compose 默认只绑定 `127.0.0.1`，不传入 `GITHUB_TOKEN`，不是公开部署配置。
 
 ## 测试与评测入口
 

@@ -29,7 +29,8 @@
     "image_venv_absent": true,
     "lockfile_package_count": 68,
     "all_lockfile_packages_pinned": true,
-    "lockfile_sha256": "172e14feba0d52802cc84c12b3c2ab753628d55abb5546567ba8172d5fdd2864"
+    "lockfile_sha256": "172e14feba0d52802cc84c12b3c2ab753628d55abb5546567ba8172d5fdd2864",
+    "independent_no_cache_review": "PASS; docker-container BuildKit v0.33.1, host proxy, 252 s, OCI export and Docker import complete; see t062_no_cache_builder_review.json"
   },
   "configuration": {
     "source": "external git-ignored config.toml mounted read-only",
@@ -112,7 +113,7 @@
     "credential_value_recorded": false
   },
   "not_verified": [
-    "Successful --no-cache image export in this T062 run; BuildKit snapshot failure, cached-layer build passed",
+    "Default Docker builder no-cache export success remains unverified after its snapshot parent missing failure; isolated builder no-cache export passed",
     "Natural model omission of path; clarification used controlled path removal after real model tool selection",
     "Independent business success assessment beyond tool/HTTP evidence",
     "Other host OS/architectures and direct registry access from the default Docker bridge",
