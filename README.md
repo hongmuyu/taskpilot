@@ -107,7 +107,7 @@ uv pip install --python .venv/bin/python --torch-backend cpu pytest==8.3.5 pytes
 
 这些是确定性与隔离集成回归，不能替代真实 Provider/GitHub/MCP 验收；真实脱敏证据索引见 [任务总账](docs/TASKS.md)。上游完整测试集含与当前 Python 版本不符的 sandbox 环境断言，不能把上述相关回归说成全量通过。
 
-Routing 数据集分为 [28 条 experiment](eval/datasets/routing_v1_experiment.json) 与 [12 条 evaluation](eval/datasets/routing_v1_evaluation.json)，schema 见 [routing_v1.schema.json](eval/datasets/routing_v1.schema.json)。[T029 实验](docs/T029_TOPK_EXPERIMENT.md)用于选 K，[T030 对照](docs/T030_ROUTING_COMPARISON.md)比较 K=3 和真正的全量工具基线；原始结果在 `eval/results/`，运行脚本为 `eval/t029_topk_experiment.py` 与 `eval/t030_routing_comparison.py`。这些是**单步工具选择阶段实验**，不是 Phase 8 的最终任务级 Benchmark；正式基线、指标与最终数字仍待 T065–T073 验收。重跑脚本会调用真实模型并产生费用，请将 `--output` 指向新的文件，勿覆盖现有证据。
+Routing 数据集分为 [28 条 experiment](eval/datasets/routing_v1_experiment.json) 与 [12 条 evaluation](eval/datasets/routing_v1_evaluation.json)，schema 见 [routing_v1.schema.json](eval/datasets/routing_v1.schema.json)。[T029 实验](docs/T029_TOPK_EXPERIMENT.md)用于选 K，[T030 对照](docs/T030_ROUTING_COMPARISON.md)比较 K=3 和真正的全量工具基线；原始结果在 `eval/results/`，运行脚本为 `eval/t029_topk_experiment.py` 与 `eval/t030_routing_comparison.py`。这些是**单步工具选择阶段实验**，不是 Phase 8 的最终任务级 Benchmark。[T065 独立 holdout 与冻结口径](docs/T065_BENCHMARK_DATASET.md)已建立；正式基线运行和最终数字仍待 T066–T073 验收。重跑脚本会调用真实模型并产生费用，请将 `--output` 指向新的文件，勿覆盖现有证据。
 
 ## 边界、来源与许可证
 

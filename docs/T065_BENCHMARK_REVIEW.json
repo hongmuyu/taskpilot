@@ -1,0 +1,125 @@
+{
+  "dataset_version": "1.0.0",
+  "method": "manual_source_and_label_crosscheck_by_agent",
+  "reviewed_at_utc": "2026-10-11T08:24:40.590116+00:00",
+  "independence": "self_review_not_external_human_review",
+  "scope": "labels, alternatives, source snapshots, business evidence, negative conditions; no model or benchmark execution",
+  "items": [
+    {
+      "id": "core-001",
+      "decision": "approved",
+      "note": "Pinned httpx README blob checked; file-read path is explicit and success requires cited capabilities."
+    },
+    {
+      "id": "core-002",
+      "decision": "approved",
+      "note": "Pinned Rich README blob checked; overview claim is limited to README evidence."
+    },
+    {
+      "id": "core-003",
+      "decision": "approved",
+      "note": "Issue #895 title/body hash checked; direct issue detail and report-only answer fit."
+    },
+    {
+      "id": "core-004",
+      "decision": "approved",
+      "note": "Issue #4171 title/body hash checked; no unverified implementation claim required."
+    },
+    {
+      "id": "core-005",
+      "decision": "approved",
+      "note": "Issue #4202 and rich/cells.py hashes checked; issue-to-code order and path source are explicit."
+    },
+    {
+      "id": "core-006",
+      "decision": "approved",
+      "note": "Issue #13965 and _validators.py hashes checked; Decimal report and code evidence are separate."
+    },
+    {
+      "id": "core-007",
+      "decision": "approved",
+      "note": "Controlled missing issue_number is marked as injection; confirmed repo/ref are reused; pre-reply zero dispatch."
+    },
+    {
+      "id": "core-008",
+      "decision": "approved",
+      "note": "Controlled missing path is marked as injection; only user reply provides path; pre-reply zero dispatch."
+    },
+    {
+      "id": "core-009",
+      "decision": "approved",
+      "note": "Malformed JSON is rejected at parse boundary; no file or HTTP response is required."
+    },
+    {
+      "id": "core-010",
+      "decision": "approved",
+      "note": "Boolean issue_number is type-invalid and cannot be coerced; zero dispatch is the outcome."
+    },
+    {
+      "id": "core-011",
+      "decision": "approved",
+      "note": "Issue search and code search are both defensible discovery tools; either cited pinned source suffices."
+    },
+    {
+      "id": "core-012",
+      "decision": "approved",
+      "note": "Local shell is outside the declared GitHub read-only tool pool; safe no-match is expected."
+    },
+    {
+      "id": "core-013",
+      "decision": "approved",
+      "note": "Actual v1 stdio discovery checked; echo_read schema requires text and audit expects one call."
+    },
+    {
+      "id": "core-014",
+      "decision": "approved",
+      "note": "Actual v1 inputSchema checked; controlled missing text leads to reply/revalidation and one audit entry."
+    },
+    {
+      "id": "core-015",
+      "decision": "approved",
+      "note": "Actual v2 stdio discovery checked; echo_read requires both text and suffix."
+    },
+    {
+      "id": "core-016",
+      "decision": "approved",
+      "note": "Fixture fail_read raises a controlled error; isError/failure and one attempt are required."
+    },
+    {
+      "id": "core-017",
+      "decision": "approved",
+      "note": "Fixture slow_read duration exceeds declared client deadline; unknown remote outcome is preserved."
+    },
+    {
+      "id": "core-018",
+      "decision": "approved",
+      "note": "Pinned Rich ref exists; deliberately absent path tests real permanent GitHub 404."
+    },
+    {
+      "id": "core-019",
+      "decision": "approved",
+      "note": "First 503 is explicitly injected; only second pinned GitHub GET may count as real success."
+    },
+    {
+      "id": "core-020",
+      "decision": "approved",
+      "note": "Issue #4232 and rich/ansi.py hashes checked; observation explains switch from issue to code."
+    },
+    {
+      "id": "core-021",
+      "decision": "approved",
+      "note": "Issue #13957 and _typing_extra.py hashes checked; source contains ForwardRef and is_class; code search needs auth."
+    }
+  ],
+  "source_audit": {
+    "github_issue_body_hashes_checked": 8,
+    "github_issue_title_and_updated_at_checked": 8,
+    "github_file_blob_ids_checked": 11,
+    "mcp_discovery_variants_checked": [
+      "v1",
+      "v2"
+    ],
+    "benchmark_model_runs": 0,
+    "remaining_caveat": "Issue bodies can change after capture; recheck at run time."
+  }
+}

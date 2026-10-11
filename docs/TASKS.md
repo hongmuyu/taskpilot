@@ -2,22 +2,22 @@
 
 ## Dashboard
 
-- Current Phase: Phase 7 — Productization
-- Current PR: PR-08c — Core delivery（T059–T060、T062 DONE，待评审）
-- Next Task: 待后续授权；本轮不开始其他任务
+- Current Phase: Phase 8 — Final Evaluation
+- Current PR: PR-09 — T065 final benchmark dataset（本分支待评审）
+- Next Task: 待后续授权；本轮不开始 T066–T073
 - Total Tasks: 73
-- Completed: 44
-- TODO: 28
+- Completed: 45
+- TODO: 27
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 9
+- Remaining P0: 8
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-11；PR-08c 起点 main `f88d0ca`
+- State verified: 2026-10-11；PR-09 起点 main `f80dffb`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a 和 PR-08b 已合并；PR-08c 已完成 T059–T060，尚未合并。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a、PR-08b 和 PR-08c 已合并；PR-09 的 T065 在本分支完成，尚未合并。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 44 + 28 + 1 + 0 + 0 = 73；剩余 9 + 19 + 1 = 29。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 45 + 27 + 1 + 0 + 0 = 73；剩余 8 + 19 + 1 = 28。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -77,7 +77,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
 - Phase 7：T053–T064，Productization，PR-08 或按依赖拆成小 PR。
-- Phase 8：T065–T073，Final Evaluation，计划 PR-09。
+- Phase 8：T065–T073，Final Evaluation，PR-09 已完成 T065 数据集；T066–T073 尚待授权与验收。
 
 后续 Task 的 Acceptance Criteria 和 Tests 是验收要求，不是已通过的结果；实施完成时必须附具体命令、版本、结果和脱敏证据位置。未验收不得将 TODO 改为 DONE。
 
@@ -1099,14 +1099,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Final benchmark dataset
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T028
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 在开发过程中逐步冻结可复现、带标注的 Core Benchmark 数据集。
 - **Acceptance Criteria:** Core 覆盖 Repository Understanding、Issue Investigation、Issue→Code、Missing Parameters、Invalid Parameters、Semantic Routing、Real MCP、Tool Failure/Timeout/Retry 和 multi-step investigation；固定 repo/ref/Issue 快照或采集时间，明确期望证据/工具/slot，与调参集分开。
 - **Tests:** 数据 schema/引用有效性检查、人工标注复核、预先冻结评分口径；按已完成的核心能力逐步补样本，最终 Core 数据集版本冻结。
 - **Out of Scope:** 仅重复三个 Demo case、事后剔除失败题。
-- **Notes:** 主要依赖 T028，数据准备不等待 Docker/Deployment；复用 v0 并补版本/标注。Controlled Actions/Advanced Memory 仅在实际交付后增加独立 subset，未完成 P1 不阻塞 T065/T068/T073；v0 DONE 不等于本项完成。
+- **Notes:** 2026-10-11 冻结 [独立 holdout v1.0.0](../eval/datasets/core_benchmark_v1_holdout.json) 21 条/8 类场景；[Schema](../eval/datasets/core_benchmark_v1.schema.json)、[来源快照](../eval/datasets/core_benchmark_v1_sources.json)、[评分口径](../eval/datasets/core_benchmark_v1_scoring.json)、[人工标注复核](T065_BENCHMARK_REVIEW.json) 与 [说明](T065_BENCHMARK_DATASET.md)成套保存。T028 的 28 条 experiment 已用于选 K、12 条 evaluation 已用于 T030，均仅作为 provenance，不混入新的 holdout；新题使用另外三个 GitHub repo/固定 commit。采集时 8 个 Issue title/body hash/updated_at、11 个文件 blob SHA 全部再次核对，MCP SDK 1.5.0 的真实 stdio v1/v2 discovery schema 通过隔离校验。T065/T028 targeted **9 passed**；TaskPilot + baseline/Browser MCP 回归 **346 passed**。没有运行正式 Benchmark 或产生性能数字；Issue 后续漂移、真实模型/基线执行及受控 503 runner 均 **NOT VERIFIED**。Controlled Actions/Advanced Memory 只在实际交付后另建 subset，未完成 P1 不阻塞 Core。
 
 ### T066 — Original OpenManus baseline
 
@@ -1335,4 +1335,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 已完成 T056–T057 并合并，T058 保持 TODO；PR-08c 已完成 T059–T060、T062，尚未合并。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 已完成 T056–T057 并合并，T058 保持 TODO；PR-08c 已完成 T059–T060、T062 并合并；PR-09 的 T065 已在本分支完成，未合并。

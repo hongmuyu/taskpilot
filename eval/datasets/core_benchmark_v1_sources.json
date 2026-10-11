@@ -1,0 +1,341 @@
+{
+  "catalog": "taskpilot_core_benchmark_sources",
+  "version": "1.0.0",
+  "captured_at_utc": "2026-10-11T08:15:23.160314+00:00",
+  "github_repositories": [
+    {
+      "id": "httpx",
+      "repository": "encode/httpx",
+      "ref": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254",
+      "ref_kind": "commit",
+      "files": [
+        {
+          "path": "README.md",
+          "blob_sha": "2ccecd578c3dfdd4fa1f7fc493309cfc944f7cb3",
+          "size_bytes": 4944,
+          "url": "https://github.com/encode/httpx/blob/b5addb64f0161ff6bfe94c124ef76f6a1fba5254/README.md"
+        },
+        {
+          "path": "httpx/_client.py",
+          "blob_sha": "13cd9336732a0854dae25b53b34e4b2e749b5897",
+          "size_bytes": 65713,
+          "url": "https://github.com/encode/httpx/blob/b5addb64f0161ff6bfe94c124ef76f6a1fba5254/httpx/_client.py"
+        },
+        {
+          "path": "httpx/_models.py",
+          "blob_sha": "2cc86321a4bc0915bd5e3886b3a69d551bbfc8d0",
+          "size_bytes": 44697,
+          "url": "https://github.com/encode/httpx/blob/b5addb64f0161ff6bfe94c124ef76f6a1fba5254/httpx/_models.py"
+        },
+        {
+          "path": "httpx/_transports/default.py",
+          "blob_sha": "fc8c70970a8d7a1101677ac8d9ed209b4a053a5b",
+          "size_bytes": 13984,
+          "url": "https://github.com/encode/httpx/blob/b5addb64f0161ff6bfe94c124ef76f6a1fba5254/httpx/_transports/default.py"
+        }
+      ],
+      "issues": [
+        {
+          "number": 895,
+          "title": "How to correctly save and load cookies?",
+          "state": "closed",
+          "updated_at": "2025-05-27T15:59:03Z",
+          "body_sha256": "ae027affd6c32265fccf25ddbe2512edce7e10da785603ffd805582742ab4137",
+          "url": "https://github.com/encode/httpx/issues/895"
+        },
+        {
+          "number": 3453,
+          "title": "Connections in the pool never get to the idle state when a proxy is being used",
+          "state": "closed",
+          "updated_at": "2024-12-13T12:31:33Z",
+          "body_sha256": "c08946cd8bc0b184ea700fb22ae2bc81c2ae6978fe5c44452990cb002f76805a",
+          "url": "https://github.com/encode/httpx/issues/3453"
+        }
+      ]
+    },
+    {
+      "id": "pydantic",
+      "repository": "pydantic/pydantic",
+      "ref": "0edb9347fad19f29452037d8fc47331cd2c0a096",
+      "ref_kind": "commit",
+      "files": [
+        {
+          "path": "README.md",
+          "blob_sha": "76725494305186a6ff5d3936ac3dd8b7a45341e7",
+          "size_bytes": 3446,
+          "url": "https://github.com/pydantic/pydantic/blob/0edb9347fad19f29452037d8fc47331cd2c0a096/README.md"
+        },
+        {
+          "path": "pydantic/_internal/_validators.py",
+          "blob_sha": "d9d7b20e840ae2e95feceddb9079540f5d6bd990",
+          "size_bytes": 20857,
+          "url": "https://github.com/pydantic/pydantic/blob/0edb9347fad19f29452037d8fc47331cd2c0a096/pydantic/_internal/_validators.py"
+        },
+        {
+          "path": "pydantic/_internal/_typing_extra.py",
+          "blob_sha": "4eca11008e23e70608c68cca6426bd452aa729e5",
+          "size_bytes": 20967,
+          "url": "https://github.com/pydantic/pydantic/blob/0edb9347fad19f29452037d8fc47331cd2c0a096/pydantic/_internal/_typing_extra.py"
+        }
+      ],
+      "issues": [
+        {
+          "number": 13957,
+          "title": "TypeError: ForwardRef.__init__() got an unexpected keyword argument 'is_class` on Python 3.10",
+          "state": "closed",
+          "updated_at": "2026-10-09T13:47:09Z",
+          "body_sha256": "03a2cba984c94064cac9d8cf1b96cc0cde13c8013740c2ed8f6a38af69169760",
+          "url": "https://github.com/pydantic/pydantic/issues/13957"
+        },
+        {
+          "number": 13965,
+          "title": "`max_digits` whole-digit limit not enforced when a validator precedes `Field` on `Decimal`",
+          "state": "closed",
+          "updated_at": "2026-10-10T23:29:54Z",
+          "body_sha256": "8adc85a0a3923a049ffa7df040c28aca20fd556b10f9cfeba84ea9e2de0a35bf",
+          "url": "https://github.com/pydantic/pydantic/issues/13965"
+        }
+      ]
+    },
+    {
+      "id": "rich",
+      "repository": "Textualize/rich",
+      "ref": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+      "ref_kind": "commit",
+      "files": [
+        {
+          "path": "README.md",
+          "blob_sha": "a8475817e1d00628656acd0d7eab72df16f61371",
+          "size_bytes": 17017,
+          "url": "https://github.com/Textualize/rich/blob/9d8f9a372cc5916fd4781fec207ced7ddac2f08f/README.md"
+        },
+        {
+          "path": "rich/cells.py",
+          "blob_sha": "9d590b04e89b81a592f82ddd64aa5ccd50e36e9c",
+          "size_bytes": 12335,
+          "url": "https://github.com/Textualize/rich/blob/9d8f9a372cc5916fd4781fec207ced7ddac2f08f/rich/cells.py"
+        },
+        {
+          "path": "rich/ansi.py",
+          "blob_sha": "7bbcb0bfcc656bd219b195c500c657a8bdb838f7",
+          "size_bytes": 6947,
+          "url": "https://github.com/Textualize/rich/blob/9d8f9a372cc5916fd4781fec207ced7ddac2f08f/rich/ansi.py"
+        },
+        {
+          "path": "rich/table.py",
+          "blob_sha": "1e2eb2b45aca21e15c9d0b183afe3a46c4a6c827",
+          "size_bytes": 40033,
+          "url": "https://github.com/Textualize/rich/blob/9d8f9a372cc5916fd4781fec207ced7ddac2f08f/rich/table.py"
+        }
+      ],
+      "issues": [
+        {
+          "number": 4171,
+          "title": "Expand typing for Title field in Table object",
+          "state": "closed",
+          "updated_at": "2026-06-18T18:28:56Z",
+          "body_sha256": "126eab1712cdd21067a9d5ff23e78fd247911d3a02995dc9f77465e35b63b2b9",
+          "url": "https://github.com/Textualize/rich/issues/4171"
+        },
+        {
+          "number": 4202,
+          "title": "chop_cells() emits a spurious empty first line when the first character is wider than max_cells",
+          "state": "closed",
+          "updated_at": "2026-08-05T06:17:02Z",
+          "body_sha256": "554dfa5498a837a1085e52dc9da70235d62a4b2ebea2750ca44fb1c5068d5b78",
+          "url": "https://github.com/Textualize/rich/issues/4202"
+        },
+        {
+          "number": 4226,
+          "title": "[REQUEST] add option to select() to return unprocessed keys",
+          "state": "closed",
+          "updated_at": "2026-09-23T09:15:16Z",
+          "body_sha256": "0c0fb9d65d28fd5c911082f31c3ce0e6f34a01e66cf6ac1947e6cc2e923e8235",
+          "url": "https://github.com/Textualize/rich/issues/4226"
+        },
+        {
+          "number": 4232,
+          "title": "Text.from_ansi exposes OSC 8 payloads with BEL-terminated hyperlinks",
+          "state": "closed",
+          "updated_at": "2026-10-02T20:04:49Z",
+          "body_sha256": "96304089f4b9eb977345ad749958919a42be277ccec875b5e551e99ef6ba8e42",
+          "url": "https://github.com/Textualize/rich/issues/4232"
+        }
+      ]
+    }
+  ],
+  "mcp_server": {
+    "name": "taskpilot-stdio-fixture",
+    "server_id": "fixture",
+    "transport": "stdio",
+    "mcp_sdk_version": "1.5.0",
+    "source_path": "tests/taskpilot/fixtures/stdio_mcp_server.py",
+    "source_sha256": "4f85b0c40a52b560781e76a7d5410ccab719791fcad6b14214d4cfec9a9d0794",
+    "variants": [
+      {
+        "name": "v1",
+        "tools": [
+          {
+            "public_name": "mcp_fixture_echo_read",
+            "original_name": "echo_read",
+            "input_schema": {
+              "properties": {
+                "text": {
+                  "title": "Text",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "title": "echo_read_v1Arguments",
+              "type": "object"
+            }
+          },
+          {
+            "public_name": "mcp_fixture_fail_read",
+            "original_name": "fail_read",
+            "input_schema": {
+              "properties": {},
+              "title": "fail_readArguments",
+              "type": "object"
+            }
+          },
+          {
+            "public_name": "mcp_fixture_legacy_read",
+            "original_name": "legacy_read",
+            "input_schema": {
+              "properties": {},
+              "title": "legacy_readArguments",
+              "type": "object"
+            }
+          },
+          {
+            "public_name": "mcp_fixture_server_pid",
+            "original_name": "server_pid",
+            "input_schema": {
+              "properties": {},
+              "title": "server_pidArguments",
+              "type": "object"
+            }
+          },
+          {
+            "public_name": "mcp_fixture_slow_read",
+            "original_name": "slow_read",
+            "input_schema": {
+              "properties": {
+                "wait_ms": {
+                  "title": "Wait Ms",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "wait_ms"
+              ],
+              "title": "slow_readArguments",
+              "type": "object"
+            }
+          }
+        ]
+      },
+      {
+        "name": "v2",
+        "tools": [
+          {
+            "public_name": "mcp_fixture_echo_read",
+            "original_name": "echo_read",
+            "input_schema": {
+              "properties": {
+                "text": {
+                  "title": "Text",
+                  "type": "string"
+                },
+                "suffix": {
+                  "title": "Suffix",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "text",
+                "suffix"
+              ],
+              "title": "echo_read_v2Arguments",
+              "type": "object"
+            }
+          },
+          {
+            "public_name": "mcp_fixture_fail_read",
+            "original_name": "fail_read",
+            "input_schema": {
+              "properties": {},
+              "title": "fail_readArguments",
+              "type": "object"
+            }
+          },
+          {
+            "public_name": "mcp_fixture_new_read",
+            "original_name": "new_read",
+            "input_schema": {
+              "properties": {},
+              "title": "new_readArguments",
+              "type": "object"
+            }
+          },
+          {
+            "public_name": "mcp_fixture_server_pid",
+            "original_name": "server_pid",
+            "input_schema": {
+              "properties": {},
+              "title": "server_pidArguments",
+              "type": "object"
+            }
+          },
+          {
+            "public_name": "mcp_fixture_slow_read",
+            "original_name": "slow_read",
+            "input_schema": {
+              "properties": {
+                "wait_ms": {
+                  "title": "Wait Ms",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "wait_ms"
+              ],
+              "title": "slow_readArguments",
+              "type": "object"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "local_tools": [
+    {
+      "name": "github_repository_info",
+      "schema_sha256": "99334726611ccf58a148b0814696bfa6fe08c1b2d027e946beccf5a74331c9aa",
+      "source": "app/taskpilot/github_tools.py"
+    },
+    {
+      "name": "github_issue_search",
+      "schema_sha256": "b60f84eae9b938d115b0ceab02c46226e37dafbd8b9ea96c0b4051092f6c7a5e",
+      "source": "app/taskpilot/github_tools.py"
+    },
+    {
+      "name": "github_issue_detail",
+      "schema_sha256": "d113bdff389b2e18959e200078c5e42fb14797072b1cbcaa2c94127f8c9b739e",
+      "source": "app/taskpilot/github_tools.py"
+    },
+    {
+      "name": "github_code_search",
+      "schema_sha256": "03518a2286fad7f45a3d3e401884613ba8adfbf8ad66bdc90ff0b2e2a9e46404",
+      "source": "app/taskpilot/github_tools.py"
+    },
+    {
+      "name": "github_read_file",
+      "schema_sha256": "21a3737ea1c3b76dc98d2244099c2686b646787c96a6ad0c89de3ffc6a26b5cd",
+      "source": "app/taskpilot/github_tools.py"
+    }
+  ]
+}
