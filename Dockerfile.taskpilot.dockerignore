@@ -1,0 +1,7 @@
+*
+!app/
+!app/**
+!config/
+!config/config.example-baseline.toml
+!Dockerfile.taskpilot
+!requirements-service.lock.txt

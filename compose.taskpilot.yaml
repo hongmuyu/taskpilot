@@ -1,0 +1,26 @@
+name: taskpilot
+
+services:
+  service:
+    build:
+      context: .
+      dockerfile: Dockerfile.taskpilot
+    image: taskpilot-service:t059
+    init: true
+    environment:
+      HF_HUB_OFFLINE: ${HF_HUB_OFFLINE:-0}
+    ports:
+      - "127.0.0.1:${TASKPILOT_PORT:-8000}:8000"
+    volumes:
+      - type: bind
+        source: ${TASKPILOT_MODEL_CONFIG:?Set TASKPILOT_MODEL_CONFIG to an absolute config.toml path}
+        target: /srv/taskpilot/config/config.toml
+        read_only: true
+        bind:
+          create_host_path: false
+      - model-cache:/var/cache/taskpilot/huggingface
+    restart: "no"
+    stop_grace_period: 20s
+
+volumes:
+  model-cache:

@@ -168,6 +168,10 @@ def create_app(
 
     app = FastAPI(title="TaskPilot read-only service", lifespan=lifespan)
 
+    @app.get("/health")
+    async def health():
+        return {"status": "ok"}
+
     async def execute_task(record: TaskRecord, request: StartTaskRequest) -> None:
         agent = None
         final_status = "failed"
