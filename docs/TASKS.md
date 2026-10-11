@@ -3,7 +3,7 @@
 ## Dashboard
 
 - Current Phase: Phase 7 — Productization
-- Current PR: PR-08b — Service（T056–T057 DONE；未合并）
+- Current PR: PR-08b — Service（T056–T057 DONE）
 - Next Task: 待后续授权；本轮不开始 T058
 - Total Tasks: 73
 - Completed: 41
@@ -15,9 +15,9 @@
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-10；PR-08b 起点 main `0c061473f2b6f00f5119a1473ef54045ab77ea41`
+- State verified: 2026-10-11；PR-08b 起点 main `0c061473f2b6f00f5119a1473ef54045ab77ea41`
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05 和 PR-08a 已合并；PR-08b 当前实施 T056–T057。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05 和 PR-08a 已合并；PR-08b 已完成 T056–T057。
 
 ## Maintenance and priority rules
 
@@ -982,7 +982,7 @@ Top-K 只影响候选 schema，不授予工具权限、不改变动态 Agent Loo
 - **Tests:** 缺参→用户回复→merge→revalidation→真实 GitHub 执行；多个 pending 请求隔离、取消、重复回复、超时；T040/T041 交付后才加入批准/拒绝写入链路。
 - **Out of Scope:** 企业审批平台、将 AskHuman.input 直接包 HTTP。
 - **Notes:** P0 仅验收非阻塞参数澄清，不依赖 P1 的 T041；一个任务等待时不得发送含未闭合 tool call 的新模型请求。后续写入确认适配必须与 Controlled Actions 一起验收，不能复用已完成的 Core 验收冒充通过。
-- **Evidence (2026-10-10):** 服务增加 `POST /tasks/{task_id}/clarifications/{tool_call_id}/reply`（202；`reply` 非空严格字符串），`GET /tasks/{task_id}` 在 `clarification_pending` 返回原 `tool_call_id`、工具名和缺失字段。每个任务独立 Agent/队列，结束时释放 Agent 引用与回复队列；回复必须匹配 task 与 call ID，单个 pending 回复在处理中禁止重复排队。Agent 在原调用中异步等待，服务调用既有 `submit_clarification_reply` 做参数 merge、同一 ToolCollection 重校验和原 call ID 的一次执行；未得到对应 Tool 结果前不发下一次 LLM 请求。无效/不完整回复保持 pending，取消、迟到和重复回复拒绝或安全结束，等待 120 秒默认超时（可按服务实例配置）后以 `clarification_timeout` / execution unknown 有界结束，均不执行原 Tool；CLI 同步 AskHuman 路径未改。`tests/taskpilot/test_service_clarification.py` 13 passed，TaskPilot + baseline/Browser MCP 相关回归 **332 passed**。真实 [Provider + GitHub 服务端澄清 E2E](evidence/t057_service_clarification.json) 使用 `deepseek-flash`、K=3、`FoundationAgents/OpenManus` 默认分支：真实模型选择 `github_read_file`，脚本明确受控移除 `path`（**不是自然遗漏**）；API pending 返回 `path`，回复 202，澄清前原调用 dispatch 0 / GitHub HTTP 0，重校验 pending→success，原调用 dispatch 1、Tool message 1，真实 README GET 200；2 次模型调用、31 条合法 Trace，最终 Agent 声明 success、服务 `finished`、清理 complete、业务结果 `not_verified`。自然模型缺参、真实 HTTP 监听部署、长时间人工等待/并发负载和 P1 写操作批准链路 **NOT VERIFIED**；T058 保持 TODO。
+- **Evidence (2026-10-10):** 服务增加 `POST /tasks/{task_id}/clarifications/{tool_call_id}/reply`（202；`reply` 非空严格字符串），`GET /tasks/{task_id}` 在 `clarification_pending` 返回原 `tool_call_id`、工具名和缺失字段。每个任务独立 Agent/队列，结束时释放 Agent 引用与回复队列；回复必须匹配 task 与 call ID，单个 pending 回复在处理中禁止重复排队。Agent 在原调用中异步等待，服务调用既有 `submit_clarification_reply` 做参数 merge、同一 ToolCollection 重校验和原 call ID 的一次执行；未得到对应 Tool 结果前不发下一次 LLM 请求。无效/不完整回复保持 pending，取消、迟到和重复回复拒绝或安全结束，等待 120 秒默认超时（可按服务实例配置）后以 `clarification_timeout` / execution unknown 有界结束，均不执行原 Tool；CLI 同步 AskHuman 路径未改。`tests/taskpilot/test_service_clarification.py` 14 passed，TaskPilot + baseline/Browser MCP 相关回归 **333 passed**；新增确定性用例证明任务 A 等待澄清时任务 B 可独立执行并完成，A 在等待期间零 Tool dispatch。真实 [Provider + GitHub 服务端澄清 E2E](evidence/t057_service_clarification.json) 使用 `deepseek-flash`、K=3、`FoundationAgents/OpenManus` 默认分支：真实模型选择 `github_read_file`，脚本明确受控移除 `path`（**不是自然遗漏**）；API pending 返回 `path`，回复 202，澄清前原调用 dispatch 0 / GitHub HTTP 0，重校验 pending→success，原调用 dispatch 1、Tool message 1，真实 README GET 200；2 次模型调用、31 条合法 Trace，最终 Agent 声明 success、服务 `finished`、清理 complete、业务结果 `not_verified`。自然模型缺参、真实 HTTP 监听部署、长时间人工等待/并发负载和 P1 写操作批准链路 **NOT VERIFIED**；T058 保持 TODO。
 
 ### T058 — Simple Demo UI
 
@@ -1335,4 +1335,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 当前完成 T056–T057，未合并，T058 保持 TODO。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 已完成 T056–T057，T058 保持 TODO。

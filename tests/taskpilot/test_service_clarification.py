@@ -49,7 +49,7 @@ async def wait_for_view(client, task_id, predicate):
     raise AssertionError("Task did not reach the expected state")
 
 
-def read_service(*, timeout=1.0):
+def read_service(*, timeout=1.0, ready_repo=None):
     agents = {}
     requests = []
     llm_calls = {}
@@ -62,7 +62,12 @@ def read_service(*, timeout=1.0):
             call_count += 1
             llm_calls[context.repo] = call_count
             name = "github_read_file" if call_count == 1 else "terminate"
-            arguments = "{}" if call_count == 1 else '{"status":"success"}'
+            if call_count == 1:
+                arguments = (
+                    '{"path":"README.md"}' if context.repo == ready_repo else "{}"
+                )
+            else:
+                arguments = '{"status":"success"}'
             return SimpleNamespace(
                 content=None,
                 tool_calls=[
@@ -300,6 +305,42 @@ async def test_parallel_tasks_cannot_receive_each_others_replies():
         "/repos/octo/second/contents/README.md",
     ]
     assert agents["first"] is not agents["second"]
+
+
+@pytest.mark.asyncio
+async def test_other_task_completes_while_first_waits_for_clarification():
+    app, agents, requests, llm_calls = read_service(timeout=30.0, ready_repo="ready")
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        waiting = await client.post(
+            "/tasks", json={"repository": "octo/waiting", "task": "Read a file"}
+        )
+        waiting_id = waiting.json()["task_id"]
+        await wait_for_status(client, waiting_id, "clarification_pending")
+        assert requests == []
+
+        ready = await asyncio.wait_for(
+            client.post(
+                "/tasks", json={"repository": "octo/ready", "task": "Read README"}
+            ),
+            2.0,
+        )
+        ready_id = ready.json()["task_id"]
+        completed = await asyncio.wait_for(
+            wait_for_status(client, ready_id, "finished"), 2.0
+        )
+        assert completed["cleanup_status"] == "complete"
+        assert (await client.get(f"/tasks/{waiting_id}")).json()["status"] == (
+            "clarification_pending"
+        )
+        assert requests == ["/repos/octo/ready/contents/README.md"]
+        assert llm_calls == {"waiting": 1, "ready": 2}
+        assert (await client.delete(f"/tasks/{waiting_id}")).status_code == 200
+        await wait_for_status(client, waiting_id, "cancelled")
+
+    assert agents["waiting"] is not agents["ready"]
+    assert all(agent.github_client.http_client.is_closed for agent in agents.values())
 
 
 @pytest.mark.asyncio
