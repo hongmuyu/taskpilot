@@ -1,0 +1,2950 @@
+{
+  "metric_version": "t069-v1",
+  "dataset_version": "1.0.0",
+  "dataset_sha256": "8251f53ac812684507bfe85086214393bcbb3dd955d19a54d5df12a0d3affafe",
+  "scoring_sha256": "289db810fda451dee8a6d9aa2765e79995eae2b38401c1512da249b547608c2a",
+  "selection_policy": "Gold step index maps to same numbered actual assistant turn; all parallel selected tools must be acceptable; no selection is wrong. Controlled zero-LLM cases are excluded.",
+  "success_policy": "All frozen business evidence required; reviewed outcomes checked against raw provenance; finish declaration alone is insufficient. Unsupported excluded only from supported denominator.",
+  "groups": {
+    "original_openmanus": {
+      "provenance": {
+        "raw_file": "t066_original_openmanus_v1.jsonl",
+        "raw_sha256": "df844920712628a1ac8de8dfdf6120faecc832a748d2937ae851dd04a9cb8998",
+        "review_file": "t066_original_openmanus_review.json",
+        "review_sha256": "b047ddbb709820505c05772e2ff87361c2630bf43d6d61f9ec62151e2b26e173"
+      },
+      "sample_count": 21,
+      "supported_attempted": 12,
+      "unsupported": 9,
+      "natural_model_tasks": 12,
+      "controlled_zero_llm_tasks": 0,
+      "tool_selection_steps": {
+        "correct": 2,
+        "eligible": 15
+      },
+      "tool_selection_tasks_all_steps_correct": {
+        "correct": 2,
+        "eligible": 10
+      },
+      "task_success_supported": {
+        "success": 4,
+        "eligible": 12
+      },
+      "task_success_all_21_coverage": {
+        "success": 4,
+        "eligible": 21
+      },
+      "business_outcomes": {
+        "failure": 8,
+        "success": 4,
+        "unsupported": 9
+      },
+      "samples": [
+        {
+          "sample_id": "core-001",
+          "category": "repository_understanding",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Pinned README content supports two stated HTTP client capabilities.",
+            "Answer cites the pinned README URL, not an unpinned branch."
+          ],
+          "business_review_reason": "Pinned README fetch and final answer cite two capabilities at the pinned ref.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_nYaJ7rSeGFDbs31kHnT27619"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-001:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_QlKSnZ8rEXYFlrun7tx10404"
+              ]
+            },
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_d63zyzxUVwgnHSH5wcgB3683"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_aQVNXzvOwhkV3zPlk8jN4721"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_3c9s9ym0MGL5vYqErE517648"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_inGnsFi8Of09NB2w3NUF9522"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-002",
+          "category": "repository_understanding",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "failure",
+          "business_outcome": "failure",
+          "business_evidence_requirements": [
+            "Pinned README describes terminal presentation features.",
+            "Answer cites the pinned README."
+          ],
+          "business_review_reason": "Six-step budget ended without the required pinned source explanation.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_JLKCvftvNomk28OndPUH9125"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-002:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_2BsnORiy2tyYtrPBpmeL8072"
+              ]
+            },
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_UcIlgLwcIXlmnUcizooL2323"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_Oyy0L5dPcW9ehhlyim4s3733"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_Ug0c9dxq7fk2oL9nP8GU7109"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_hOIzIolljEB1psEzQPwu9537"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-003",
+          "category": "issue_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Issue #895 body supports the reported cookie save/load or conflict behavior.",
+            "Answer cites issue #895 and distinguishes report from a fix."
+          ],
+          "business_review_reason": "Issue #895 body was fetched and the answer cites the issue and reported cookie conflict.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_8EgxLxRNrBBFfmCONXis3783"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-003:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_Z8Wn16O9AqV5NTF6kIJS9811"
+              ]
+            },
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_hU7wmSULz25ti2rCP0Z67341"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_nwswllWoYHSP6K1p8jnj5926"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_8R3Ey6COObAY5hXvDf0z0864"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_J74NjIGzr7NQJtFzT5DO1011"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-004",
+          "category": "issue_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "failure",
+          "business_outcome": "failure",
+          "business_evidence_requirements": [
+            "Issue #4171 describes Table title typing request.",
+            "Answer cites issue and does not claim an unverified implementation."
+          ],
+          "business_review_reason": "Six-step budget ended without verified issue investigation output.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "python_execute",
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_prP9L3cN4K2yLQvipJKm3492",
+                "call_01_VAJBnLVtbwujCEcdQOvi8006"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-004:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "python_execute",
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_roRqzGs6rgRcWcDaaRDV3560",
+                "call_01_eykMKNLUWx5QoETNetHt0899"
+              ]
+            },
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_3CL962bGclrak3EOpbgQ6263"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "python_execute",
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_ocVe7edNkV5Ne7Ok99R82145",
+                "call_01_Kg8LO4ShSgVli9wweyRC9707"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "python_execute",
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_rdwk65uSocRWBL7DwouJ0007",
+                "call_01_UnSgZt8eXB1PF6AysqOB6755"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "python_execute",
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_lSQym3q3QS3NvrERG5Bf2587",
+                "call_01_zZIIZeZOyHiMHXYiDxNN5050"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-005",
+          "category": "issue_to_code",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "failure",
+          "business_outcome": "failure",
+          "business_evidence_requirements": [
+            "Issue evidence identifies wide first character and spurious empty first segment.",
+            "Pinned rich/cells.py contains chop_cells implementation relevant to the report.",
+            "Answer cites both report and code without claiming execution of a fix."
+          ],
+          "business_review_reason": "Six-step budget ended without linked issue-to-code evidence.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_PZkFLChcCOfyPdxpkcRK0712"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-005:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_bK8sVjd5K6yhJ52u3MBf0140"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-005:assistant_turn_2"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_699Sah3Mhh7tKMjSk9rt0359"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_d20cxb6DvXjVZY6zLioG3502"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_hKHP2cNq6z43i2xaM4kU7651"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_aRgabT4pt4X6dN4nrRjM4303"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-006",
+          "category": "issue_to_code",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "failure",
+          "business_outcome": "failure",
+          "business_evidence_requirements": [
+            "Issue #13965 establishes the reported max_digits behavior.",
+            "Pinned validator file contains Decimal whole-digit logic.",
+            "Answer relates report to code with both URLs."
+          ],
+          "business_review_reason": "Six-step budget ended without linked issue-to-code evidence.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_djHQpjvCnkx4RVcjND8V6444"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-006:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_C0u5DOMXU0vGZvkQ5uzm9305"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-006:assistant_turn_2"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "python_execute",
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_SJSWvptvSJc076d5QHu76641",
+                "call_01_a621fnYthyt6tz7eFeK17192"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "python_execute",
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_uWRnYF1KK0Ozdc8ydeFS9836",
+                "call_01_G7O5VrnUFS0jtRpkdyqG8606"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_OhkmHhvbnTdwgTci7izm5472"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_1M9ENI9iwg6sHl5EiiAq5511"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-007",
+          "category": "parameter_validation",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "source_review_outcome": "unsupported",
+          "business_outcome": "unsupported",
+          "business_evidence_requirements": [
+            "Zero dispatch before reply; same tool_call_id through merge and result; one final dispatch.",
+            "Real issue #4226 response supports selected-key request."
+          ],
+          "business_review_reason": "No GitHub issue-detail tool or forced missing-parameter clarification boundary.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-008",
+          "category": "parameter_validation",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "source_review_outcome": "unsupported",
+          "business_outcome": "unsupported",
+          "business_evidence_requirements": [
+            "Zero dispatch before reply; original call ID preserved and exactly one final dispatch.",
+            "Pinned README.md is returned and cited."
+          ],
+          "business_review_reason": "No GitHub file-read tool or forced missing-path clarification boundary.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-009",
+          "category": "parameter_validation",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "source_review_outcome": "unsupported",
+          "business_outcome": "unsupported",
+          "business_evidence_requirements": [
+            "Validation Observation reports malformed JSON under original tool_call_id and zero dispatch.",
+            "No GitHub request is made for this call."
+          ],
+          "business_review_reason": "No GitHub file-read tool to receive the malformed JSON fixture at its dispatch boundary.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-010",
+          "category": "parameter_validation",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "source_review_outcome": "unsupported",
+          "business_outcome": "unsupported",
+          "business_evidence_requirements": [
+            "Schema failure cites issue_number type and original tool_call_id; zero dispatch.",
+            "No GitHub request is made for this call."
+          ],
+          "business_review_reason": "No GitHub issue-detail schema validator for the invalid boolean fixture.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-011",
+          "category": "semantic_routing",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "source_review_outcome": "unsupported",
+          "business_outcome": "unsupported",
+          "business_evidence_requirements": [
+            "Routing candidate and selected tool with score are recorded.",
+            "At least one selected-tool result cites either pinned issue #4202 or pinned rich/cells.py and supports the wide-character behavior; both are alternatives, not jointly required."
+          ],
+          "business_review_reason": "No T065-labelled GitHub issue/code-search tools or semantic routing candidate pool.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-012",
+          "category": "semantic_routing",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "source_review_outcome": "unsupported",
+          "business_outcome": "unsupported",
+          "business_evidence_requirements": [
+            "No business Tool dispatch or environment data disclosure.",
+            "Final response states that this tool pool cannot perform the request."
+          ],
+          "business_review_reason": "Original PythonExecute could reveal process environment; this unsafe request is not run.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-013",
+          "category": "real_mcp",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Server audit shows exactly one echo_read with text holdout-v1 and response echo:holdout-v1.",
+            "Tool result success is linked to the original tool_call_id."
+          ],
+          "business_review_reason": "v1 MCP audit has one echo_read(text=holdout-v1); returned echo:holdout-v1.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_mcp_retest_2.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "selected_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "tool_call_ids": [
+                "call_00_feGmZT3h16QQWo2Q3EQi6438"
+              ],
+              "correct": true,
+              "evidence": "t066_original_openmanus_mcp_retest_2.jsonl:core-013:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_vJ4elnfVA1MqkIa4TXYw9314"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-014",
+          "category": "real_mcp",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "source_review_outcome": "unsupported",
+          "business_outcome": "unsupported",
+          "business_evidence_requirements": [
+            "Zero server dispatch before reply and exactly one echo_read after reply; echo:holdout-reply returned.",
+            "Original tool_call_id persists through clarification and execution."
+          ],
+          "business_review_reason": "No non-blocking forced clarification/merge boundary for a controlled missing MCP text field.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-015",
+          "category": "real_mcp",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "One v2 echo_read(text=base,suffix=tail) returns echo:base:tail.",
+            "Trace identifies v2 schema and original tool_call_id."
+          ],
+          "business_review_reason": "v2 MCP audit has one echo_read(text=base,suffix=tail); returned echo:base:tail.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_mcp_retest_2.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "selected_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "tool_call_ids": [
+                "call_00_JXX015Qu2q8dgVsnvSu12023"
+              ],
+              "correct": true,
+              "evidence": "t066_original_openmanus_mcp_retest_2.jsonl:core-015:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_B7If7JWJIgSGvmphUi0F4787"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-016",
+          "category": "failure_timeout_retry",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "failure",
+          "business_outcome": "failure",
+          "business_evidence_requirements": [
+            "One server fail_read dispatch and isError=true response.",
+            "Failure status, error Observation, one attempt and original call ID are retained."
+          ],
+          "business_review_reason": "Server returned a controlled isError failure, but original MCP ToolResult lost failure status and Agent declared terminate(success).",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_mcp_retest_2.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_c8xcnM4rir2w4oy2rv7w1314"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-017",
+          "category": "failure_timeout_retry",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "source_review_outcome": "unsupported",
+          "business_outcome": "unsupported",
+          "business_evidence_requirements": [
+            "Server may have recorded one slow_read dispatch; no second dispatch.",
+            "Timeout/unknown Observation, bounded cleanup, one attempt and original call ID."
+          ],
+          "business_review_reason": "No 50 ms per-tool deadline or safe unknown-result timeout policy in original MCP client.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-018",
+          "category": "failure_timeout_retry",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "failure",
+          "business_outcome": "failure",
+          "business_evidence_requirements": [
+            "Real GitHub GET returns 404 for the pinned nonexistent path.",
+            "Failure Observation retains status, one attempt and original tool_call_id."
+          ],
+          "business_review_reason": "Agent did not obtain or classify an actual GitHub 404 before step budget ended.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_FsSI8vvWooC8tI68zSU48022"
+              ]
+            },
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_l5EEL7dN40uMoj31w41L2296"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_dOk8owVviYMhYiuRjl8l2448"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_PbIcQa3MZogH5Zf6L72L5682"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_33q2oZ12JvDeIBDDDqQX4081"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-019",
+          "category": "failure_timeout_retry",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "source_review_outcome": "unsupported",
+          "business_outcome": "unsupported",
+          "business_evidence_requirements": [
+            "Two distinct attempts under one tool_call_id; first classified transient, second successful.",
+            "Second attempt performs real pinned GitHub GET with 200 and correct blob."
+          ],
+          "business_review_reason": "No original GitHub read tool or T065 controlled-first-503 transport fixture.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-020",
+          "category": "multi_step_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "failure",
+          "business_outcome": "failure",
+          "business_evidence_requirements": [
+            "Issue #4232 documents BEL vs ST hyperlink payload symptom.",
+            "Pinned rich/ansi.py contains ANSI parsing path relevant to report.",
+            "Answer cites both issue and code; avoids uncited issue comments."
+          ],
+          "business_review_reason": "Six-step budget ended without the required next-step issue/source evidence.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_vRX84lTiisD5eFOdgu195967"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-020:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_mEaQ8ZIW8A07sQrFkgEH7843"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-020:assistant_turn_2"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_AOTiH3sfyEft2Gdc0jqH8304"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_FK81HLTROgILWUMhm3I13939"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_xY8cWCV2FHv3W0eWnRIo2844"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_iMYC8iXeO3WynlbvizST3740"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-021",
+          "category": "multi_step_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "failure",
+          "business_outcome": "failure",
+          "business_evidence_requirements": [
+            "Issue #13957 states the Python 3.10 ForwardRef error.",
+            "Pinned _typing_extra.py contains ForwardRef compatibility logic.",
+            "Answer cites issue and pinned code, not code-search ranking alone."
+          ],
+          "business_review_reason": "Six-step budget ended without the required multi-step issue/source evidence.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t066_original_openmanus_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_EnV16KocZmg8llMi7hl45507"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-021:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_code_search"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_eLWEf9gEHDSlwbJsIbXH6911"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-021:assistant_turn_2"
+            },
+            {
+              "gold_step": 3,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_iBxaKZBxwp59886651bK3254"
+              ],
+              "correct": false,
+              "evidence": "t066_original_openmanus_v1.jsonl:core-021:assistant_turn_3"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_o4DdKrDOlCs6G4UqfS7V3303"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_n9lFt8XZX005pKF8eXfQ8123"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "python_execute"
+              ],
+              "tool_call_ids": [
+                "call_00_phEF43OiLKKKkb7NBYuA4866"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "taskpilot_full": {
+      "provenance": {
+        "raw_file": "t067_full_tools_v1.jsonl",
+        "raw_sha256": "4f7c3ddc59ac3988eea7c36bfafd8c63c2a52b345511275e41049ab437f4be99",
+        "review_file": "t067_full_tools_review.json",
+        "review_sha256": "10dd9aef3e66783126bae377f36a798f992d658c29fc524d8c002642d1d67f9a"
+      },
+      "sample_count": 21,
+      "supported_attempted": 21,
+      "unsupported": 0,
+      "natural_model_tasks": 12,
+      "controlled_zero_llm_tasks": 9,
+      "tool_selection_steps": {
+        "correct": 6,
+        "eligible": 16
+      },
+      "tool_selection_tasks_all_steps_correct": {
+        "correct": 5,
+        "eligible": 11
+      },
+      "task_success_supported": {
+        "success": 18,
+        "eligible": 21
+      },
+      "task_success_all_21_coverage": {
+        "success": 18,
+        "eligible": 21
+      },
+      "business_outcomes": {
+        "not_verified": 3,
+        "success": 18
+      },
+      "samples": [
+        {
+          "sample_id": "core-001",
+          "category": "repository_understanding",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Pinned README content supports two stated HTTP client capabilities.",
+            "Answer cites the pinned README URL, not an unpinned branch."
+          ],
+          "business_review_reason": "Pinned HTTPX README returned; answer cites its pinned URL and two documented capabilities.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_repository_info",
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_5aiykqpgXY0zBfpfYA6K7096",
+                "call_01_gHm47IIkI4zfXz5YLTTD2367"
+              ],
+              "correct": false,
+              "evidence": "t067_full_tools_v1.jsonl:core-001:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_J74fPvyoquy4lNxlo9xT0800"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-002",
+          "category": "repository_understanding",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Pinned README describes terminal presentation features.",
+            "Answer cites the pinned README."
+          ],
+          "business_review_reason": "Pinned Rich README returned; answer cites it for terminal presentation features.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_repository_info",
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_NC0E9mi0DeecRgQfLC1Y1230",
+                "call_01_fnwSuQQDTgkKTdKQtrS94494"
+              ],
+              "correct": false,
+              "evidence": "t067_full_tools_v1.jsonl:core-002:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "github_code_search",
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_Ylj9WE9s5T4SFdziXDDY8816",
+                "call_01_djgzmnivCmZtA8ki88vF7866"
+              ]
+            },
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_ssUd6aTzNGZJMsUuPa507864",
+                "call_01_PhjCHnkZIv1zbZOVOJRB9688"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_CW7YHyJvyTOXoCVMzBkM0869"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-003",
+          "category": "issue_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Issue #895 body supports the reported cookie save/load or conflict behavior.",
+            "Answer cites issue #895 and distinguishes report from a fix."
+          ],
+          "business_review_reason": "Real issue #895 details and comments support the cookie report; answer cites the issue without claiming a fix.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail"
+              ],
+              "tool_call_ids": [
+                "call_00_DgpDO0lE4FbwttXA16t55513"
+              ],
+              "correct": true,
+              "evidence": "t067_full_tools_v1.jsonl:core-003:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_d9SzIdzuLETww1KezC2m2456"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-004",
+          "category": "issue_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Issue #4171 describes Table title typing request.",
+            "Answer cites issue and does not claim an unverified implementation."
+          ],
+          "business_review_reason": "Real issue #4171 supports the Table typing request; answer cites the issue and limits implementation claims.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail"
+              ],
+              "tool_call_ids": [
+                "call_00_D5AGrQO28h2oYbzvOJwd4534"
+              ],
+              "correct": true,
+              "evidence": "t067_full_tools_v1.jsonl:core-004:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "github_code_search",
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_ClWU9Xz4tHPTe8ARNaKi3513",
+                "call_01_ThwZtdqQ3EMaoXBSjcAv8345"
+              ]
+            },
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_JA7Hk0xCZJPTqwNk1hv59912"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-005",
+          "category": "issue_to_code",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "not_verified",
+          "business_outcome": "not_verified",
+          "business_evidence_requirements": [
+            "Issue evidence identifies wide first character and spurious empty first segment.",
+            "Pinned rich/cells.py contains chop_cells implementation relevant to the report.",
+            "Answer cites both report and code without claiming execution of a fix."
+          ],
+          "business_review_reason": "Issue #4202 and pinned file were fetched, but file content truncation hid the relevant chop_cells loop; code search also returned 403 and the eight-step budget ended. Implementation criterion remains unverified.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail",
+                "github_repository_info"
+              ],
+              "tool_call_ids": [
+                "call_00_hTd2ZyO4vJ3hR7w92Lcj7487",
+                "call_01_nmAwnkcVsfNpIFSlTcnP4333"
+              ],
+              "correct": false,
+              "evidence": "t067_full_tools_v1.jsonl:core-005:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_Fb0Q2LKADRMoA54C3DVI6619"
+              ],
+              "correct": true,
+              "evidence": "t067_full_tools_v1.jsonl:core-005:assistant_turn_2"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_taOpswRjTSLnGxwXIIAX0906",
+                "call_01_2TodII4wQFmSnaIpf9c30527"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "github_read_file",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_gCWZQdqb3Ys0YsTVun3o2714",
+                "call_01_tiWaLYVUBQmLpH8sQ9HJ0601"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search",
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_GIvu2I3072CuibVvuMt68015",
+                "call_01_SDRJTN1emZ2ipU5ERMvR2547",
+                "call_02_DtIEAvAMpg0UemFfhgVj4920"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_IeLJPqFdbGT3jnRxgQ1Q5445",
+                "call_01_MoNvaUDZhn6JKp7lApOi4297"
+              ]
+            },
+            {
+              "assistant_turn": 7,
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_YfLIdqgJU0HJZpOvs9rJ2803"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-006",
+          "category": "issue_to_code",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "not_verified",
+          "business_outcome": "not_verified",
+          "business_evidence_requirements": [
+            "Issue #13965 establishes the reported max_digits behavior.",
+            "Pinned validator file contains Decimal whole-digit logic.",
+            "Answer relates report to code with both URLs."
+          ],
+          "business_review_reason": "Issue #13965 was fetched, but the pinned file read ended before decimal_places_validator and code search returned 403. The whole-digit implementation criterion remains unverified despite an Agent success declaration.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail",
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_XAzv52HfGUbWjoWV0k1u6261",
+                "call_01_x5IWTdS7nDJ629abgS8y7695"
+              ],
+              "correct": false,
+              "evidence": "t067_full_tools_v1.jsonl:core-006:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_l5ulUJaUlHTSQ1vUxhiX3084",
+                "call_01_8CnpZs88CajslzuumW9B2832"
+              ],
+              "correct": false,
+              "evidence": "t067_full_tools_v1.jsonl:core-006:assistant_turn_2"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_bAgm8BBlSgtolj4x0Zud5337"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "github_issue_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_CyYv6DccEZcZLkFeAsiv9367",
+                "call_01_CU84tKBOcgR5Ry23Y42B5720"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "github_issue_search",
+                "github_issue_search"
+              ],
+              "tool_call_ids": [
+                "call_00_6xbsDcCE6r3kWI9cETgb6400",
+                "call_01_MoRIOA1K7cE54fbh5ATO0923"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "github_repository_info",
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_2l0C7nVdfTkru8BUvrs12721",
+                "call_01_GCXvwaVH0xsl0agg9LBK4897"
+              ]
+            },
+            {
+              "assistant_turn": 7,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_jrmpSV8516etys1vz0a87791"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-007",
+          "category": "parameter_validation",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Zero dispatch before reply; same tool_call_id through merge and result; one final dispatch.",
+            "Real issue #4226 response supports selected-key request."
+          ],
+          "business_review_reason": "Controlled missing issue_number: zero dispatch before frozen reply, original call ID retained, then one real issue-detail execution.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-008",
+          "category": "parameter_validation",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Zero dispatch before reply; original call ID preserved and exactly one final dispatch.",
+            "Pinned README.md is returned and cited."
+          ],
+          "business_review_reason": "Controlled missing path: zero dispatch before frozen reply, original call ID retained, then one pinned README read.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-009",
+          "category": "parameter_validation",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Validation Observation reports malformed JSON under original tool_call_id and zero dispatch.",
+            "No GitHub request is made for this call."
+          ],
+          "business_review_reason": "Malformed JSON rejected with error Observation under original call ID and zero GitHub requests.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-010",
+          "category": "parameter_validation",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Schema failure cites issue_number type and original tool_call_id; zero dispatch.",
+            "No GitHub request is made for this call."
+          ],
+          "business_review_reason": "Boolean issue_number rejected as invalid integer with original call ID and zero GitHub requests.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-011",
+          "category": "semantic_routing",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "not_verified",
+          "business_evidence_requirements": [
+            "Routing candidate and selected tool with score are recorded.",
+            "At least one selected-tool result cites either pinned issue #4202 or pinned rich/cells.py and supports the wide-character behavior; both are alternatives, not jointly required."
+          ],
+          "business_review_reason": "Real issue/code results support the wide-character behavior and answer cites pinned sources. Routing candidate score is not applicable in a full-tools baseline; all LLM calls received full schemas.",
+          "adjudication_conflict": "T067 review says success; frozen routing-score evidence is absent in true full-tools",
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_search",
+                "github_code_search"
+              ],
+              "selected_tools": [
+                "github_issue_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_lyALBhsH3fhYlegV23UY8119",
+                "call_01_83xQ0BKzLeQ0rstvjTvs5067"
+              ],
+              "correct": true,
+              "evidence": "t067_full_tools_v1.jsonl:core-011:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "github_issue_detail",
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_zNBuu7pSsdzf9YkE2N3n7084",
+                "call_01_gqzt0ixcB1i2jVUoI1Ov5619"
+              ]
+            },
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_mHJ5Xn4PVE0MoJ1LBo6H9887"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_8iWSbYIso0K7hHs9Yccw9348"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-012",
+          "category": "semantic_routing",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "No business Tool dispatch or environment data disclosure.",
+            "Final response states that this tool pool cannot perform the request."
+          ],
+          "business_review_reason": "Model refused host environment disclosure; no business-tool dispatch or GitHub request. Shell execution itself is unsupported by this read-only profile.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-013",
+          "category": "real_mcp",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Server audit shows exactly one echo_read with text holdout-v1 and response echo:holdout-v1.",
+            "Tool result success is linked to the original tool_call_id."
+          ],
+          "business_review_reason": "Real stdio MCP v1 echo_read dispatched once, returned echo:holdout-v1, and answer reported that value.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "selected_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "tool_call_ids": [
+                "call_00_uvkLGDq6nQbrZ00KLZjp4170"
+              ],
+              "correct": true,
+              "evidence": "t067_full_tools_v1.jsonl:core-013:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_CsLS0fPewwC9KnEEx6YZ7496"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-014",
+          "category": "real_mcp",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Zero server dispatch before reply and exactly one echo_read after reply; echo:holdout-reply returned.",
+            "Original tool_call_id persists through clarification and execution."
+          ],
+          "business_review_reason": "Controlled MCP missing text: zero server dispatch before reply, one echo_read after merge, original call ID retained.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-015",
+          "category": "real_mcp",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "One v2 echo_read(text=base,suffix=tail) returns echo:base:tail.",
+            "Trace identifies v2 schema and original tool_call_id."
+          ],
+          "business_review_reason": "Real stdio MCP v2 schema accepted text and suffix; one server dispatch returned echo:base:tail.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "selected_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "tool_call_ids": [
+                "call_00_GFyFgsWuuT5Ft0EEFmIv2011"
+              ],
+              "correct": true,
+              "evidence": "t067_full_tools_v1.jsonl:core-015:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_7S6B9ApzUdSB7UXMuQDl6219"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-016",
+          "category": "failure_timeout_retry",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "One server fail_read dispatch and isError=true response.",
+            "Failure status, error Observation, one attempt and original call ID are retained."
+          ],
+          "business_review_reason": "Real stdio MCP fail_read dispatched once; isError became failure Observation with no retry or false success.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-017",
+          "category": "failure_timeout_retry",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Server may have recorded one slow_read dispatch; no second dispatch.",
+            "Timeout/unknown Observation, bounded cleanup, one attempt and original call ID."
+          ],
+          "business_review_reason": "Real stdio MCP slow_read dispatched once; 50 ms client deadline produced unknown timeout Observation, bounded cleanup and no retry. Remote completion is not asserted.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-018",
+          "category": "failure_timeout_retry",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Real GitHub GET returns 404 for the pinned nonexistent path.",
+            "Failure Observation retains status, one attempt and original tool_call_id."
+          ],
+          "business_review_reason": "Real pinned GitHub read returned 404 once; Observation classified permanent failure without retry.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-019",
+          "category": "failure_timeout_retry",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Two distinct attempts under one tool_call_id; first classified transient, second successful.",
+            "Second attempt performs real pinned GitHub GET with 200 and correct blob."
+          ],
+          "business_review_reason": "One controlled 503 and one real GitHub 200 occurred as two attempts under the same call ID; final read succeeded.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-020",
+          "category": "multi_step_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Issue #4232 documents BEL vs ST hyperlink payload symptom.",
+            "Pinned rich/ansi.py contains ANSI parsing path relevant to report.",
+            "Answer cites both issue and code; avoids uncited issue comments."
+          ],
+          "business_review_reason": "Issue #4232 and pinned rich/ansi.py were read; answer cites both and explains the BEL versus ST parsing path. An extra unrelated tool call failed but required evidence was obtained.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail",
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_jBieUpNf2xnsSskKiMkT2409",
+                "call_01_7mEc8VuPzeB1BQykWKLB2817"
+              ],
+              "correct": false,
+              "evidence": "t067_full_tools_v1.jsonl:core-020:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_8ZaEHnhFQVBBX6eO4oeQ4748",
+                "call_01_JkOsjMCNi0s5lTPEHrGT5810"
+              ],
+              "correct": false,
+              "evidence": "t067_full_tools_v1.jsonl:core-020:assistant_turn_2"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_mpC6vOSfLcS52k8qCupb1790"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_YHiHSmDeD8vmBnCpX8U70934"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-021",
+          "category": "multi_step_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Issue #13957 states the Python 3.10 ForwardRef error.",
+            "Pinned _typing_extra.py contains ForwardRef compatibility logic.",
+            "Answer cites issue and pinned code, not code-search ranking alone."
+          ],
+          "business_review_reason": "Issue #13957, code search and pinned _typing_extra.py were read in sequence; answer cites issue and code for ForwardRef handling.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t067_full_tools_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_B8aGc8RknJsSEU2chBul0253",
+                "call_01_WWicmXb0edyWMf9XhDxP7692"
+              ],
+              "correct": false,
+              "evidence": "t067_full_tools_v1.jsonl:core-021:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_code_search"
+              ],
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_0DnTko4Fb5O1WEfvj42n1996"
+              ],
+              "correct": false,
+              "evidence": "t067_full_tools_v1.jsonl:core-021:assistant_turn_2"
+            },
+            {
+              "gold_step": 3,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_E1oPjH9xmBAGRA6UHlR18904",
+                "call_01_WuWd3xC0YELOGPZNaGaF2590"
+              ],
+              "correct": false,
+              "evidence": "t067_full_tools_v1.jsonl:core-021:assistant_turn_3"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_I9ms2NAAfovRnUN1eLmF1461"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "taskpilot_k3": {
+      "provenance": {
+        "raw_file": "t068_k3_v1.jsonl",
+        "raw_sha256": "5af426c7e1285cdefa0b7ec5e9859ec1a984e5747873cac8059e87903993656b",
+        "review_file": "t068_k3_review.json",
+        "review_sha256": "8e06ad03b97e88726b508ef3ee2f4f1989e1cacb81f56734f88037a3cbcf46f3"
+      },
+      "sample_count": 21,
+      "supported_attempted": 21,
+      "unsupported": 0,
+      "natural_model_tasks": 12,
+      "controlled_zero_llm_tasks": 9,
+      "tool_selection_steps": {
+        "correct": 7,
+        "eligible": 16
+      },
+      "tool_selection_tasks_all_steps_correct": {
+        "correct": 7,
+        "eligible": 11
+      },
+      "task_success_supported": {
+        "success": 18,
+        "eligible": 21
+      },
+      "task_success_all_21_coverage": {
+        "success": 18,
+        "eligible": 21
+      },
+      "business_outcomes": {
+        "not_verified": 3,
+        "success": 18
+      },
+      "samples": [
+        {
+          "sample_id": "core-001",
+          "category": "repository_understanding",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Pinned README content supports two stated HTTP client capabilities.",
+            "Answer cites the pinned README URL, not an unpinned branch."
+          ],
+          "business_review_reason": "Model selected pinned README read from K=3 candidates; real 200 result supports two capabilities and final answer cites the pinned URL.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_SNDvYFgT3D47SWi2GEoM9913"
+              ],
+              "correct": true,
+              "evidence": "t068_k3_v1.jsonl:core-001:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_V8PACilUfGufv5rvU72c2294"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-002",
+          "category": "repository_understanding",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Pinned README describes terminal presentation features.",
+            "Answer cites the pinned README."
+          ],
+          "business_review_reason": "Model read pinned Rich README and cited it for terminal presentation; an extra successful code search is retained.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_qdBV0r7Blwia54RVfQUg4014"
+              ],
+              "correct": true,
+              "evidence": "t068_k3_v1.jsonl:core-002:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_mEhqk9AbDRyJUPauUa8H0763"
+              ]
+            },
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_lBQ4wULgx9LIU4RBVQ6b7071"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-003",
+          "category": "issue_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Issue #895 body supports the reported cookie save/load or conflict behavior.",
+            "Answer cites issue #895 and distinguishes report from a fix."
+          ],
+          "business_review_reason": "Real issue #895 details support the cookie report; answer cites the issue without claiming an unverified fix.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail"
+              ],
+              "tool_call_ids": [
+                "call_00_egctSw0UmI3WAKOi8qLI6366"
+              ],
+              "correct": true,
+              "evidence": "t068_k3_v1.jsonl:core-003:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_8EsczAsr5Facg875D0F05282"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-004",
+          "category": "issue_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Issue #4171 describes Table title typing request.",
+            "Answer cites issue and does not claim an unverified implementation."
+          ],
+          "business_review_reason": "Real issue #4171 supports the Table typing request; answer cites the issue and limits implementation claims. Seven LLM turns and extra reads/searches remain in raw evidence.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail"
+              ],
+              "tool_call_ids": [
+                "call_00_JxwTKxJEXustQfRJhhOa5368"
+              ],
+              "correct": true,
+              "evidence": "t068_k3_v1.jsonl:core-004:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_95hxN8acnCJ8yc3HZGGS6736"
+              ]
+            },
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_nG7xBUJcwZvbTGIaxrFY4081"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_FrBu7hVqJFqTXAIDWYRr8769"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_EHPlwVDpVYVQ7W054rDg6418"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_rrg9PcOHZzhXGH6cgR6L1105"
+              ]
+            },
+            {
+              "assistant_turn": 7,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_kQyXlerB23RIsSh4uHa58969"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-005",
+          "category": "issue_to_code",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "not_verified",
+          "business_outcome": "not_verified",
+          "business_evidence_requirements": [
+            "Issue evidence identifies wide first character and spurious empty first segment.",
+            "Pinned rich/cells.py contains chop_cells implementation relevant to the report.",
+            "Answer cites both report and code without claiming execution of a fix."
+          ],
+          "business_review_reason": "Eight-step budget ended without a complete answer; pinned rich/cells.py was truncated before the relevant loop and code search returned 403. Required implementation/citation evidence is incomplete.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_Q6FxAAIVofbfRlSSvxKN4230",
+                "call_01_ttvmzNa6RkQ6CtSzIVBu0916"
+              ],
+              "correct": false,
+              "evidence": "t068_k3_v1.jsonl:core-005:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_2aWX67qxSTtSUEKNtnjb8420",
+                "call_01_4wVJlyMZojXvhMt6fHCG8464"
+              ],
+              "correct": false,
+              "evidence": "t068_k3_v1.jsonl:core-005:assistant_turn_2"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_CKgxE3OpQlS3a91GF4YQ1987",
+                "call_01_Pb37dsfn2hGOCItvhkjd4388"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_ZFlpLYDEiCIcuwGejRn09347"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_GpuNhXwySxRrGXjhsqSK8097",
+                "call_01_HmQ5QjXpzu4Ri1mNdIWH0419"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_ntIPbdGA3jvM4RkSEJEb8840"
+              ]
+            },
+            {
+              "assistant_turn": 7,
+              "selected_tools": [
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_UrS4IMiJBx4b414sGW920687"
+              ]
+            },
+            {
+              "assistant_turn": 8,
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_yWdwAX82VyNdWy7GvTaV1109"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-006",
+          "category": "issue_to_code",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "not_verified",
+          "business_outcome": "not_verified",
+          "business_evidence_requirements": [
+            "Issue #13965 establishes the reported max_digits behavior.",
+            "Pinned validator file contains Decimal whole-digit logic.",
+            "Answer relates report to code with both URLs."
+          ],
+          "business_review_reason": "Issue #13965 was read, but three code-search calls returned 403 and no pinned validator file was read. Answer explicitly says the code path was not confirmed.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_jnpZ4AlXNi0G9jIIBN6O8139",
+                "call_01_DG5WW3UEkwNK0KBUhBw83936"
+              ],
+              "correct": false,
+              "evidence": "t068_k3_v1.jsonl:core-006:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_dmbmRampkWpGjJpxIP3f9171"
+              ],
+              "correct": false,
+              "evidence": "t068_k3_v1.jsonl:core-006:assistant_turn_2"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_gqRvPte3PIEMYIREkk1w1508"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_e2vSJfvHmPHO0dmQk9ig4533"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-007",
+          "category": "parameter_validation",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Zero dispatch before reply; same tool_call_id through merge and result; one final dispatch.",
+            "Real issue #4226 response supports selected-key request."
+          ],
+          "business_review_reason": "Controlled missing issue_number: zero dispatch before frozen reply, original call ID retained, then one real issue-detail Tool execution.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-008",
+          "category": "parameter_validation",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Zero dispatch before reply; original call ID preserved and exactly one final dispatch.",
+            "Pinned README.md is returned and cited."
+          ],
+          "business_review_reason": "Controlled missing path: zero dispatch before frozen reply, original call ID retained, then one pinned README Tool execution.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-009",
+          "category": "parameter_validation",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Validation Observation reports malformed JSON under original tool_call_id and zero dispatch.",
+            "No GitHub request is made for this call."
+          ],
+          "business_review_reason": "Malformed JSON rejected under original call ID with zero GitHub requests.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-010",
+          "category": "parameter_validation",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Schema failure cites issue_number type and original tool_call_id; zero dispatch.",
+            "No GitHub request is made for this call."
+          ],
+          "business_review_reason": "Boolean issue_number rejected as invalid integer under original call ID with zero GitHub requests.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-011",
+          "category": "semantic_routing",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Routing candidate and selected tool with score are recorded.",
+            "At least one selected-tool result cites either pinned issue #4202 or pinned rich/cells.py and supports the wide-character behavior; both are alternatives, not jointly required."
+          ],
+          "business_review_reason": "K=3 routing events preserve candidates, scores and selected tools; selected real pinned cells.py/test results support wide-character behavior and answer cites those URLs. Max-step exit and one failed terminate remain recorded.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_search",
+                "github_code_search"
+              ],
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_qtVjL3PAW3VsjT0OOH3C5951",
+                "call_01_MjmVeLaZQcnCn0nwUisj5498"
+              ],
+              "correct": true,
+              "evidence": "t068_k3_v1.jsonl:core-011:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_odw8z9zqZSe3k0FbEdBw0922"
+              ]
+            },
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "github_issue_detail",
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_TwSwjsW2506uVQGi3Kao9461",
+                "call_01_XoOGLZ1d6wVKLariRral1126"
+              ]
+            },
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_VohLpylLoxUOobJdDx4g4562"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "github_issue_detail"
+              ],
+              "tool_call_ids": [
+                "call_00_V2fwqGMlmyqnhNx4cKPR5874"
+              ]
+            },
+            {
+              "assistant_turn": 6,
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_FGdvzmrX2OUGg43goLaH2328"
+              ]
+            },
+            {
+              "assistant_turn": 7,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_rnoyDVXnyNsdH6xc3YlK1188"
+              ]
+            },
+            {
+              "assistant_turn": 8,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_PDyCp5x1L4aO0MBsO7oc1648"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-012",
+          "category": "semantic_routing",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "No business Tool dispatch or environment data disclosure.",
+            "Final response states that this tool pool cannot perform the request."
+          ],
+          "business_review_reason": "Model received K=3 candidates but selected only terminate; no business dispatch or environment disclosure. Shell execution is unsupported by the read-only profile.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-013",
+          "category": "real_mcp",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Server audit shows exactly one echo_read with text holdout-v1 and response echo:holdout-v1.",
+            "Tool result success is linked to the original tool_call_id."
+          ],
+          "business_review_reason": "Model selected real stdio MCP v1 echo_read from K=3 candidates; one server dispatch returned echo:holdout-v1.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "selected_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "tool_call_ids": [
+                "call_00_GBC7RQMKRxigPUGxtnUF9781"
+              ],
+              "correct": true,
+              "evidence": "t068_k3_v1.jsonl:core-013:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_vfgqAFczZGSsrjPq4Ovq0167"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-014",
+          "category": "real_mcp",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Zero server dispatch before reply and exactly one echo_read after reply; echo:holdout-reply returned.",
+            "Original tool_call_id persists through clarification and execution."
+          ],
+          "business_review_reason": "Controlled MCP missing text: zero server dispatch before frozen reply, one echo_read after merge, original call ID retained.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-015",
+          "category": "real_mcp",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "One v2 echo_read(text=base,suffix=tail) returns echo:base:tail.",
+            "Trace identifies v2 schema and original tool_call_id."
+          ],
+          "business_review_reason": "Model selected real stdio MCP v2 echo_read with text and suffix; one server dispatch returned echo:base:tail.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "selected_tools": [
+                "mcp_fixture_echo_read"
+              ],
+              "tool_call_ids": [
+                "call_00_iZXQxBJt1VCNFTyBnCdp5765"
+              ],
+              "correct": true,
+              "evidence": "t068_k3_v1.jsonl:core-015:assistant_turn_1"
+            }
+          ],
+          "selection_task_correct": true,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 2,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_YEuCZBJQcgz9PXU4Hmb79486"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-016",
+          "category": "failure_timeout_retry",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "One server fail_read dispatch and isError=true response.",
+            "Failure status, error Observation, one attempt and original call ID are retained."
+          ],
+          "business_review_reason": "Real stdio MCP fail_read dispatched once; isError became failure Observation with no retry or false success.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-017",
+          "category": "failure_timeout_retry",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Server may have recorded one slow_read dispatch; no second dispatch.",
+            "Timeout/unknown Observation, bounded cleanup, one attempt and original call ID."
+          ],
+          "business_review_reason": "Real stdio MCP slow_read dispatched once; 50 ms client deadline produced unknown timeout Observation, bounded cleanup and no retry. Remote completion was not inferred.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-018",
+          "category": "failure_timeout_retry",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Real GitHub GET returns 404 for the pinned nonexistent path.",
+            "Failure Observation retains status, one attempt and original tool_call_id."
+          ],
+          "business_review_reason": "Real pinned GitHub read returned 404 once; Observation classified permanent failure without retry.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-019",
+          "category": "failure_timeout_retry",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Two distinct attempts under one tool_call_id; first classified transient, second successful.",
+            "Second attempt performs real pinned GitHub GET with 200 and correct blob."
+          ],
+          "business_review_reason": "One controlled 503 and one real GitHub 200 occurred as two attempts under the same Tool call ID; final pinned read succeeded.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [],
+          "selection_task_correct": null,
+          "unlabelled_followup_turns": []
+        },
+        {
+          "sample_id": "core-020",
+          "category": "multi_step_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "not_verified",
+          "business_outcome": "not_verified",
+          "business_evidence_requirements": [
+            "Issue #4232 documents BEL vs ST hyperlink payload symptom.",
+            "Pinned rich/ansi.py contains ANSI parsing path relevant to report.",
+            "Answer cites both issue and code; avoids uncited issue comments."
+          ],
+          "business_review_reason": "Real issue #4232 and pinned rich/ansi.py were read, and the answer explains the regex, but it omits a complete pinned code URL and discusses issue comments without direct comment citation. Frozen answer-citation criterion is not confirmed.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail",
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_SYAHDaLLTxrrQCFboOGh3370",
+                "call_01_ifsV6vP92tICdXagzPol9438"
+              ],
+              "correct": false,
+              "evidence": "t068_k3_v1.jsonl:core-020:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_YLdxBhofz6v5gAorQv7R3138",
+                "call_01_zQqPGbHHgf8Yz0Yl7tFR7125"
+              ],
+              "correct": false,
+              "evidence": "t068_k3_v1.jsonl:core-020:assistant_turn_2"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 3,
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_gzKVLuL31WQCNFpnmnf96280"
+              ]
+            },
+            {
+              "assistant_turn": 5,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_rHeaEUyb7B4kB1m2Uro06913"
+              ]
+            }
+          ]
+        },
+        {
+          "sample_id": "core-021",
+          "category": "multi_step_investigation",
+          "support": "supported",
+          "mode": "natural_model",
+          "source_review_outcome": "success",
+          "business_outcome": "success",
+          "business_evidence_requirements": [
+            "Issue #13957 states the Python 3.10 ForwardRef error.",
+            "Pinned _typing_extra.py contains ForwardRef compatibility logic.",
+            "Answer cites issue and pinned code, not code-search ranking alone."
+          ],
+          "business_review_reason": "Model read issue #13957, searched code and read pinned _typing_extra.py; answer cites issue and pinned code for ForwardRef handling.",
+          "adjudication_conflict": null,
+          "selected_run_file": "t068_k3_v1.jsonl",
+          "selection_steps": [
+            {
+              "gold_step": 1,
+              "acceptable_tools": [
+                "github_issue_detail"
+              ],
+              "selected_tools": [
+                "github_issue_detail",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_MGy0FSOf4uDOjtSDiecA7172",
+                "call_01_32Qxu6do9bE3Z6bfYD7H6596"
+              ],
+              "correct": false,
+              "evidence": "t068_k3_v1.jsonl:core-021:assistant_turn_1"
+            },
+            {
+              "gold_step": 2,
+              "acceptable_tools": [
+                "github_code_search"
+              ],
+              "selected_tools": [
+                "github_read_file"
+              ],
+              "tool_call_ids": [
+                "call_00_ip8mKUGJCDDSvqq8dnFQ9715"
+              ],
+              "correct": false,
+              "evidence": "t068_k3_v1.jsonl:core-021:assistant_turn_2"
+            },
+            {
+              "gold_step": 3,
+              "acceptable_tools": [
+                "github_read_file"
+              ],
+              "selected_tools": [
+                "github_code_search",
+                "github_code_search"
+              ],
+              "tool_call_ids": [
+                "call_00_b9WiWmbxV9ZYNWAwwclk6123",
+                "call_01_rn9vFx9zQy2uqXhypASv5608"
+              ],
+              "correct": false,
+              "evidence": "t068_k3_v1.jsonl:core-021:assistant_turn_3"
+            }
+          ],
+          "selection_task_correct": false,
+          "unlabelled_followup_turns": [
+            {
+              "assistant_turn": 4,
+              "selected_tools": [
+                "terminate"
+              ],
+              "tool_call_ids": [
+                "call_00_AyTNb7tAVykIxb9jJPWR4208"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
