@@ -3,15 +3,15 @@
 ## Dashboard
 
 - Current Phase: Phase 8 — Final Evaluation
-- Current PR: PR-09 — T065 final benchmark dataset（本分支待评审）
-- Next Task: 待后续授权；本轮不开始 T066–T073
+- Current PR: PR-09 — T065/T066（本分支待评审）
+- Next Task: 待后续授权；本轮不开始 T067–T073
 - Total Tasks: 73
-- Completed: 45
-- TODO: 27
+- Completed: 46
+- TODO: 26
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 8
+- Remaining P0: 7
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 45 + 27 + 1 + 0 + 0 = 73；剩余 8 + 19 + 1 = 28。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 46 + 26 + 1 + 0 + 0 = 73；剩余 7 + 19 + 1 = 27。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -77,7 +77,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
 - Phase 7：T053–T064，Productization，PR-08 或按依赖拆成小 PR。
-- Phase 8：T065–T073，Final Evaluation，PR-09 已完成 T065 数据集；T066–T073 尚待授权与验收。
+- Phase 8：T065–T073，Final Evaluation，PR-09 已完成 T065 数据集和 T066 上游基线；T067–T073 尚待授权与验收。
 
 后续 Task 的 Acceptance Criteria 和 Tests 是验收要求，不是已通过的结果；实施完成时必须附具体命令、版本、结果和脱敏证据位置。未验收不得将 TODO 改为 DONE。
 
@@ -1114,14 +1114,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Original OpenManus baseline
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T003, T065
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 运行固定上游原始装配的产品参照。
 - **Acceptance Criteria:** 使用 commit 3309bf4e416fb1c74b008f3e86494439a31bad53；记录原工具池、环境、模型和限制；无对应能力/无法安全运行的任务明确标 unsupported/NOT VERIFIED，单列分母。
 - **Tests:** 独立 checkout、真实 provider/工具运行；核验无 TaskPilot 实现混入；保存原始记录。
 - **Out of Scope:** 为使 baseline 好看而改造上游、启用不受控危险动作。
-- **Notes:** 安全可比子集与全量可用性分开；不能把新增 GitHub 工具收益全归因 Top-K。
+- **Notes:** 2026-10-11 在独立 checkout 固定上游 `3309bf4e416fb1c74b008f3e86494439a31bad53`，原始 Manus/Tool 装配通过隔离 Docker + 真实 DeepSeek Provider 运行冻结 v1.0.0 的 21 条 holdout：12 条 supported 实际执行（4 条业务证据达成、8 条失败），9 条 unsupported 未 dispatch。原始 21 行及两次 MCP setup failure/复测全部保留在 [原始证据](../eval/results/t066_original_openmanus_v1.jsonl)、[MCP 首次复测](../eval/results/t066_original_openmanus_mcp_retest.jsonl)、[MCP 最终复测](../eval/results/t066_original_openmanus_mcp_retest_2.jsonl)；[逐项复核](../eval/results/t066_original_openmanus_review.json) 和 [环境/限制/复现](T066_ORIGINAL_OPENMANUS.md) 单列分母与 NOT VERIFIED。原始工具池仅 `ask_human/python_execute/str_replace_editor/terminate`，MCP fixture 经上游接口接入；没有混入 TaskPilot GitHub Tools、Routing、Validation 或 Reliability。MCP `fail_read` 真实 `isError=true`，但原始结果状态丢失且 Agent 声明 success，按冻结规则记失败。安全可比子集与全量可用性分开，不能把新增 GitHub 工具收益全归因 Top-K；未计算 T069–T071 正式指标。
 
 ### T067 — Same-tool-pool full-tool baseline
 
