@@ -154,6 +154,9 @@ From a clean checkout with Python 3.12 and the locked dependencies in
 `requirements-service.lock.txt`, run the commands below. They read committed
 raw evidence and write T069/T070 recomputations outside the repository;
 `--check` compares T071/T072 directly with committed results.
+No local `config.toml` or Provider credential is needed: the offline Trace
+import uses the tracked `config/config.example.toml` with an empty Daytona
+placeholder.
 
 ```bash
 .venv/bin/python -m eval.t069_score_accuracy_success --output /tmp/taskpilot-t069-recomputed.json
