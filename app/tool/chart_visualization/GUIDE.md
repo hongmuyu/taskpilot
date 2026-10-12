@@ -2,6 +2,8 @@
 
 # Chart Visualization Tool
 
+> Historical OpenManus component guide. TaskPilot's read-only GitHub entry point does not enable this tool; the installation and demo commands below are not part of the verified TaskPilot setup. See the [TaskPilot usage guide](../../../docs/USAGE.md).
+
 The chart visualization tool generates data processing code through Python and ultimately invokes [@visactor/vmind](https://github.com/VisActor/VMind) to obtain chart specifications. Chart rendering is implemented using [@visactor/vchart](https://github.com/VisActor/VChart).
 
 ## Installation (Mac / Linux)

@@ -1,6 +1,6 @@
 # TaskPilot 当前架构（Core，只读）
 
-本文对应已交付的只读 Core MVP 源码。运行命令见 [README](../README.md) 和 [使用指南](USAGE.md)；真实调用证据、正式评测及限制见 [公开文档索引](README.md) 与 [Benchmark](BENCHMARK.md)。
+本文对应已交付的只读 Core MVP 源码。运行命令见 [README](../README.md) 和 [使用指南](USAGE.md)；真实调用证据、正式评测及限制见 [公开文档索引](INDEX.md) 与 [Benchmark](BENCHMARK.md)。
 
 ## 调用边界
 
@@ -64,4 +64,4 @@ FastAPI 的 `POST /tasks` 在严格请求校验后创建每任务独立 Agent �
 
 ## 上游与许可
 
-TaskPilot 保留 [FoundationAgents/OpenManus](https://github.com/FoundationAgents/OpenManus) 的祖先历史，以 `3309bf4e416fb1c74b008f3e86494439a31bad53`（`openmanus-baseline-3309bf4`）为固定二次开发基线，不自动追踪上游主分支。原 [MIT LICENSE](../LICENSE) 与上游多语言 README 保留在仓库；它们描述的通用 OpenManus 能力不等于 TaskPilot 专用只读入口的权限或验收范围。
+TaskPilot 保留 [FoundationAgents/OpenManus](https://github.com/FoundationAgents/OpenManus) 的祖先历史，以 `3309bf4e416fb1c74b008f3e86494439a31bad53`（`openmanus-baseline-3309bf4`）为固定二次开发基线，不自动追踪上游主分支。仓库保留原 [MIT LICENSE](../LICENSE)；上游多语言介绍见 [OpenManus 官方仓库](https://github.com/FoundationAgents/OpenManus)。通用 OpenManus 能力不等于 TaskPilot 专用只读入口的权限或验收范围。

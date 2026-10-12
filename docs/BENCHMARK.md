@@ -24,6 +24,9 @@ claim.
   was performed by the implementing agent, not an independent reviewer.
 - [Original OpenManus](../eval/results/t066_original_openmanus_v1.jsonl) is
   pinned to upstream `3309bf4e416fb1c74b008f3e86494439a31bad53`.
+  Its raw transcript includes file names from that historical checkout,
+  including legacy translated README files; these are observations, not links
+  to the current public tree.
   [Full-tools](../eval/results/t067_full_tools_v1.jsonl) and
   [K=3](../eval/results/t068_k3_v1.jsonl) use the same TaskPilot product app
   tree `c9c64263f7070141bab3dfb9d7df6a8aa7871bb3`, deepseek-flash,
@@ -171,7 +174,7 @@ real GitHub/MCP replays and known environment limits, use the
 need the existing model configuration and network access, may incur provider
 charges and must use new output paths. The evaluation runner records Git HEAD
 and therefore needs `git`; the deployed service image omits it. Historical
-GitHub/MCP/Docker integration evidence is indexed in [the public docs](README.md).
+GitHub/MCP/Docker integration evidence is indexed in [the public docs](INDEX.md).
 
 Provider/GitHub/MCP/Docker E2E evidence was recorded in its named earlier
 tasks, with separate T072 replays. The publication of this report did not

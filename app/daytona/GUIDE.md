@@ -1,5 +1,7 @@
 # Agent with Daytona sandbox
 
+> Historical OpenManus component guide. TaskPilot's read-only GitHub entry point does not enable Daytona; the instructions below have not been revalidated as a TaskPilot setup path. See the [TaskPilot usage guide](../../docs/USAGE.md).
+
 
 
 

@@ -27,3 +27,7 @@
 - [失败分析与干净环境复现](T072_FAILURE_REPRODUCIBILITY.md)
 
 `eval/datasets/` 存放冻结的 Holdout、标注及评分规则；`eval/results/` 保存脱敏原始运行、人工复核与逐样本结果。早期 [K 选择实验](T029_TOPK_EXPERIMENT.md)与[单步路由对照](T030_ROUTING_COMPARISON.md)是阶段证据，与正式 21 条 Holdout 分开。
+
+## 保留的上游组件资料
+
+仓库仍含 OpenManus 的 [Daytona sandbox](../app/daytona/GUIDE.md)、[图表可视化](../app/tool/chart_visualization/GUIDE.md)、[A2A 实验](../protocol/a2a/app/GUIDE.md)与[示例任务](../examples/use_case/EXAMPLE.md)资料。这些指南记录上游组件，不是 TaskPilot 只读 GitHub 入口的安装步骤或已验收能力。

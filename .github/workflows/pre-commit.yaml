@@ -14,6 +14,13 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+      - name: Check README uniqueness
+        run: |
+          readmes="$(git ls-files | grep -Ei '(^|/)readme([^/]*)$')"
+          if [ "$readmes" != 'README.md' ]; then
+            printf 'Expected only README.md; found:\n%s\n' "$readmes"
+            exit 1
+          fi
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
