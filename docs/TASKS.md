@@ -3,21 +3,21 @@
 ## Dashboard
 
 - Current Phase: Phase 8 — Final Evaluation
-- Current PR: PR-09 — T065/T066/T067/T068/T069/T070（本分支待评审）
-- Next Task: 待后续授权；本轮不开始 T071–T073
+- Current PR: PR-09 — T065/T066/T067/T068/T069/T070/T071（本分支待评审）
+- Next Task: 待后续授权；本轮不开始 T072–T073
 - Total Tasks: 73
-- Completed: 50
-- TODO: 22
+- Completed: 51
+- TODO: 21
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 3
+- Remaining P0: 2
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-11；PR-09 起点 main `f80dffb`，T070 成本与延迟结果已核验
+- State verified: 2026-10-12；PR-09 起点 main `f80dffb`，T071 参数与澄清指标已核验
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a、PR-08b 和 PR-08c 已合并；PR-09 的 T065–T070 在本分支完成，尚未合并。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a、PR-08b 和 PR-08c 已合并；PR-09 的 T065–T071 在本分支完成，尚未合并。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 50 + 22 + 1 + 0 + 0 = 73；剩余 3 + 19 + 1 = 23。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 51 + 21 + 1 + 0 + 0 = 73；剩余 2 + 19 + 1 = 22。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -77,7 +77,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
 - Phase 7：T053–T064，Productization，PR-08 或按依赖拆成小 PR。
-- Phase 8：T065–T073，Final Evaluation，PR-09 已完成 T065 数据集、T066 上游基线、T067 同工具池 full-tools 基线、T068 K=3 真实运行、T069 正式准确率/任务成功率和 T070 成本/延迟统计；T071–T073 尚待授权与验收。
+- Phase 8：T065–T073，Final Evaluation，PR-09 已完成 T065 数据集、T066 上游基线、T067 同工具池 full-tools 基线、T068 K=3 真实运行、T069 正式准确率/任务成功率、T070 成本/延迟统计和 T071 参数/澄清指标；T072–T073 尚待授权与验收。
 
 后续 Task 的 Acceptance Criteria 和 Tests 是验收要求，不是已通过的结果；实施完成时必须附具体命令、版本、结果和脱敏证据位置。未验收不得将 TODO 改为 DONE。
 
@@ -1189,14 +1189,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Parameter / Slot metrics
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T065, T068
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 测量参数提取与澄清质量。
 - **Acceptance Criteria:** 定义字段级 precision/recall/F1 或明确等价指标；关键参数准确率、缺参检测、澄清后有效率与无依据猜测单列；标注来源可追踪。
 - **Tests:** 基于真实调用与用户回复评分；缺参/错误类型/多轮改值样本；人工核验关键 slot。
 - **Out of Scope:** 凭模型自评填分、把 schema 合法等同用户意图正确。
-- **Notes:** 口径在 T065 冻结，报告实际样本与零分母处理。
+- **Notes:** 2026-10-12 按 T065 v1.0.0 冻结口径、T066–T068 原始记录完成 [可复算评分脚本](../eval/t071_slot_metrics.py)、[63 条逐样本/逐字段来源与结果](../eval/results/t071_slot_metrics_v1.json)和[人工复核与分母说明](T071_PARAMETER_SLOT_METRICS.md)。结构化字段自然任务：上游仅 2 个 MCP step、TP/FP/FN=3/0/0（9 个 GitHub Python 调查无可比 typed slot）；Full-tools 16 step 为 41/10/4，Precision/Recall/F1=0.804/0.911/0.854；K=3 16 step 为 40/12/5，0.769/0.889/0.825。模型显式提取仅按 task/Observation 17 个 gold 字段计分，Full-tools 13/10/4、K=3 12/12/5；确认的 Context 与 9 个零 LLM 受控样本另列。两组均在 3/3 个受控缺参字段上触发零执行澄清，3/3 条脚本回复有效且原 call ID 保持，2/2 条非法参数类型识别并零 dispatch；无 gold 字段分母记 NOT APPLICABLE。没有确认的错误 gold 值猜测；额外参数是否无依据与自然多轮改值仍 NOT VERIFIED。T070 仅加测试未删测试；363 与 359 的历史命令差异无法精确复原，当前相关回归覆盖 TaskPilot/baseline/Browser MCP。
 
 ### T072 — Failure analysis / benchmark reproducibility
 
@@ -1311,7 +1311,7 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - [ ] TaskPilot comparison run：真实 GitHub REST、MCP、clarification、routing、reliability、多步调查已测；T068。
 - [ ] Tool Selection Accuracy measured；Task Success Rate measured，任务成功按证据判定而非 terminate(success)；T069。
 - [ ] Token Usage measured；Latency measured，失败/重试成本、人类等待和未知 usage 口径明确；T070。
-- [ ] Parameter / Slot metrics measured，字段标注与真实调用可核验；T071。
+- [x] Parameter / Slot metrics measured，字段标注与真实调用可核验；T071。
 - [ ] Failure analysis completed，原始记录、配置、命令与评分可复现；T072。
 - [ ] Resume metrics traceable to real runs：每个简历数字可回溯真实数据、版本与计算口径；T073。
 
