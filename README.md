@@ -2,7 +2,7 @@
 
 TaskPilot 是基于 [OpenManus](https://github.com/FoundationAgents/OpenManus) 二次开发的单 Agent、只读 GitHub 仓库调查工具。用户明确指定 `owner/repo` 后，Agent 根据任务及每一步的 Observation 动态调查仓库结构、Issue 和源码，并尽量在回答中给出文件路径、Issue 编号及来源 URL。它不是固定的调查工作流，也不提供仓库写入或 Shell 执行权限。
 
-当前交付的是**仅供本地或受限访问的 Core MVP 候选**，含冻结的最终任务级 Benchmark；不是公开服务。[最终验收与三组评测](docs/T073_CORE_MVP_FINAL.md)列出分母、失败及限制，功能状态以 [任务总账](docs/TASKS.md) 为准；实际调用链见 [架构文档](docs/TASKPILOT_ARCHITECTURE.md)。
+当前交付的是**仅供本地或受限访问的 Core MVP**，含冻结的最终任务级 Benchmark；不是公开服务。[最终验收与三组评测](docs/T073_CORE_MVP_FINAL.md)列出分母、失败及限制，功能状态以 [任务总账](docs/TASKS.md) 为准；实际调用链见 [架构文档](docs/TASKPILOT_ARCHITECTURE.md)。正式冻结使用 PR-09 合并后 `main` 上的 `core-mvp-v1` tag；`core-mvp-candidate-v1` 保留 T073 验收时的候选提交。
 
 ## 已实现的 Core
 

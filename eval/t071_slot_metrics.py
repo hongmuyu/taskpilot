@@ -9,7 +9,6 @@ import argparse
 import json
 import re
 from collections import Counter
-from pathlib import Path
 
 from eval import t069_score_accuracy_success as t069
 

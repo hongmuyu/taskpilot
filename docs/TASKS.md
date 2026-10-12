@@ -3,8 +3,8 @@
 ## Dashboard
 
 - Current Phase: Phase 8 — Final Evaluation
-- Current PR: PR-09 — T065/T066/T067/T068/T069/T070/T071/T072/T073（本分支待评审）
-- Next Task: 待 PR-09 最终合并评审授权；本轮不开始新任务
+- Current PR: PR-09 — T065–T073 完成，Core MVP 正式冻结使用合并后 `main` 的 `core-mvp-v1`
+- Next Task: Core MVP 已完成；收尾后停止，新任务须单独授权
 - Total Tasks: 73
 - Completed: 53
 - TODO: 19
@@ -17,7 +17,7 @@
 - Total P0 / P1 / P2: 53 / 19 / 1
 - State verified: 2026-10-12；PR-09 起点 main `f80dffb`，T073 Core MVP 出口与最终指标已核验
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a、PR-08b 和 PR-08c 已合并；PR-09 的 T065–T073 在本分支完成，尚未合并。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a、PR-08b 和 PR-08c 已合并；PR-09 的 T065–T073 已完成，合并与正式冻结状态以 GitHub PR 和 `core-mvp-v1` tag 为准；候选 `core-mvp-candidate-v1` 保留在 T073 验收提交。
 
 ## Maintenance and priority rules
 
@@ -77,7 +77,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
 - Phase 7：T053–T064，Productization，PR-08 或按依赖拆成小 PR。
-- Phase 8：T065–T073，Final Evaluation，PR-09 已在本分支完成 T065 冻结数据、T066–T068 三组运行、T069–T071 正式指标、T072 失败与复现审计及 T073 Core MVP 出口验收；尚未合并。
+- Phase 8：T065–T073，Final Evaluation，PR-09 已完成 T065 冻结数据、T066–T068 三组运行、T069–T071 正式指标、T072 失败与复现审计及 T073 Core MVP 出口验收；正式冻结仅使用合并后的 `main` revision。
 
 后续 Task 的 Acceptance Criteria 和 Tests 是验收要求，不是已通过的结果；实施完成时必须附具体命令、版本、结果和脱敏证据位置。未验收不得将 TODO 改为 DONE。
 
@@ -1226,7 +1226,7 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Acceptance Criteria:** README/最终报告/简历数字均能追溯真实 run 和计算口径；复核所有 Core P0 DONE、Core MVP Exit Criteria 全满足；不夸大收益；冻结 Core MVP revision；未实现 P1/P2 不阻塞交付。
 - **Tests:** 核验数字和引用；运行当时全部已交付 TaskPilot scope tests；按 Core MVP Exit Criteria 核对真实只读/GitHub/MCP E2E、Docker、可复现部署和文档证据；已交付 Enhancement subset 另附结果。
 - **Out of Scope:** 预写提升百分比、为了简历数字继续堆 Feature。
-- **Notes:** 2026-10-12 完成[Core MVP 最终报告、28 项出口证据与保守简历表述](T073_CORE_MVP_FINAL.md)，README 加入冻结 21 条 Holdout 的三组正式结果和复算入口。T069–T071 指标均直接引用原始结果及评分脚本；T072 的 core-011 full-tools 口径限制、所有失败/NOT VERIFIED 和 K=3 负收益继续保留。所有 53 项 P0 DONE、Exit Criteria 28/28 核对，Dashboard Remaining P0=0；TaskPilot + baseline/Browser MCP 已交付范围 **390 passed**，真实 GitHub/MCP/Trace/FastAPI/Docker/受限部署证据逐项引用，不把受控样本当模型自主成功。独立 clean checkout 的无网络复算、Docker 真实复跑和镜像缺 Git 的复现约束见 T072；候选 revision 以 T073 commit 和本地 `core-mvp-candidate-v1` tag 冻结。未运行的上游完整 sandbox suite、其他平台/transport、自然模型漏参、真实人工等待及 Provider revision 保留 NOT VERIFIED。P1/P2 仍延期；PR-09 未合并，不继续增加 Feature。
+- **Notes:** 2026-10-12 完成[Core MVP 最终报告、28 项出口证据与保守简历表述](T073_CORE_MVP_FINAL.md)，README 加入冻结 21 条 Holdout 的三组正式结果和复算入口。T069–T071 指标均直接引用原始结果及评分脚本；T072 的 core-011 full-tools 口径限制、所有失败/NOT VERIFIED 和 K=3 负收益继续保留。所有 53 项 P0 DONE、Exit Criteria 28/28 核对，Dashboard Remaining P0=0；TaskPilot + baseline/Browser MCP 已交付范围 **390 passed / 12 warnings**，真实 GitHub/MCP/Trace/FastAPI/Docker/受限部署证据逐项引用，不把受控样本当模型自主成功。独立 clean checkout 的无网络复算、Docker 真实复跑和镜像缺 Git 的复现约束见 T072；候选 revision 以 T073 commit 和本地 `core-mvp-candidate-v1` tag 冻结。未运行的上游完整 sandbox suite、其他平台/transport、自然模型漏参、真实人工等待及 Provider revision 保留 NOT VERIFIED。P1/P2 仍延期；T073 验收时 PR-09 未合并，正式冻结使用随后合并到 main 的 `core-mvp-v1`，不继续增加 Feature。
 
 ## Explicit Deferred / Non-goals
 

@@ -1,10 +1,12 @@
 # TaskPilot Core MVP — final exit review and benchmark
 
 **Scope:** local or access-restricted, single-agent, read-only GitHub repository
-investigation. This is a Core MVP candidate, not a public service or a claim
-of statistically significant improvement. The candidate is frozen at the
-T073 commit, identified by local tag `core-mvp-candidate-v1`; PR-09 remains
-unmerged at this review.
+investigation. This report records the accepted Core MVP, not a public service
+or a claim of statistically significant improvement. The T073 acceptance
+candidate remains frozen at `f016437ff4cbfa25e8a07f502d1d57b8b3b70637`
+under `core-mvp-candidate-v1`. The official `core-mvp-v1` tag is created only
+on the PR-09 squash-merge commit in `main`; it identifies the final merged
+revision, while the candidate tag preserves the earlier acceptance snapshot.
 
 ## Evidence and scoring provenance
 
@@ -178,7 +180,7 @@ review complete. The following checks correspond in order to
 24. **Failure/reproduction audit:** [T072](T072_FAILURE_REPRODUCIBILITY.md), clean offline metric replay and separate real integration reruns.
 25. **Resume traceability:** conservative claims below cite these frozen sources and explicit denominators.
 26. **All Core P0 DONE:** task-card count and Dashboard are checked after updating T073; deferred P1/P2 do not gate Core.
-27. **Scope tests:** `tests/taskpilot tests/baseline/test_runtime.py tests/baseline/test_t066_original_baseline.py tests/tools/test_browser_use_mcp.py` **390 passed** on this branch: 372 TaskPilot tests, 13 runtime/Browser MCP tests and five T066 original-baseline tests. T071 documented that historical 363-versus-359 command selection cannot be reconstructed; no T070 test was deleted, and the current explicit suite avoids that ambiguity. Historical live evidence is separately linked. The unrelated upstream full-suite sandbox assertion remains outside this passing claim.
+27. **Scope tests:** `tests/taskpilot tests/baseline/test_runtime.py tests/baseline/test_t066_original_baseline.py tests/tools/test_browser_use_mcp.py` **390 passed, 12 warnings**: 372 TaskPilot tests, 13 runtime/Browser MCP tests and five T066 original-baseline tests. The 12 warnings are seven Pydantic class-config deprecations, four Pydantic removed-config-key warnings and one Requests dependency-version warning; pytest-asyncio also emits a pre-run fixture-loop-scope deprecation. These existing dependency/configuration warnings are not test failures. T071 documented that historical 363-versus-359 command selection cannot be reconstructed; no T070 test was deleted, and the current explicit suite avoids that ambiguity. Historical live evidence is separately linked. The unrelated upstream full-suite sandbox assertion remains outside this passing claim.
 28. **No fabricated metrics:** no mock labelled live, no unsupported as zero-token attempt, no finish declaration as independent business success, no statistical or overall improvement claim.
 
 ## Clean-checkout evaluation route and candidate freeze
@@ -196,8 +198,17 @@ injection; never put secret values in arguments or output. The pinned
 deployment image and lockfile are verified on Linux amd64; Docker bridge
 proxy restrictions, embedding cold download and isolated-builder no-cache
 build are documented in [T059](T059_DOCKER.md) and [T062](T062_DEPLOYMENT.md).
-The candidate tag points to this final review commit; no merge or public
-release is implied.
+T073 and the final PR review recompute committed metrics and run scope tests;
+the real Provider/GitHub/MCP/Docker E2E records linked above come from their
+named earlier tasks, including T072's separate replay. They are not new T073
+live executions. Final review removed one unused `Path` import from the T071
+scorer to satisfy autoflake; its recomputed output is unchanged.
+
+The candidate tag stays on the T073 acceptance commit. After PR-09 is merged
+and verified, `core-mvp-v1` points to the resulting `main` squash commit.
+Use `git fetch origin --tags` and `git rev-parse core-mvp-v1^{commit}` to
+resolve the official frozen revision. A Git tag does not imply public-service
+deployment.
 
 ## Resume-safe wording
 
