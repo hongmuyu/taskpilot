@@ -2,7 +2,7 @@
 
 TaskPilot 是基于 [OpenManus](https://github.com/FoundationAgents/OpenManus) 二次开发的单 Agent、只读 GitHub 仓库调查工具。用户明确指定 `owner/repo` 后，Agent 根据任务及每一步的 Observation 动态调查仓库结构、Issue 和源码，并尽量在回答中给出文件路径、Issue 编号及来源 URL。它不是固定的调查工作流，也不提供仓库写入或 Shell 执行权限。
 
-当前交付的是 **Core 调查链路**，不是最终 Core MVP Benchmark 或公开服务。功能边界与验收状态以 [任务总账](docs/TASKS.md) 为准；实际调用链见 [架构文档](docs/TASKPILOT_ARCHITECTURE.md)。
+当前交付的是**仅供本地或受限访问的 Core MVP 候选**，含冻结的最终任务级 Benchmark；不是公开服务。[最终验收与三组评测](docs/T073_CORE_MVP_FINAL.md)列出分母、失败及限制，功能状态以 [任务总账](docs/TASKS.md) 为准；实际调用链见 [架构文档](docs/TASKPILOT_ARCHITECTURE.md)。
 
 ## 已实现的 Core
 
@@ -102,15 +102,30 @@ docker compose -f compose.taskpilot.yaml down
 
 ```bash
 uv pip install --python .venv/bin/python --torch-backend cpu pytest==8.3.5 pytest-asyncio==0.25.3
-.venv/bin/python -m pytest -q tests/taskpilot tests/baseline/test_runtime.py tests/tools/test_browser_use_mcp.py
+.venv/bin/python -m pytest -q tests/taskpilot tests/baseline/test_runtime.py tests/baseline/test_t066_original_baseline.py tests/tools/test_browser_use_mcp.py
 ```
 
 这些是确定性与隔离集成回归，不能替代真实 Provider/GitHub/MCP 验收；真实脱敏证据索引见 [任务总账](docs/TASKS.md)。上游完整测试集含与当前 Python 版本不符的 sandbox 环境断言，不能把上述相关回归说成全量通过。
 
-Routing 数据集分为 [28 条 experiment](eval/datasets/routing_v1_experiment.json) 与 [12 条 evaluation](eval/datasets/routing_v1_evaluation.json)，schema 见 [routing_v1.schema.json](eval/datasets/routing_v1.schema.json)。[T029 实验](docs/T029_TOPK_EXPERIMENT.md)用于选 K，[T030 对照](docs/T030_ROUTING_COMPARISON.md)比较 K=3 和真正的全量工具基线；原始结果在 `eval/results/`，运行脚本为 `eval/t029_topk_experiment.py` 与 `eval/t030_routing_comparison.py`。这些是**单步工具选择阶段实验**，不是 Phase 8 的最终任务级 Benchmark。[T065 独立 holdout 与冻结口径](docs/T065_BENCHMARK_DATASET.md)已建立；正式基线运行和最终数字仍待 T066–T073 验收。重跑脚本会调用真实模型并产生费用，请将 `--output` 指向新的文件，勿覆盖现有证据。
+Routing 数据集分为 [28 条 experiment](eval/datasets/routing_v1_experiment.json) 与 [12 条 evaluation](eval/datasets/routing_v1_evaluation.json)，schema 见 [routing_v1.schema.json](eval/datasets/routing_v1.schema.json)。[T029 实验](docs/T029_TOPK_EXPERIMENT.md)用于选 K，[T030 对照](docs/T030_ROUTING_COMPARISON.md)比较 K=3 和真正的全量工具基线；这些是**单步路由阶段实验**，不计入最终任务级结果。
+
+最终评测使用 [T065 冻结的 21 条独立 Holdout](docs/T065_BENCHMARK_DATASET.md)。[最终报告](docs/T073_CORE_MVP_FINAL.md)分别呈现 Original OpenManus、同工具池 full-tools 与 K=3；原始运行、逐样本评分和失败索引均在 `eval/results/`，复现步骤见 [T072 审计](docs/T072_FAILURE_REPRODUCIBILITY.md)。简要结果如下，均为**单次运行**：
+
+- 模型自主 Tool Selection Accuracy：Original OpenManus **2/15** 步，TaskPilot full-tools **6/16**，K=3 **7/16**。九条 TaskPilot 零 LLM 受控任务不进入分母。
+- 冻结预期结果达成：上游 **4/12 supported**，另有 **9/21 unsupported**；full-tools 与 K=3 均为 **18/21**。两组正向调查子集均为 **8/11**；18/21 包含安全拒绝和故障正确处理，不能称为正向业务成功率。
+- 同工具池 21 对样本中，Provider total tokens 为 full-tools **243,308**、K=3 **237,136**；端到端总耗时分别 **110.592 s**、**107.669 s**。K=3 在 **9/21** 条任务更慢，差异没有统计显著性结论。Slot Precision/Recall/F1、分阶段成本及负收益见最终报告。
+
+离线复算提交的原始记录可运行以下命令；第三方 clean-checkout Docker 复算和真实集成复跑的完整命令见 T072。评测 runner 记录 HEAD 时需要 `git`；部署镜像未内置 Git，T072 记录了临时挂载方式。真实重跑需要现有模型配置、必要的 GitHub 只读凭据和网络，会产生费用；始终将 `--output` 指向新文件，勿覆盖冻结证据。
+
+```bash
+.venv/bin/python -m eval.t069_score_accuracy_success --output /tmp/taskpilot-t069-recomputed.json
+.venv/bin/python -m eval.t070_cost_latency --output /tmp/taskpilot-t070-recomputed.json
+.venv/bin/python -m eval.t071_slot_metrics --check
+.venv/bin/python -m eval.t072_failure_audit --check
+```
 
 ## 边界、来源与许可证
 
 - 当前 Core 是 GitHub 只读调查；写入、审批/风险门禁、复杂 Memory、通用 fallback、Demo UI 和公开部署安全属于尚未交付的 P1/P2 范围。不要将上游仓库内其他入口视为 TaskPilot 已启用能力。
-- `finished` 或 Agent `terminate(success)` 是执行/声明状态，**不是独立验证的业务成功**；服务目前将 `business_outcome` 保持 `not_verified`。真实模型自然遗漏关键参数、默认 thinking mode 多轮兼容、其他 MCP transport、公开部署与 Phase 8 完整 Benchmark 仍有 NOT VERIFIED 项，详见任务总账。
+- `finished` 或 Agent `terminate(success)` 是执行/声明状态，**不是独立验证的业务成功**；服务目前将 `business_outcome` 保持 `not_verified`。21 条最终 Holdout 仅单次运行，full-tools `core-011` 的冻结 routing-score 条件不适用于未过滤基线，Code Search 403 与源码截断造成未验证结果；真实模型自然遗漏关键参数、默认 thinking mode 多轮兼容、其他 MCP transport 和公开部署仍有 NOT VERIFIED 项，详见[最终报告](docs/T073_CORE_MVP_FINAL.md)。
 - 本仓库保留 OpenManus 的祖先历史，以固定上游 commit `3309bf4e416fb1c74b008f3e86494439a31bad53`（tag `openmanus-baseline-3309bf4`）为二次开发基线。原始多语言 README（[中文](README_zh.md)、[한국어](README_ko.md)、[日本語](README_ja.md)）描述的是上游 OpenManus，不能作为 TaskPilot 功能清单。保留原 [MIT LICENSE](LICENSE)；TaskPilot 的新增说明和代码建立在该基线上。
