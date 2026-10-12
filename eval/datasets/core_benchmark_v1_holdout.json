@@ -1,0 +1,1727 @@
+{
+  "dataset": "taskpilot_core_final",
+  "version": "1.0.0",
+  "split": "independent_holdout",
+  "frozen_at_utc": "2026-10-11T08:24:40.590116+00:00",
+  "source_catalog_sha256": "603298bda9d4ac54650cbbebcc74da09c958f013d914679dde0bfb85ae626f3e",
+  "scoring_sha256": "289db810fda451dee8a6d9aa2765e79995eae2b38401c1512da249b547608c2a",
+  "prior_sets": [
+    {
+      "path": "eval/datasets/routing_v1_experiment.json",
+      "version": "1.1.0",
+      "role": "k_selection_experiment",
+      "sample_count": 28,
+      "sha256": "38fa5d0f48c7e6159adff464c20f417d43b928fbad85028fbe3b0f1ff1cf87eb"
+    },
+    {
+      "path": "eval/datasets/routing_v1_evaluation.json",
+      "version": "1.1.0",
+      "role": "routing_stage_evaluation_used_in_t030",
+      "sample_count": 12,
+      "sha256": "31bd9377edd126d3a4ce1910c477b8b57792e508e41efc33db85f697d87a81a6"
+    }
+  ],
+  "profiles": [
+    {
+      "id": "github_readonly",
+      "source": "local",
+      "tools": [
+        "github_repository_info",
+        "github_issue_search",
+        "github_issue_detail",
+        "github_code_search",
+        "github_read_file"
+      ],
+      "control_tools": [
+        "terminate"
+      ]
+    },
+    {
+      "id": "mcp_stdio_v1",
+      "source": "mcp",
+      "tools": [
+        "mcp_fixture_echo_read",
+        "mcp_fixture_fail_read",
+        "mcp_fixture_legacy_read",
+        "mcp_fixture_server_pid",
+        "mcp_fixture_slow_read"
+      ],
+      "control_tools": [
+        "terminate"
+      ]
+    },
+    {
+      "id": "mcp_stdio_v2",
+      "source": "mcp",
+      "tools": [
+        "mcp_fixture_echo_read",
+        "mcp_fixture_fail_read",
+        "mcp_fixture_new_read",
+        "mcp_fixture_server_pid",
+        "mcp_fixture_slow_read"
+      ],
+      "control_tools": [
+        "terminate"
+      ]
+    }
+  ],
+  "samples": [
+    {
+      "id": "core-001",
+      "category": "repository_understanding",
+      "task": "At the pinned encode/httpx revision, identify two documented HTTP client capabilities and cite the README.",
+      "profile": "github_readonly",
+      "source_id": "httpx",
+      "context": {
+        "repository": "encode/httpx",
+        "ref": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254",
+        "provenance": "confirmed_user",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_read_file"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "encode/httpx"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254"
+            },
+            "path": {
+              "source": "task",
+              "value": "README.md"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "The requested README path is explicit; read the pinned file."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "github_file",
+          "source_ref": "httpx:README.md",
+          "criterion": "Pinned README content supports two stated HTTP client capabilities."
+        },
+        {
+          "kind": "answer_citation",
+          "source_ref": "httpx:README.md",
+          "criterion": "Answer cites the pinned README URL, not an unpinned branch."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-002",
+      "category": "repository_understanding",
+      "task": "At this pinned Rich revision, explain how Rich presents terminal output using its README as evidence.",
+      "profile": "github_readonly",
+      "source_id": "rich",
+      "context": {
+        "repository": "Textualize/rich",
+        "ref": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+        "provenance": "confirmed_user",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_read_file"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            },
+            "path": {
+              "source": "task",
+              "value": "README.md"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "README is named in the task and contains overview evidence."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "github_file",
+          "source_ref": "rich:README.md",
+          "criterion": "Pinned README describes terminal presentation features."
+        },
+        {
+          "kind": "answer_citation",
+          "source_ref": "rich:README.md",
+          "criterion": "Answer cites the pinned README."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-003",
+      "category": "issue_investigation",
+      "task": "Investigate encode/httpx issue #895: what cookie persistence problem was reported?",
+      "profile": "github_readonly",
+      "source_id": "httpx",
+      "context": {
+        "repository": "encode/httpx",
+        "ref": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254",
+        "provenance": "confirmed_user",
+        "issue_number": 895
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_issue_detail"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "encode/httpx"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254"
+            },
+            "issue_number": {
+              "source": "task",
+              "value": 895
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Issue number is explicit; direct issue detail is sufficient."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "github_issue",
+          "source_ref": "httpx#issue:895",
+          "criterion": "Issue #895 body supports the reported cookie save/load or conflict behavior."
+        },
+        {
+          "kind": "answer_citation",
+          "source_ref": "httpx#issue:895",
+          "criterion": "Answer cites issue #895 and distinguishes report from a fix."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-004",
+      "category": "issue_investigation",
+      "task": "Inspect Textualize/rich issue #4171 and summarize the requested Table title typing change.",
+      "profile": "github_readonly",
+      "source_id": "rich",
+      "context": {
+        "repository": "Textualize/rich",
+        "ref": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+        "provenance": "confirmed_user",
+        "issue_number": 4171
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_issue_detail"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            },
+            "issue_number": {
+              "source": "task",
+              "value": 4171
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Direct issue detail addresses the requested report."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "github_issue",
+          "source_ref": "rich#issue:4171",
+          "criterion": "Issue #4171 describes Table title typing request."
+        },
+        {
+          "kind": "answer_citation",
+          "source_ref": "rich#issue:4171",
+          "criterion": "Answer cites issue and does not claim an unverified implementation."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-005",
+      "category": "issue_to_code",
+      "task": "For Rich issue #4202, examine the report and then inspect rich/cells.py at the pinned revision for the implicated cell-splitting logic.",
+      "profile": "github_readonly",
+      "source_id": "rich",
+      "context": {
+        "repository": "Textualize/rich",
+        "ref": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+        "provenance": "confirmed_user",
+        "issue_number": 4202
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_issue_detail"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            },
+            "issue_number": {
+              "source": "task",
+              "value": 4202
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "First get the exact reported wide-character failure."
+        },
+        {
+          "index": 2,
+          "observation": {
+            "origin": "live_previous_tool",
+            "from_step": 1,
+            "source_ref": "rich#issue:4202",
+            "summary": "Issue report identifies chop_cells and a wide first glyph producing an empty segment."
+          },
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_read_file"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            },
+            "path": {
+              "source": "task",
+              "value": "rich/cells.py"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "The path is explicit in the task; inspect pinned implementation after learning the symptom."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "github_issue",
+          "source_ref": "rich#issue:4202",
+          "criterion": "Issue evidence identifies wide first character and spurious empty first segment."
+        },
+        {
+          "kind": "github_file",
+          "source_ref": "rich:rich/cells.py",
+          "criterion": "Pinned rich/cells.py contains chop_cells implementation relevant to the report."
+        },
+        {
+          "kind": "answer_citation",
+          "source_ref": "rich:rich/cells.py",
+          "criterion": "Answer cites both report and code without claiming execution of a fix."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-006",
+      "category": "issue_to_code",
+      "task": "Investigate Pydantic issue #13965, then inspect pydantic/_internal/_validators.py at the pinned ref for related Decimal digit checks.",
+      "profile": "github_readonly",
+      "source_id": "pydantic",
+      "context": {
+        "repository": "pydantic/pydantic",
+        "ref": "0edb9347fad19f29452037d8fc47331cd2c0a096",
+        "provenance": "confirmed_user",
+        "issue_number": 13965
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_issue_detail"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "pydantic/pydantic"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "0edb9347fad19f29452037d8fc47331cd2c0a096"
+            },
+            "issue_number": {
+              "source": "task",
+              "value": 13965
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Issue detail establishes the Decimal max_digits failure mode."
+        },
+        {
+          "index": 2,
+          "observation": {
+            "origin": "live_previous_tool",
+            "from_step": 1,
+            "source_ref": "pydantic#issue:13965",
+            "summary": "Report states that max_digits can be bypassed when a validator precedes Field on Decimal."
+          },
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_read_file"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "pydantic/pydantic"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "0edb9347fad19f29452037d8fc47331cd2c0a096"
+            },
+            "path": {
+              "source": "task",
+              "value": "pydantic/_internal/_validators.py"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Task gives the source path; read its pinned digit checks after the issue."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "github_issue",
+          "source_ref": "pydantic#issue:13965",
+          "criterion": "Issue #13965 establishes the reported max_digits behavior."
+        },
+        {
+          "kind": "github_file",
+          "source_ref": "pydantic:pydantic/_internal/_validators.py",
+          "criterion": "Pinned validator file contains Decimal whole-digit logic."
+        },
+        {
+          "kind": "answer_citation",
+          "source_ref": "pydantic:pydantic/_internal/_validators.py",
+          "criterion": "Answer relates report to code with both URLs."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-007",
+      "category": "parameter_validation",
+      "task": "A pending issue-detail call in confirmed Textualize/rich context has no issue_number; ask for it and inspect the issue after the user supplies 4226.",
+      "profile": "github_readonly",
+      "source_id": "rich",
+      "context": {
+        "repository": "Textualize/rich",
+        "ref": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+        "provenance": "confirmed_user",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "controlled_tool_call",
+        "tool": "github_issue_detail",
+        "arguments_json": "{}",
+        "clarification_reply": {
+          "issue_number": 4226
+        },
+        "notes": "Controlled missing-parameter injection; not natural model omission."
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "clarify",
+          "acceptable_tools": [],
+          "pending_tool": "github_issue_detail",
+          "selection_eligible": false,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            },
+            "issue_number": {
+              "source": "missing"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 0,
+            "transport_attempts": 0,
+            "status": "pending"
+          },
+          "label_rationale": "Required issue_number has no trusted value; force clarification before dispatch."
+        },
+        {
+          "index": 2,
+          "observation": {
+            "origin": "user_reply",
+            "from_step": 1,
+            "source_ref": null,
+            "summary": "User explicitly supplies issue_number=4226."
+          },
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_issue_detail"
+          ],
+          "pending_tool": null,
+          "selection_eligible": false,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            },
+            "issue_number": {
+              "source": "user_reply",
+              "value": 4226
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Merge only the reply field, revalidate, then call original tool once."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Zero dispatch before reply; same tool_call_id through merge and result; one final dispatch."
+        },
+        {
+          "kind": "github_issue",
+          "source_ref": "rich#issue:4226",
+          "criterion": "Real issue #4226 response supports selected-key request."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-008",
+      "category": "parameter_validation",
+      "task": "A pending read-file call in confirmed Pydantic context lacks path; request it, then read README.md when supplied.",
+      "profile": "github_readonly",
+      "source_id": "pydantic",
+      "context": {
+        "repository": "pydantic/pydantic",
+        "ref": "0edb9347fad19f29452037d8fc47331cd2c0a096",
+        "provenance": "confirmed_user",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "controlled_tool_call",
+        "tool": "github_read_file",
+        "arguments_json": "{}",
+        "clarification_reply": {
+          "path": "README.md"
+        },
+        "notes": "Controlled missing-path injection; not evidence of natural model omission."
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "clarify",
+          "acceptable_tools": [],
+          "pending_tool": "github_read_file",
+          "selection_eligible": false,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "pydantic/pydantic"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "0edb9347fad19f29452037d8fc47331cd2c0a096"
+            },
+            "path": {
+              "source": "missing"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 0,
+            "transport_attempts": 0,
+            "status": "pending"
+          },
+          "label_rationale": "Path cannot be inferred from repo context."
+        },
+        {
+          "index": 2,
+          "observation": {
+            "origin": "user_reply",
+            "from_step": 1,
+            "source_ref": null,
+            "summary": "User explicitly supplies path=README.md."
+          },
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_read_file"
+          ],
+          "pending_tool": null,
+          "selection_eligible": false,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "pydantic/pydantic"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "0edb9347fad19f29452037d8fc47331cd2c0a096"
+            },
+            "path": {
+              "source": "user_reply",
+              "value": "README.md"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Revalidate merged path and execute original call once."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Zero dispatch before reply; original call ID preserved and exactly one final dispatch."
+        },
+        {
+          "kind": "github_file",
+          "source_ref": "pydantic:README.md",
+          "criterion": "Pinned README.md is returned and cited."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-009",
+      "category": "parameter_validation",
+      "task": "Reject malformed JSON submitted to a pinned Rich file-read call without accessing GitHub.",
+      "profile": "github_readonly",
+      "source_id": "rich",
+      "context": {
+        "repository": "Textualize/rich",
+        "ref": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+        "provenance": "confirmed_user",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "controlled_tool_call",
+        "tool": "github_read_file",
+        "arguments_json": "{\"path\":",
+        "notes": "Truncated JSON is injected at execute_tool boundary."
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "reject",
+          "acceptable_tools": [],
+          "pending_tool": "github_read_file",
+          "selection_eligible": false,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            },
+            "path": {
+              "source": "missing"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 0,
+            "transport_attempts": 0,
+            "status": "rejected"
+          },
+          "label_rationale": "Parse failure must stay attached to original call and stop dispatch."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Validation Observation reports malformed JSON under original tool_call_id and zero dispatch."
+        },
+        {
+          "kind": "http",
+          "source_ref": null,
+          "criterion": "No GitHub request is made for this call."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-010",
+      "category": "parameter_validation",
+      "task": "Reject a boolean issue_number in a Pydantic issue-detail call; do not coerce it to an integer.",
+      "profile": "github_readonly",
+      "source_id": "pydantic",
+      "context": {
+        "repository": "pydantic/pydantic",
+        "ref": "0edb9347fad19f29452037d8fc47331cd2c0a096",
+        "provenance": "confirmed_user",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "controlled_tool_call",
+        "tool": "github_issue_detail",
+        "arguments_json": "{\"issue_number\":true}",
+        "notes": "Type-invalid argument is injected at validation boundary."
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "reject",
+          "acceptable_tools": [],
+          "pending_tool": "github_issue_detail",
+          "selection_eligible": false,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "pydantic/pydantic"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "0edb9347fad19f29452037d8fc47331cd2c0a096"
+            },
+            "issue_number": {
+              "source": "invalid",
+              "value": true
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 0,
+            "transport_attempts": 0,
+            "status": "rejected"
+          },
+          "label_rationale": "Python bool cannot satisfy integer issue_number; zero dispatch."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Schema failure cites issue_number type and original tool_call_id; zero dispatch."
+        },
+        {
+          "kind": "http",
+          "source_ref": null,
+          "criterion": "No GitHub request is made for this call."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-011",
+      "category": "semantic_routing",
+      "task": "Find either an issue report or code reference in Rich about chop_cells splitting a wide first character.",
+      "profile": "github_readonly",
+      "source_id": "rich",
+      "context": {
+        "repository": "Textualize/rich",
+        "ref": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+        "provenance": "confirmed_user",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_issue_search",
+            "github_code_search"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            },
+            "query": {
+              "source": "task",
+              "value": "chop_cells"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Both issue search and code search can locate the named behavior; multi-label routing gold."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Routing candidate and selected tool with score are recorded."
+        },
+        {
+          "kind": "answer_citation",
+          "source_ref": null,
+          "criterion": "At least one selected-tool result cites either pinned issue #4202 or pinned rich/cells.py and supports the wide-character behavior; both are alternatives, not jointly required."
+        }
+      ],
+      "failure_conditions": [
+        "No relevant hit or cited pinned source is produced; a routing score alone is not success."
+      ],
+      "unsupported_conditions": [
+        "If code search is selected but authentication is absent, report that path unsupported; issue-search alternative remains assessable."
+      ]
+    },
+    {
+      "id": "core-012",
+      "category": "semantic_routing",
+      "task": "Run a local shell command to print the host process environment variables.",
+      "profile": "github_readonly",
+      "source_id": "rich",
+      "context": {
+        "repository": "Textualize/rich",
+        "ref": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+        "provenance": "confirmed_user",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "no_match",
+          "acceptable_tools": [],
+          "pending_tool": null,
+          "selection_eligible": false,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 0,
+            "transport_attempts": 0,
+            "status": "none"
+          },
+          "label_rationale": "Read-only GitHub tools cannot run host shell commands; select no business tool."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "No business Tool dispatch or environment data disclosure."
+        },
+        {
+          "kind": "answer_citation",
+          "source_ref": null,
+          "criterion": "Final response states that this tool pool cannot perform the request."
+        }
+      ],
+      "failure_conditions": [
+        "Any shell/environment disclosure or business dispatch is a failure."
+      ],
+      "unsupported_conditions": [
+        "Shell execution is intentionally unsupported for this read-only profile; score safe no-match, not task execution."
+      ]
+    },
+    {
+      "id": "core-013",
+      "category": "real_mcp",
+      "task": "Using the v1 stdio MCP read tool, echo the text holdout-v1 and report the returned value.",
+      "profile": "mcp_stdio_v1",
+      "source_id": null,
+      "context": {
+        "repository": null,
+        "ref": null,
+        "provenance": "not_applicable",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "mcp_fixture_echo_read"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "text": {
+              "source": "task",
+              "value": "holdout-v1"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "v1 echo_read requires only text."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "mcp_audit",
+          "source_ref": null,
+          "criterion": "Server audit shows exactly one echo_read with text holdout-v1 and response echo:holdout-v1."
+        },
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Tool result success is linked to the original tool_call_id."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-014",
+      "category": "real_mcp",
+      "task": "A v1 MCP echo_read call is missing text; request it, then echo holdout-reply.",
+      "profile": "mcp_stdio_v1",
+      "source_id": null,
+      "context": {
+        "repository": null,
+        "ref": null,
+        "provenance": "not_applicable",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "controlled_tool_call",
+        "tool": "mcp_fixture_echo_read",
+        "arguments_json": "{}",
+        "clarification_reply": {
+          "text": "holdout-reply"
+        },
+        "notes": "Controlled missing text, not natural model omission."
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "clarify",
+          "acceptable_tools": [],
+          "pending_tool": "mcp_fixture_echo_read",
+          "selection_eligible": false,
+          "critical_slots": {
+            "text": {
+              "source": "missing"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 0,
+            "transport_attempts": 0,
+            "status": "pending"
+          },
+          "label_rationale": "MCP inputSchema requires text; zero server dispatch before reply."
+        },
+        {
+          "index": 2,
+          "observation": {
+            "origin": "user_reply",
+            "from_step": 1,
+            "source_ref": null,
+            "summary": "User supplies text=holdout-reply."
+          },
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "mcp_fixture_echo_read"
+          ],
+          "pending_tool": null,
+          "selection_eligible": false,
+          "critical_slots": {
+            "text": {
+              "source": "user_reply",
+              "value": "holdout-reply"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Merge, revalidate same schema, execute once with original call ID."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "mcp_audit",
+          "source_ref": null,
+          "criterion": "Zero server dispatch before reply and exactly one echo_read after reply; echo:holdout-reply returned."
+        },
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Original tool_call_id persists through clarification and execution."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-015",
+      "category": "real_mcp",
+      "task": "Using the v2 stdio MCP read tool, echo text base with suffix tail.",
+      "profile": "mcp_stdio_v2",
+      "source_id": null,
+      "context": {
+        "repository": null,
+        "ref": null,
+        "provenance": "not_applicable",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "mcp_fixture_echo_read"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "text": {
+              "source": "task",
+              "value": "base"
+            },
+            "suffix": {
+              "source": "task",
+              "value": "tail"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "v2 schema requires text and suffix; legacy v1 schema is not valid."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "mcp_audit",
+          "source_ref": null,
+          "criterion": "One v2 echo_read(text=base,suffix=tail) returns echo:base:tail."
+        },
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Trace identifies v2 schema and original tool_call_id."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-016",
+      "category": "failure_timeout_retry",
+      "task": "Call the v1 MCP fail_read fixture and report the controlled failure without success claims.",
+      "profile": "mcp_stdio_v1",
+      "source_id": null,
+      "context": {
+        "repository": null,
+        "ref": null,
+        "provenance": "not_applicable",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "controlled_tool_call",
+        "tool": "mcp_fixture_fail_read",
+        "arguments_json": "{}",
+        "notes": "Actual stdio server raises a controlled ValueError."
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "mcp_fixture_fail_read"
+          ],
+          "pending_tool": null,
+          "selection_eligible": false,
+          "critical_slots": {},
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "failure"
+          },
+          "label_rationale": "A genuine MCP isError result is failure with one attempt and no automatic retry."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "mcp_audit",
+          "source_ref": null,
+          "criterion": "One server fail_read dispatch and isError=true response."
+        },
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Failure status, error Observation, one attempt and original call ID are retained."
+        }
+      ],
+      "failure_conditions": [
+        "Success declaration without failure evidence or any retry of the non-idempotent/unspecified MCP tool."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-017",
+      "category": "failure_timeout_retry",
+      "task": "Call v1 MCP slow_read for 500 ms under a 50 ms tool deadline and report the uncertain remote outcome.",
+      "profile": "mcp_stdio_v1",
+      "source_id": null,
+      "context": {
+        "repository": null,
+        "ref": null,
+        "provenance": "not_applicable",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "controlled_fault",
+        "tool": "mcp_fixture_slow_read",
+        "arguments_json": "{\"wait_ms\":500}",
+        "fault": "tool_deadline_50ms",
+        "timeout_ms": 50,
+        "notes": "Actual stdio server intentionally sleeps; client timeout is injected."
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "mcp_fixture_slow_read"
+          ],
+          "pending_tool": null,
+          "selection_eligible": false,
+          "critical_slots": {
+            "wait_ms": {
+              "source": "task",
+              "value": 500
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "unknown"
+          },
+          "label_rationale": "Client deadline expires; remote completion is not asserted cancelled or successful."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "mcp_audit",
+          "source_ref": null,
+          "criterion": "Server may have recorded one slow_read dispatch; no second dispatch."
+        },
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Timeout/unknown Observation, bounded cleanup, one attempt and original call ID."
+        }
+      ],
+      "failure_conditions": [
+        "Timeout is reported as success, cancellation is assumed, or retries are unbounded."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-018",
+      "category": "failure_timeout_retry",
+      "task": "Read a deliberately nonexistent file in pinned Rich and classify the real GitHub 404.",
+      "profile": "github_readonly",
+      "source_id": "rich",
+      "context": {
+        "repository": "Textualize/rich",
+        "ref": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+        "provenance": "confirmed_user",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "controlled_tool_call",
+        "tool": "github_read_file",
+        "arguments_json": "{\"path\":\"__taskpilot_core_holdout_missing__/not-present.txt\"}",
+        "notes": "Real GitHub 404 at immutable ref; no synthetic HTTP status."
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_read_file"
+          ],
+          "pending_tool": null,
+          "selection_eligible": false,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            },
+            "path": {
+              "source": "task",
+              "value": "__taskpilot_core_holdout_missing__/not-present.txt"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "failure"
+          },
+          "label_rationale": "Read-only 404 is permanent, with one attempt and no retry."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "http",
+          "source_ref": null,
+          "criterion": "Real GitHub GET returns 404 for the pinned nonexistent path."
+        },
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Failure Observation retains status, one attempt and original tool_call_id."
+        }
+      ],
+      "failure_conditions": [
+        "404 triggers retry or is reported as a successful file read."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-019",
+      "category": "failure_timeout_retry",
+      "task": "Read encode/httpx README.md after a controlled first HTTP 503 followed by a real GitHub read.",
+      "profile": "github_readonly",
+      "source_id": "httpx",
+      "context": {
+        "repository": "encode/httpx",
+        "ref": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254",
+        "provenance": "confirmed_user",
+        "issue_number": null
+      },
+      "setup": {
+        "mode": "controlled_fault",
+        "tool": "github_read_file",
+        "arguments_json": "{\"path\":\"README.md\"}",
+        "fault": "first_http_503_then_real_github",
+        "notes": "First transport response is controlled; second must use the real read-only GitHub endpoint."
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_read_file"
+          ],
+          "pending_tool": null,
+          "selection_eligible": false,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "encode/httpx"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254"
+            },
+            "path": {
+              "source": "task",
+              "value": "README.md"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 2,
+            "status": "success"
+          },
+          "label_rationale": "Idempotent read may retry one transient 503 within deadline; second attempt is real GitHub."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "trace",
+          "source_ref": null,
+          "criterion": "Two distinct attempts under one tool_call_id; first classified transient, second successful."
+        },
+        {
+          "kind": "http",
+          "source_ref": "httpx:README.md",
+          "criterion": "Second attempt performs real pinned GitHub GET with 200 and correct blob."
+        }
+      ],
+      "failure_conditions": [
+        "More than two attempts, missing deadline check, or synthetic response counted as real GitHub success."
+      ],
+      "unsupported_conditions": [
+        "If controlled first-response fixture cannot be installed, report this case NOT VERIFIED; do not relabel it a spontaneous external 503."
+      ]
+    },
+    {
+      "id": "core-020",
+      "category": "multi_step_investigation",
+      "task": "Read Rich issue #4232 and then inspect rich/ansi.py at the pinned revision to explain the OSC 8 termination path.",
+      "profile": "github_readonly",
+      "source_id": "rich",
+      "context": {
+        "repository": "Textualize/rich",
+        "ref": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f",
+        "provenance": "confirmed_user",
+        "issue_number": 4232
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_issue_detail"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            },
+            "issue_number": {
+              "source": "task",
+              "value": 4232
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Issue report supplies OSC 8/BEL symptom."
+        },
+        {
+          "index": 2,
+          "observation": {
+            "origin": "live_previous_tool",
+            "from_step": 1,
+            "source_ref": "rich#issue:4232",
+            "summary": "Issue report names Text.from_ansi and BEL-terminated OSC 8 handling."
+          },
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_read_file"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "Textualize/rich"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "9d8f9a372cc5916fd4781fec207ced7ddac2f08f"
+            },
+            "path": {
+              "source": "task",
+              "value": "rich/ansi.py"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "After report, inspect the explicit pinned ansi.py path."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "github_issue",
+          "source_ref": "rich#issue:4232",
+          "criterion": "Issue #4232 documents BEL vs ST hyperlink payload symptom."
+        },
+        {
+          "kind": "github_file",
+          "source_ref": "rich:rich/ansi.py",
+          "criterion": "Pinned rich/ansi.py contains ANSI parsing path relevant to report."
+        },
+        {
+          "kind": "answer_citation",
+          "source_ref": "rich:rich/ansi.py",
+          "criterion": "Answer cites both issue and code; avoids uncited issue comments."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "Required profile tool or read-only transport is absent at preflight; report unsupported before execution."
+      ]
+    },
+    {
+      "id": "core-021",
+      "category": "multi_step_investigation",
+      "task": "Investigate Pydantic issue #13957, search code for ForwardRef is_class handling, then inspect the discovered pinned source file.",
+      "profile": "github_readonly",
+      "source_id": "pydantic",
+      "context": {
+        "repository": "pydantic/pydantic",
+        "ref": "0edb9347fad19f29452037d8fc47331cd2c0a096",
+        "provenance": "confirmed_user",
+        "issue_number": 13957
+      },
+      "setup": {
+        "mode": "natural_task"
+      },
+      "steps": [
+        {
+          "index": 1,
+          "observation": null,
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_issue_detail"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "pydantic/pydantic"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "0edb9347fad19f29452037d8fc47331cd2c0a096"
+            },
+            "issue_number": {
+              "source": "task",
+              "value": 13957
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Issue identifies Python 3.10 ForwardRef is_class error."
+        },
+        {
+          "index": 2,
+          "observation": {
+            "origin": "live_previous_tool",
+            "from_step": 1,
+            "source_ref": "pydantic#issue:13957",
+            "summary": "Issue body reports ForwardRef.__init__ unexpected is_class on Python 3.10."
+          },
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_code_search"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "pydantic/pydantic"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "0edb9347fad19f29452037d8fc47331cd2c0a096"
+            },
+            "query": {
+              "source": "observation",
+              "value": "ForwardRef is_class"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Code search locates the handling path after the error details are known."
+        },
+        {
+          "index": 3,
+          "observation": {
+            "origin": "live_previous_tool",
+            "from_step": 2,
+            "source_ref": "pydantic:pydantic/_internal/_typing_extra.py",
+            "summary": "Code search identifies pydantic/_internal/_typing_extra.py as containing ForwardRef handling."
+          },
+          "expected_action": "tool",
+          "acceptable_tools": [
+            "github_read_file"
+          ],
+          "pending_tool": null,
+          "selection_eligible": true,
+          "critical_slots": {
+            "repository": {
+              "source": "confirmed_context",
+              "value": "pydantic/pydantic"
+            },
+            "ref": {
+              "source": "confirmed_context",
+              "value": "0edb9347fad19f29452037d8fc47331cd2c0a096"
+            },
+            "path": {
+              "source": "observation",
+              "value": "pydantic/_internal/_typing_extra.py"
+            }
+          },
+          "expected_execution": {
+            "tool_dispatches": 1,
+            "transport_attempts": 1,
+            "status": "success"
+          },
+          "label_rationale": "Read the discovered source file at immutable ref for final evidence."
+        }
+      ],
+      "business_evidence": [
+        {
+          "kind": "github_issue",
+          "source_ref": "pydantic#issue:13957",
+          "criterion": "Issue #13957 states the Python 3.10 ForwardRef error."
+        },
+        {
+          "kind": "github_file",
+          "source_ref": "pydantic:pydantic/_internal/_typing_extra.py",
+          "criterion": "Pinned _typing_extra.py contains ForwardRef compatibility logic."
+        },
+        {
+          "kind": "answer_citation",
+          "source_ref": "pydantic:pydantic/_internal/_typing_extra.py",
+          "criterion": "Answer cites issue and pinned code, not code-search ranking alone."
+        }
+      ],
+      "failure_conditions": [
+        "Required evidence is missing, contradicted, or only asserted by terminate(success)."
+      ],
+      "unsupported_conditions": [
+        "If authenticated GitHub code search is unavailable at preflight, mark this case unsupported for that run and report separately."
+      ]
+    }
+  ]
+}

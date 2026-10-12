@@ -1,0 +1,1394 @@
+{
+  "audit_version": "t072-v1",
+  "dataset_version": "1.0.0",
+  "dataset_sha256": "8251f53ac812684507bfe85086214393bcbb3dd955d19a54d5df12a0d3affafe",
+  "scoring_sha256": "289db810fda451dee8a6d9aa2765e79995eae2b38401c1512da249b547608c2a",
+  "metric_versions": [
+    "t069-v1",
+    "t070-v1",
+    "T071_parameter_slot_v1"
+  ],
+  "cases": [
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-002",
+      "outcome": "failure",
+      "categories": [
+        "Context / Evidence",
+        "Timeout / Retry / Budget"
+      ],
+      "reason": "Six-step budget ended without the required pinned source explanation.",
+      "causal_limit": "Proximate failure verified; why the model chose this path is UNKNOWN",
+      "evidence": {
+        "benchmark_run_id": "t066:core-002:t066_original_openmanus_v1.jsonl:2",
+        "runtime_run_id": null,
+        "source": "eval/results/t066_original_openmanus_v1.jsonl:2",
+        "runtime_trace": "NOT AVAILABLE in pinned upstream",
+        "call_ids": [
+          "call_00_JLKCvftvNomk28OndPUH9125",
+          "call_00_2BsnORiy2tyYtrPBpmeL8072",
+          "call_00_UcIlgLwcIXlmnUcizooL2323",
+          "call_00_Oyy0L5dPcW9ehhlyim4s3733",
+          "call_00_Ug0c9dxq7fk2oL9nP8GU7109",
+          "call_00_hOIzIolljEB1psEzQPwu9537"
+        ],
+        "provider_http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "mcp_dispatches": []
+      }
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-004",
+      "outcome": "failure",
+      "categories": [
+        "Context / Evidence",
+        "Timeout / Retry / Budget"
+      ],
+      "reason": "Six-step budget ended without verified issue investigation output.",
+      "causal_limit": "Proximate failure verified; why the model chose this path is UNKNOWN",
+      "evidence": {
+        "benchmark_run_id": "t066:core-004:t066_original_openmanus_v1.jsonl:4",
+        "runtime_run_id": null,
+        "source": "eval/results/t066_original_openmanus_v1.jsonl:4",
+        "runtime_trace": "NOT AVAILABLE in pinned upstream",
+        "call_ids": [
+          "call_00_prP9L3cN4K2yLQvipJKm3492",
+          "call_01_VAJBnLVtbwujCEcdQOvi8006",
+          "call_00_roRqzGs6rgRcWcDaaRDV3560",
+          "call_01_eykMKNLUWx5QoETNetHt0899",
+          "call_00_3CL962bGclrak3EOpbgQ6263",
+          "call_00_ocVe7edNkV5Ne7Ok99R82145",
+          "call_01_Kg8LO4ShSgVli9wweyRC9707",
+          "call_00_rdwk65uSocRWBL7DwouJ0007",
+          "call_01_UnSgZt8eXB1PF6AysqOB6755",
+          "call_00_lSQym3q3QS3NvrERG5Bf2587",
+          "call_01_zZIIZeZOyHiMHXYiDxNN5050"
+        ],
+        "provider_http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "mcp_dispatches": []
+      }
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-005",
+      "outcome": "failure",
+      "categories": [
+        "Context / Evidence",
+        "Timeout / Retry / Budget"
+      ],
+      "reason": "Six-step budget ended without linked issue-to-code evidence.",
+      "causal_limit": "Proximate failure verified; why the model chose this path is UNKNOWN",
+      "evidence": {
+        "benchmark_run_id": "t066:core-005:t066_original_openmanus_v1.jsonl:5",
+        "runtime_run_id": null,
+        "source": "eval/results/t066_original_openmanus_v1.jsonl:5",
+        "runtime_trace": "NOT AVAILABLE in pinned upstream",
+        "call_ids": [
+          "call_00_PZkFLChcCOfyPdxpkcRK0712",
+          "call_00_bK8sVjd5K6yhJ52u3MBf0140",
+          "call_00_699Sah3Mhh7tKMjSk9rt0359",
+          "call_00_d20cxb6DvXjVZY6zLioG3502",
+          "call_00_hKHP2cNq6z43i2xaM4kU7651",
+          "call_00_aRgabT4pt4X6dN4nrRjM4303"
+        ],
+        "provider_http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "mcp_dispatches": []
+      }
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-006",
+      "outcome": "failure",
+      "categories": [
+        "Context / Evidence",
+        "Timeout / Retry / Budget"
+      ],
+      "reason": "Six-step budget ended without linked issue-to-code evidence.",
+      "causal_limit": "Proximate failure verified; why the model chose this path is UNKNOWN",
+      "evidence": {
+        "benchmark_run_id": "t066:core-006:t066_original_openmanus_v1.jsonl:6",
+        "runtime_run_id": null,
+        "source": "eval/results/t066_original_openmanus_v1.jsonl:6",
+        "runtime_trace": "NOT AVAILABLE in pinned upstream",
+        "call_ids": [
+          "call_00_djHQpjvCnkx4RVcjND8V6444",
+          "call_00_C0u5DOMXU0vGZvkQ5uzm9305",
+          "call_00_SJSWvptvSJc076d5QHu76641",
+          "call_01_a621fnYthyt6tz7eFeK17192",
+          "call_00_uWRnYF1KK0Ozdc8ydeFS9836",
+          "call_01_G7O5VrnUFS0jtRpkdyqG8606",
+          "call_00_OhkmHhvbnTdwgTci7izm5472",
+          "call_00_1M9ENI9iwg6sHl5EiiAq5511"
+        ],
+        "provider_http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "mcp_dispatches": []
+      }
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-016",
+      "outcome": "failure",
+      "categories": [
+        "Tool / MCP"
+      ],
+      "reason": "Server returned a controlled isError failure, but original MCP ToolResult lost failure status and Agent declared terminate(success).",
+      "causal_limit": "Verified from server result or frozen criterion",
+      "evidence": {
+        "benchmark_run_id": "t066:core-016:t066_original_openmanus_mcp_retest_2.jsonl:3",
+        "runtime_run_id": null,
+        "source": "eval/results/t066_original_openmanus_mcp_retest_2.jsonl:3",
+        "runtime_trace": "NOT AVAILABLE in pinned upstream",
+        "call_ids": [
+          "call_00_rUc7obZ1vfboTobZ1ri92703",
+          "call_00_c8xcnM4rir2w4oy2rv7w1314"
+        ],
+        "provider_http_statuses": [
+          200,
+          200
+        ],
+        "mcp_dispatches": [
+          {
+            "tool": "fail_read",
+            "arguments": {}
+          }
+        ]
+      }
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-018",
+      "outcome": "failure",
+      "categories": [
+        "Context / Evidence",
+        "Timeout / Retry / Budget"
+      ],
+      "reason": "Agent did not obtain or classify an actual GitHub 404 before step budget ended.",
+      "causal_limit": "Proximate failure verified; why the model chose this path is UNKNOWN",
+      "evidence": {
+        "benchmark_run_id": "t066:core-018:t066_original_openmanus_v1.jsonl:18",
+        "runtime_run_id": null,
+        "source": "eval/results/t066_original_openmanus_v1.jsonl:18",
+        "runtime_trace": "NOT AVAILABLE in pinned upstream",
+        "call_ids": [
+          "call_00_XpzG0NZHhRJHtMm9zAaB7212",
+          "call_00_FsSI8vvWooC8tI68zSU48022",
+          "call_00_l5EEL7dN40uMoj31w41L2296",
+          "call_00_dOk8owVviYMhYiuRjl8l2448",
+          "call_00_PbIcQa3MZogH5Zf6L72L5682",
+          "call_00_33q2oZ12JvDeIBDDDqQX4081"
+        ],
+        "provider_http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "mcp_dispatches": []
+      }
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-020",
+      "outcome": "failure",
+      "categories": [
+        "Context / Evidence",
+        "Timeout / Retry / Budget"
+      ],
+      "reason": "Six-step budget ended without the required next-step issue/source evidence.",
+      "causal_limit": "Proximate failure verified; why the model chose this path is UNKNOWN",
+      "evidence": {
+        "benchmark_run_id": "t066:core-020:t066_original_openmanus_v1.jsonl:20",
+        "runtime_run_id": null,
+        "source": "eval/results/t066_original_openmanus_v1.jsonl:20",
+        "runtime_trace": "NOT AVAILABLE in pinned upstream",
+        "call_ids": [
+          "call_00_vRX84lTiisD5eFOdgu195967",
+          "call_00_mEaQ8ZIW8A07sQrFkgEH7843",
+          "call_00_AOTiH3sfyEft2Gdc0jqH8304",
+          "call_00_FK81HLTROgILWUMhm3I13939",
+          "call_00_xY8cWCV2FHv3W0eWnRIo2844",
+          "call_00_iMYC8iXeO3WynlbvizST3740"
+        ],
+        "provider_http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "mcp_dispatches": []
+      }
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-021",
+      "outcome": "failure",
+      "categories": [
+        "Context / Evidence",
+        "Timeout / Retry / Budget"
+      ],
+      "reason": "Six-step budget ended without the required multi-step issue/source evidence.",
+      "causal_limit": "Proximate failure verified; why the model chose this path is UNKNOWN",
+      "evidence": {
+        "benchmark_run_id": "t066:core-021:t066_original_openmanus_v1.jsonl:21",
+        "runtime_run_id": null,
+        "source": "eval/results/t066_original_openmanus_v1.jsonl:21",
+        "runtime_trace": "NOT AVAILABLE in pinned upstream",
+        "call_ids": [
+          "call_00_EnV16KocZmg8llMi7hl45507",
+          "call_00_eLWEf9gEHDSlwbJsIbXH6911",
+          "call_00_iBxaKZBxwp59886651bK3254",
+          "call_00_o4DdKrDOlCs6G4UqfS7V3303",
+          "call_00_n9lFt8XZX005pKF8eXfQ8123",
+          "call_00_phEF43OiLKKKkb7NBYuA4866"
+        ],
+        "provider_http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "mcp_dispatches": []
+      }
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-005",
+      "outcome": "not_verified",
+      "categories": [
+        "Context / Evidence",
+        "Permission / Network",
+        "Timeout / Retry / Budget"
+      ],
+      "reason": "Issue #4202 and pinned file were fetched, but file content truncation hid the relevant chop_cells loop; code search also returned 403 and the eight-step budget ended. Implementation criterion remains unverified.",
+      "causal_limit": "Proximate failure verified; why the model chose this path is UNKNOWN",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_full:core-005",
+        "runtime_run_id": "de301df90c1146d3bd588654f5ef86c2",
+        "source": "eval/results/t067_full_tools_v1.jsonl:core-005",
+        "trace_event_ids": [
+          "de301df90c1146d3bd588654f5ef86c2:66",
+          "de301df90c1146d3bd588654f5ef86c2:67",
+          "de301df90c1146d3bd588654f5ef86c2:89",
+          "de301df90c1146d3bd588654f5ef86c2:90",
+          "de301df90c1146d3bd588654f5ef86c2:107"
+        ],
+        "tool_call_ids": [
+          "sha256:314355c98163d6fda41cf794e64caeafb5e3b1c17d6648ad6a7c3a3904dd611c",
+          "sha256:b61d8c5ab1f6c06731c49c10ceb627003b18fe94ee42e825a881bad84f26c711"
+        ],
+        "github_http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          422,
+          200,
+          200,
+          200,
+          403,
+          200
+        ],
+        "mcp_tool_names": [],
+        "routing_event_count": 0,
+        "schema_call_count": 8,
+        "cleanup_status": "complete"
+      }
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-006",
+      "outcome": "not_verified",
+      "categories": [
+        "Routing",
+        "Parameter / Slot",
+        "Context / Evidence",
+        "Permission / Network"
+      ],
+      "reason": "Issue #13965 was fetched, but the pinned file read ended before decimal_places_validator and code search returned 403. The whole-digit implementation criterion remains unverified despite an Agent success declaration.",
+      "causal_limit": "Proximate failure verified; why the model chose this path is UNKNOWN",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_full:core-006",
+        "runtime_run_id": "61e4b928c7604c5d8715bb2e00f4a66f",
+        "source": "eval/results/t067_full_tools_v1.jsonl:core-006",
+        "trace_event_ids": [
+          "61e4b928c7604c5d8715bb2e00f4a66f:25",
+          "61e4b928c7604c5d8715bb2e00f4a66f:26",
+          "61e4b928c7604c5d8715bb2e00f4a66f:29",
+          "61e4b928c7604c5d8715bb2e00f4a66f:30",
+          "61e4b928c7604c5d8715bb2e00f4a66f:54",
+          "61e4b928c7604c5d8715bb2e00f4a66f:55",
+          "61e4b928c7604c5d8715bb2e00f4a66f:94",
+          "61e4b928c7604c5d8715bb2e00f4a66f:95"
+        ],
+        "tool_call_ids": [
+          "sha256:3bbe7deb6293397d57d3adf728cc9c77872d4d2b21b29a85b45df038a684e48a",
+          "sha256:d36ed2f8c0bc955cff4530f323845ae9953ae9b3caff2f48708a1012a00156c7",
+          "sha256:36eca38779c3e02401996940e0f713b5b5d98d1aa8336ae7e65752886744f565",
+          "sha256:56502cf50dcd581beaafe1a722281a90f305e55aac211715ca35eb81c549f553"
+        ],
+        "github_http_statuses": [
+          200,
+          200,
+          200,
+          403,
+          403,
+          200,
+          200,
+          403,
+          200,
+          200,
+          200,
+          200
+        ],
+        "mcp_tool_names": [],
+        "routing_event_count": 0,
+        "schema_call_count": 7,
+        "cleanup_status": "complete"
+      }
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-011",
+      "outcome": "not_verified",
+      "categories": [
+        "Context / Evidence"
+      ],
+      "reason": "Real issue/code results support the wide-character behavior and answer cites pinned sources. Routing candidate score is not applicable in a full-tools baseline; all LLM calls received full schemas.",
+      "causal_limit": "Verified from server result or frozen criterion",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_full:core-011",
+        "runtime_run_id": "f996db170de84d61975522c150b05260",
+        "source": "eval/results/t067_full_tools_v1.jsonl:core-011",
+        "trace_event_ids": [
+          "f996db170de84d61975522c150b05260:49",
+          "f996db170de84d61975522c150b05260:50"
+        ],
+        "tool_call_ids": [
+          "sha256:3bae88fa7c33cfce0972301d648bf07a14a09617b1716aeb0af77e749a73e3c6"
+        ],
+        "github_http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "mcp_tool_names": [],
+        "routing_event_count": 0,
+        "schema_call_count": 4,
+        "cleanup_status": "complete"
+      }
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-005",
+      "outcome": "not_verified",
+      "categories": [
+        "Routing",
+        "Parameter / Slot",
+        "Context / Evidence",
+        "Permission / Network",
+        "Timeout / Retry / Budget"
+      ],
+      "reason": "Eight-step budget ended without a complete answer; pinned rich/cells.py was truncated before the relevant loop and code search returned 403. Required implementation/citation evidence is incomplete.",
+      "causal_limit": "Proximate failure verified; why the model chose this path is UNKNOWN",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_k3:core-005",
+        "runtime_run_id": "96d50c2eb25840889475ea148c93a3e1",
+        "source": "eval/results/t068_k3_v1.jsonl:core-005",
+        "trace_event_ids": [
+          "96d50c2eb25840889475ea148c93a3e1:79",
+          "96d50c2eb25840889475ea148c93a3e1:80",
+          "96d50c2eb25840889475ea148c93a3e1:103",
+          "96d50c2eb25840889475ea148c93a3e1:104",
+          "96d50c2eb25840889475ea148c93a3e1:118"
+        ],
+        "tool_call_ids": [
+          "sha256:fc80de96c42045b294d0ce06c59ff7976b9d0b3de26084696c02938063e20aa1",
+          "sha256:fe6f7b1c65fb3311afd644e3b3f984069680473601047663e491d89fa51ee583"
+        ],
+        "github_http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          403,
+          200,
+          403,
+          200
+        ],
+        "mcp_tool_names": [],
+        "routing_event_count": 8,
+        "schema_call_count": 8,
+        "cleanup_status": "complete"
+      }
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-006",
+      "outcome": "not_verified",
+      "categories": [
+        "Routing",
+        "Parameter / Slot",
+        "Context / Evidence",
+        "Permission / Network"
+      ],
+      "reason": "Issue #13965 was read, but three code-search calls returned 403 and no pinned validator file was read. Answer explicitly says the code path was not confirmed.",
+      "causal_limit": "Proximate failure verified; why the model chose this path is UNKNOWN",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_k3:core-006",
+        "runtime_run_id": "56480b8eec1c4b5587966a86f888940f",
+        "source": "eval/results/t068_k3_v1.jsonl:core-006",
+        "trace_event_ids": [
+          "56480b8eec1c4b5587966a86f888940f:16",
+          "56480b8eec1c4b5587966a86f888940f:17",
+          "56480b8eec1c4b5587966a86f888940f:28",
+          "56480b8eec1c4b5587966a86f888940f:29",
+          "56480b8eec1c4b5587966a86f888940f:40",
+          "56480b8eec1c4b5587966a86f888940f:41",
+          "56480b8eec1c4b5587966a86f888940f:52",
+          "56480b8eec1c4b5587966a86f888940f:53"
+        ],
+        "tool_call_ids": [
+          "sha256:30d4e9487080834b8a1241a4f864a60f8bef622c9a3d37399c038ff67562f611",
+          "sha256:ec0e56a8a015dd4d5b978576af316e22a2158794856579c21b2f86e621898959",
+          "sha256:cc0fea0d4e8cccf906e63f8d45c84b29b869272a9d50e3a2214eb629e22ad77e",
+          "sha256:701e99b001d1a949493d371bcd5859620cbacdbd330445126de0cbc590b96cb3"
+        ],
+        "github_http_statuses": [
+          200,
+          200,
+          403,
+          403,
+          403
+        ],
+        "mcp_tool_names": [],
+        "routing_event_count": 4,
+        "schema_call_count": 4,
+        "cleanup_status": "complete"
+      }
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-020",
+      "outcome": "not_verified",
+      "categories": [
+        "Context / Evidence",
+        "Parameter / Slot"
+      ],
+      "reason": "Real issue #4232 and pinned rich/ansi.py were read, and the answer explains the regex, but it omits a complete pinned code URL and discusses issue comments without direct comment citation. Frozen answer-citation criterion is not confirmed.",
+      "causal_limit": "Verified from server result or frozen criterion",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_k3:core-020",
+        "runtime_run_id": "55e7c86d75954560946dadb9015ca90f",
+        "source": "eval/results/t068_k3_v1.jsonl:core-020",
+        "trace_event_ids": [
+          "55e7c86d75954560946dadb9015ca90f:65",
+          "55e7c86d75954560946dadb9015ca90f:66"
+        ],
+        "tool_call_ids": [
+          "sha256:ed38bcec45b25a38535cd502811f31112f7a4dc9a26311557d3d4bf6e20ba92b"
+        ],
+        "github_http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "mcp_tool_names": [],
+        "routing_event_count": 5,
+        "schema_call_count": 5,
+        "cleanup_status": "complete"
+      }
+    }
+  ],
+  "unsupported": [
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-007",
+      "reason": "No GitHub issue-detail tool or forced missing-parameter clarification boundary.",
+      "source": "eval/results/t066_original_openmanus_v1.jsonl:core-007"
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-008",
+      "reason": "No GitHub file-read tool or forced missing-path clarification boundary.",
+      "source": "eval/results/t066_original_openmanus_v1.jsonl:core-008"
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-009",
+      "reason": "No GitHub file-read tool to receive the malformed JSON fixture at its dispatch boundary.",
+      "source": "eval/results/t066_original_openmanus_v1.jsonl:core-009"
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-010",
+      "reason": "No GitHub issue-detail schema validator for the invalid boolean fixture.",
+      "source": "eval/results/t066_original_openmanus_v1.jsonl:core-010"
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-011",
+      "reason": "No T065-labelled GitHub issue/code-search tools or semantic routing candidate pool.",
+      "source": "eval/results/t066_original_openmanus_v1.jsonl:core-011"
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-012",
+      "reason": "Original PythonExecute could reveal process environment; this unsafe request is not run.",
+      "source": "eval/results/t066_original_openmanus_v1.jsonl:core-012"
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-014",
+      "reason": "No non-blocking forced clarification/merge boundary for a controlled missing MCP text field.",
+      "source": "eval/results/t066_original_openmanus_v1.jsonl:core-014"
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-017",
+      "reason": "No 50 ms per-tool deadline or safe unknown-result timeout policy in original MCP client.",
+      "source": "eval/results/t066_original_openmanus_v1.jsonl:core-017"
+    },
+    {
+      "group": "original_openmanus",
+      "sample_id": "core-019",
+      "reason": "No original GitHub read tool or T065 controlled-first-503 transport fixture.",
+      "source": "eval/results/t066_original_openmanus_v1.jsonl:core-019"
+    }
+  ],
+  "expected_fault_probes": [
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-016",
+      "expected_outcome_scored": "success",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_full:core-016",
+        "runtime_run_id": "2c467c73b69247dcb97e67880f263a77",
+        "source": "eval/results/t067_full_tools_v1.jsonl:core-016",
+        "trace_event_ids": [
+          "2c467c73b69247dcb97e67880f263a77:5",
+          "2c467c73b69247dcb97e67880f263a77:6",
+          "2c467c73b69247dcb97e67880f263a77:8"
+        ],
+        "tool_call_ids": [
+          "sha256:2bb18bac844cc46a6a8a90ab6206fa5ec107e02d251dacd3d26db81eee87dad8"
+        ],
+        "github_http_statuses": [],
+        "mcp_tool_names": [
+          "fail_read"
+        ],
+        "routing_event_count": 0,
+        "schema_call_count": 0,
+        "cleanup_status": "complete"
+      },
+      "tool_attempt_status_counts": {
+        "failure": 1
+      }
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-017",
+      "expected_outcome_scored": "success",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_full:core-017",
+        "runtime_run_id": "96805a7030e649619d0cf7d33d2f3a9d",
+        "source": "eval/results/t067_full_tools_v1.jsonl:core-017",
+        "trace_event_ids": [
+          "96805a7030e649619d0cf7d33d2f3a9d:5",
+          "96805a7030e649619d0cf7d33d2f3a9d:6",
+          "96805a7030e649619d0cf7d33d2f3a9d:8"
+        ],
+        "tool_call_ids": [
+          "sha256:cc0f5235280e1ca4eaf9468dae71f6dab9e1d40505cd69949b37557d2701fc9e"
+        ],
+        "github_http_statuses": [],
+        "mcp_tool_names": [
+          "slow_read"
+        ],
+        "routing_event_count": 0,
+        "schema_call_count": 0,
+        "cleanup_status": "complete"
+      },
+      "tool_attempt_status_counts": {
+        "unknown": 1
+      }
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-018",
+      "expected_outcome_scored": "success",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_full:core-018",
+        "runtime_run_id": "569192a2cd7841c39963b9ff8e674f9c",
+        "source": "eval/results/t067_full_tools_v1.jsonl:core-018",
+        "trace_event_ids": [
+          "569192a2cd7841c39963b9ff8e674f9c:5",
+          "569192a2cd7841c39963b9ff8e674f9c:6",
+          "569192a2cd7841c39963b9ff8e674f9c:8"
+        ],
+        "tool_call_ids": [
+          "sha256:7c09bb66da1773f42147fc4458ef3340eea5e7786a3e87a031fb697926258954"
+        ],
+        "github_http_statuses": [
+          404
+        ],
+        "mcp_tool_names": [],
+        "routing_event_count": 0,
+        "schema_call_count": 0,
+        "cleanup_status": "complete"
+      },
+      "tool_attempt_status_counts": {
+        "failure": 1
+      }
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-019",
+      "expected_outcome_scored": "success",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_full:core-019",
+        "runtime_run_id": "931659d2e73047e591c712cf73381666",
+        "source": "eval/results/t067_full_tools_v1.jsonl:core-019",
+        "trace_event_ids": [
+          "931659d2e73047e591c712cf73381666:5",
+          "931659d2e73047e591c712cf73381666:12"
+        ],
+        "tool_call_ids": [
+          "sha256:70e38eb5f38edd027e4d08629e7004ff8e0bcb7245a3a33ed084c594f823fdb1"
+        ],
+        "github_http_statuses": [
+          503,
+          200
+        ],
+        "mcp_tool_names": [],
+        "routing_event_count": 0,
+        "schema_call_count": 0,
+        "cleanup_status": "complete"
+      },
+      "tool_attempt_status_counts": {
+        "failure": 1,
+        "success": 1
+      }
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-016",
+      "expected_outcome_scored": "success",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_k3:core-016",
+        "runtime_run_id": "b12971eea91640f3b7457b7a04ddefee",
+        "source": "eval/results/t068_k3_v1.jsonl:core-016",
+        "trace_event_ids": [
+          "b12971eea91640f3b7457b7a04ddefee:5",
+          "b12971eea91640f3b7457b7a04ddefee:6",
+          "b12971eea91640f3b7457b7a04ddefee:8"
+        ],
+        "tool_call_ids": [
+          "sha256:78c6d8513a4041c68386232964525963598ee71409b2c57b6c4198fa6bf0dbb9"
+        ],
+        "github_http_statuses": [],
+        "mcp_tool_names": [
+          "fail_read"
+        ],
+        "routing_event_count": 0,
+        "schema_call_count": 0,
+        "cleanup_status": "complete"
+      },
+      "tool_attempt_status_counts": {
+        "failure": 1
+      }
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-017",
+      "expected_outcome_scored": "success",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_k3:core-017",
+        "runtime_run_id": "3ae8127fe4f64e15b400dea938108f18",
+        "source": "eval/results/t068_k3_v1.jsonl:core-017",
+        "trace_event_ids": [
+          "3ae8127fe4f64e15b400dea938108f18:5",
+          "3ae8127fe4f64e15b400dea938108f18:6",
+          "3ae8127fe4f64e15b400dea938108f18:8"
+        ],
+        "tool_call_ids": [
+          "sha256:425ddca77db03decfa35bbfeafa29f819a9d502d78914607b8f18faa8ebc6d55"
+        ],
+        "github_http_statuses": [],
+        "mcp_tool_names": [
+          "slow_read"
+        ],
+        "routing_event_count": 0,
+        "schema_call_count": 0,
+        "cleanup_status": "complete"
+      },
+      "tool_attempt_status_counts": {
+        "unknown": 1
+      }
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-018",
+      "expected_outcome_scored": "success",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_k3:core-018",
+        "runtime_run_id": "00ef344cd2e848b29daf45b076ef070d",
+        "source": "eval/results/t068_k3_v1.jsonl:core-018",
+        "trace_event_ids": [
+          "00ef344cd2e848b29daf45b076ef070d:5",
+          "00ef344cd2e848b29daf45b076ef070d:6",
+          "00ef344cd2e848b29daf45b076ef070d:8"
+        ],
+        "tool_call_ids": [
+          "sha256:e6951c4b7b6f646c2e8383f379a58816149892b9dd95aa143749507cbc8f33bd"
+        ],
+        "github_http_statuses": [
+          404
+        ],
+        "mcp_tool_names": [],
+        "routing_event_count": 0,
+        "schema_call_count": 0,
+        "cleanup_status": "complete"
+      },
+      "tool_attempt_status_counts": {
+        "failure": 1
+      }
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-019",
+      "expected_outcome_scored": "success",
+      "evidence": {
+        "benchmark_run_id": "taskpilot_k3:core-019",
+        "runtime_run_id": "d6a88eb789db4a6ca1ef0c4304bf1113",
+        "source": "eval/results/t068_k3_v1.jsonl:core-019",
+        "trace_event_ids": [
+          "d6a88eb789db4a6ca1ef0c4304bf1113:5",
+          "d6a88eb789db4a6ca1ef0c4304bf1113:12"
+        ],
+        "tool_call_ids": [
+          "sha256:74c88528ffdf023ef3769ce77e440a20ec9f1d9ffbc3b98a073e80c7c4050b85"
+        ],
+        "github_http_statuses": [
+          503,
+          200
+        ],
+        "mcp_tool_names": [],
+        "routing_event_count": 0,
+        "schema_call_count": 0,
+        "cleanup_status": "complete"
+      },
+      "tool_attempt_status_counts": {
+        "failure": 1,
+        "success": 1
+      }
+    }
+  ],
+  "k3_negative_pairs": [
+    {
+      "sample_id": "core-004",
+      "k3_minus_full_provider_tokens": 27994,
+      "k3_minus_full_end_to_end_ms": 5120.8,
+      "provider_attempts_full": 3,
+      "provider_attempts_k3": 7
+    },
+    {
+      "sample_id": "core-011",
+      "k3_minus_full_provider_tokens": 61085,
+      "k3_minus_full_end_to_end_ms": 6846.1,
+      "provider_attempts_full": 4,
+      "provider_attempts_k3": 8
+    },
+    {
+      "sample_id": "core-020",
+      "k3_minus_full_provider_tokens": 14064,
+      "k3_minus_full_end_to_end_ms": 1867.7,
+      "provider_attempts_full": 4,
+      "provider_attempts_k3": 5
+    }
+  ],
+  "slot_error_steps": [
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-006",
+      "step": 1,
+      "counts": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "issue_number"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "issue_number",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "path",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t067_full_tools_v1.jsonl:core-006:assistant_turn_1"
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-006",
+      "step": 2,
+      "counts": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 1
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "path"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t067_full_tools_v1.jsonl:core-006:assistant_turn_2"
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-020",
+      "step": 1,
+      "counts": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "issue_number"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "issue_number",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "path",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t067_full_tools_v1.jsonl:core-020:assistant_turn_1"
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-020",
+      "step": 2,
+      "counts": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 1
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "path"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t067_full_tools_v1.jsonl:core-020:assistant_turn_2"
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-021",
+      "step": 1,
+      "counts": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "issue_number"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "issue_number",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t067_full_tools_v1.jsonl:core-021:assistant_turn_1"
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-021",
+      "step": 2,
+      "counts": {
+        "tp": 2,
+        "fp": 1,
+        "fn": 1
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "query"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "path",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t067_full_tools_v1.jsonl:core-021:assistant_turn_2"
+    },
+    {
+      "group": "taskpilot_full",
+      "sample_id": "core-021",
+      "step": 3,
+      "counts": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 1
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "path"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t067_full_tools_v1.jsonl:core-021:assistant_turn_3"
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-005",
+      "step": 1,
+      "counts": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "issue_number"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "issue_number",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t068_k3_v1.jsonl:core-005:assistant_turn_1"
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-005",
+      "step": 2,
+      "counts": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 1
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "path"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t068_k3_v1.jsonl:core-005:assistant_turn_2"
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-006",
+      "step": 1,
+      "counts": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "issue_number"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "issue_number",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t068_k3_v1.jsonl:core-006:assistant_turn_1"
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-006",
+      "step": 2,
+      "counts": {
+        "tp": 2,
+        "fp": 1,
+        "fn": 1
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "path"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t068_k3_v1.jsonl:core-006:assistant_turn_2"
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-020",
+      "step": 1,
+      "counts": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "issue_number"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "issue_number",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "path",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t068_k3_v1.jsonl:core-020:assistant_turn_1"
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-020",
+      "step": 2,
+      "counts": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 1
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "path"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t068_k3_v1.jsonl:core-020:assistant_turn_2"
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-021",
+      "step": 1,
+      "counts": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 0
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "issue_number"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "issue_number",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t068_k3_v1.jsonl:core-021:assistant_turn_1"
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-021",
+      "step": 2,
+      "counts": {
+        "tp": 2,
+        "fp": 1,
+        "fn": 1
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "query"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "path",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t068_k3_v1.jsonl:core-021:assistant_turn_2"
+    },
+    {
+      "group": "taskpilot_k3",
+      "sample_id": "core-021",
+      "step": 3,
+      "counts": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 1
+      },
+      "gold_fields": [
+        "repository",
+        "ref",
+        "path"
+      ],
+      "emitted_fields_and_sources": [
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "query",
+          "origin": "model_tool_call"
+        },
+        {
+          "field": "repository",
+          "origin": "confirmed_context"
+        },
+        {
+          "field": "ref",
+          "origin": "confirmed_context"
+        }
+      ],
+      "source": "t068_k3_v1.jsonl:core-021:assistant_turn_3"
+    }
+  ],
+  "core011_full_formal_outcome": "not_verified",
+  "core011_full_diagnostic_business_evidence_without_routing_criterion": "satisfied per T067 review; not a formal rescore"
+}

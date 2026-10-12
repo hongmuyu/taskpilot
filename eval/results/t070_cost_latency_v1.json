@@ -1,0 +1,6881 @@
+{
+  "metric_version": "t070-v1",
+  "dataset_version": "1.0.0",
+  "dataset_sha256": "8251f53ac812684507bfe85086214393bcbb3dd955d19a54d5df12a0d3affafe",
+  "scoring_sha256": "289db810fda451dee8a6d9aa2765e79995eae2b38401c1512da249b547608c2a",
+  "measurement_policy": {
+    "end_to_end": "runner monotonic elapsed through cleanup; supported attempted only",
+    "phase": "T055 trace duration sums are work time and may overlap; original LLM phase is provider-request elapsed only",
+    "missing": "None means NOT AVAILABLE or not attempted; zero only when no corresponding call occurred",
+    "human_wait": "controlled immediate replies have no measured human wait and remain NOT AVAILABLE",
+    "retry": "additional attempts plus backoff are diagnostic subsets of LLM/tool/end-to-end, never additive",
+    "outcome": "T069 adjudications carried unchanged; core-011 routing and business-versus-expected-outcome questions remain for T072"
+  },
+  "groups": {
+    "original_openmanus": {
+      "provenance": {
+        "raw_file": "t066_original_openmanus_v1.jsonl",
+        "raw_sha256": "df844920712628a1ac8de8dfdf6120faecc832a748d2937ae851dd04a9cb8998",
+        "review_file": "t066_original_openmanus_review.json",
+        "review_sha256": "b047ddbb709820505c05772e2ff87361c2630bf43d6d61f9ec62151e2b26e173",
+        "selected_mcp_retest_sha256": "b8149c6c3ca9f5308d42bf79542637c43b1463cd025a7c022319613aa13ae479"
+      },
+      "prior_setup_failures": {
+        "attempts": 6,
+        "elapsed_ms": {
+          "eligible": 6,
+          "available": 6,
+          "missing": 0,
+          "known_sum": 1058.2,
+          "total": 1058.2,
+          "mean": 176.36666666666667,
+          "median": 174.75
+        },
+        "provider_attempts": 0
+      },
+      "provider_attempt_status_counts": {
+        "200": 60
+      },
+      "tool_attempt_status_counts": null,
+      "coverage": {
+        "holdout": 21,
+        "supported_attempted": 12,
+        "unsupported": 9,
+        "natural_model": 12,
+        "controlled_zero_llm": 0,
+        "business_outcomes": {
+          "failure": 8,
+          "success": 4,
+          "unsupported": 9
+        }
+      },
+      "all_supported": {
+        "eligible": 12,
+        "provider_attempts": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 60,
+          "total": 60,
+          "mean": 5,
+          "median": 6.0
+        },
+        "tokens": {
+          "input": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 150459,
+            "total": 150459,
+            "mean": 12538.25,
+            "median": 14091.5
+          },
+          "output": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 12384,
+            "total": 12384,
+            "mean": 1032,
+            "median": 1124.0
+          },
+          "total": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 162843,
+            "total": 162843,
+            "mean": 13570.25,
+            "median": 15459.5
+          }
+        },
+        "unknown_provider_attempts": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "latency_ms": {
+          "end_to_end": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 154969.6,
+            "total": 154969.6,
+            "mean": 12914.133333333333,
+            "median": 13953.150000000001
+          },
+          "llm": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 82759.0,
+            "total": 82759.0,
+            "mean": 6896.583333333333,
+            "median": 7494.4
+          },
+          "embedding": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0.0
+          },
+          "tool": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "retry": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "human_wait": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          }
+        },
+        "embedding_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_index_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_query_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_index_duration_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_query_duration_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "retry_tool_extra_attempts": {
+          "eligible": 12,
+          "available": 0,
+          "missing": 12,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "retry_llm_extra_attempts": {
+          "eligible": 12,
+          "available": 0,
+          "missing": 12,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "retry_extra_attempt_duration_ms": {
+          "eligible": 12,
+          "available": 0,
+          "missing": 12,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "retry_extra_provider_tokens": {
+          "input": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "output": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "total": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          }
+        }
+      },
+      "natural_model": {
+        "eligible": 12,
+        "provider_attempts": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 60,
+          "total": 60,
+          "mean": 5,
+          "median": 6.0
+        },
+        "tokens": {
+          "input": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 150459,
+            "total": 150459,
+            "mean": 12538.25,
+            "median": 14091.5
+          },
+          "output": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 12384,
+            "total": 12384,
+            "mean": 1032,
+            "median": 1124.0
+          },
+          "total": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 162843,
+            "total": 162843,
+            "mean": 13570.25,
+            "median": 15459.5
+          }
+        },
+        "unknown_provider_attempts": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "latency_ms": {
+          "end_to_end": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 154969.6,
+            "total": 154969.6,
+            "mean": 12914.133333333333,
+            "median": 13953.150000000001
+          },
+          "llm": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 82759.0,
+            "total": 82759.0,
+            "mean": 6896.583333333333,
+            "median": 7494.4
+          },
+          "embedding": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0.0
+          },
+          "tool": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "retry": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "human_wait": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          }
+        },
+        "embedding_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_index_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_query_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_index_duration_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_query_duration_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "retry_tool_extra_attempts": {
+          "eligible": 12,
+          "available": 0,
+          "missing": 12,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "retry_llm_extra_attempts": {
+          "eligible": 12,
+          "available": 0,
+          "missing": 12,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "retry_extra_attempt_duration_ms": {
+          "eligible": 12,
+          "available": 0,
+          "missing": 12,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "retry_extra_provider_tokens": {
+          "input": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "output": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "total": {
+            "eligible": 12,
+            "available": 0,
+            "missing": 12,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          }
+        }
+      },
+      "controlled_zero_llm": {
+        "eligible": 0,
+        "provider_attempts": {
+          "eligible": 0,
+          "available": 0,
+          "missing": 0,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "tokens": {
+          "input": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "output": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "total": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          }
+        },
+        "unknown_provider_attempts": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "latency_ms": {
+          "end_to_end": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "llm": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "embedding": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "tool": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "retry": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "human_wait": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          }
+        },
+        "embedding_calls": {
+          "eligible": 0,
+          "available": 0,
+          "missing": 0,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "embedding_index_calls": {
+          "eligible": 0,
+          "available": 0,
+          "missing": 0,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "embedding_query_calls": {
+          "eligible": 0,
+          "available": 0,
+          "missing": 0,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "embedding_index_duration_ms": {
+          "eligible": 0,
+          "available": 0,
+          "missing": 0,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "embedding_query_duration_ms": {
+          "eligible": 0,
+          "available": 0,
+          "missing": 0,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "retry_tool_extra_attempts": {
+          "eligible": 0,
+          "available": 0,
+          "missing": 0,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "retry_llm_extra_attempts": {
+          "eligible": 0,
+          "available": 0,
+          "missing": 0,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "retry_extra_attempt_duration_ms": {
+          "eligible": 0,
+          "available": 0,
+          "missing": 0,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "retry_extra_provider_tokens": {
+          "input": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "output": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          },
+          "total": {
+            "eligible": 0,
+            "available": 0,
+            "missing": 0,
+            "known_sum": 0,
+            "total": null,
+            "mean": null,
+            "median": null
+          }
+        }
+      },
+      "samples": [
+        {
+          "sample_id": "core-001",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 6,
+          "provider_status_counts": {
+            "200": 6
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 17242,
+              "known_sum": 17242,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1560,
+              "known_sum": 1560,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 18802,
+              "known_sum": 18802,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 16757.8,
+            "llm": 9849.9,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-002",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "failure",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 6,
+          "provider_status_counts": {
+            "200": 6
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 17143,
+              "known_sum": 17143,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 994,
+              "known_sum": 994,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 18137,
+              "known_sum": 18137,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 14669.7,
+            "llm": 7013.7,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-003",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 6,
+          "provider_status_counts": {
+            "200": 6
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 19823,
+              "known_sum": 19823,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1694,
+              "known_sum": 1694,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 21517,
+              "known_sum": 21517,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 17107.9,
+            "llm": 10217.8,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-004",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "failure",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 6,
+          "provider_status_counts": {
+            "200": 6
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 17341,
+              "known_sum": 17341,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1915,
+              "known_sum": 1915,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 19256,
+              "known_sum": 19256,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 24103.7,
+            "llm": 9674.9,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-005",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "failure",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 6,
+          "provider_status_counts": {
+            "200": 6
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 12933,
+              "known_sum": 12933,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 870,
+              "known_sum": 870,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 13803,
+              "known_sum": 13803,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 13236.6,
+            "llm": 6692.1,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-006",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "failure",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 6,
+          "provider_status_counts": {
+            "200": 6
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 15274,
+              "known_sum": 15274,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1254,
+              "known_sum": 1254,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 16528,
+              "known_sum": 16528,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 15146.2,
+            "llm": 7776.4,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-007",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "business_outcome": "unsupported",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": null,
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": null,
+            "llm": null,
+            "embedding": null,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-008",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "business_outcome": "unsupported",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": null,
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": null,
+            "llm": null,
+            "embedding": null,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-009",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "business_outcome": "unsupported",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": null,
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": null,
+            "llm": null,
+            "embedding": null,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-010",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "business_outcome": "unsupported",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": null,
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": null,
+            "llm": null,
+            "embedding": null,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-011",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "business_outcome": "unsupported",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": null,
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": null,
+            "llm": null,
+            "embedding": null,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-012",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "business_outcome": "unsupported",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": null,
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": null,
+            "llm": null,
+            "embedding": null,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-013",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t066_original_openmanus_mcp_retest_2.jsonl",
+          "prior_setup_failures": [
+            {
+              "source_file": "t066_original_openmanus_v1.jsonl",
+              "run_status": "setup_error",
+              "elapsed_ms": 189.0,
+              "provider_attempts": 0,
+              "provider_tokens": {
+                "input": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "output": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "total": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                }
+              }
+            },
+            {
+              "source_file": "t066_original_openmanus_mcp_retest.jsonl",
+              "run_status": "setup_error",
+              "elapsed_ms": 178.2,
+              "provider_attempts": 0,
+              "provider_tokens": {
+                "input": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "output": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "total": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                }
+              }
+            }
+          ],
+          "provider_attempts": 2,
+          "provider_status_counts": {
+            "200": 2
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 3355,
+              "known_sum": 3355,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 203,
+              "known_sum": 203,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 3558,
+              "known_sum": 3558,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 3165.2,
+            "llm": 2068.3999999999996,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-014",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "business_outcome": "unsupported",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": null,
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": null,
+            "llm": null,
+            "embedding": null,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-015",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t066_original_openmanus_mcp_retest_2.jsonl",
+          "prior_setup_failures": [
+            {
+              "source_file": "t066_original_openmanus_v1.jsonl",
+              "run_status": "setup_error",
+              "elapsed_ms": 171.3,
+              "provider_attempts": 0,
+              "provider_tokens": {
+                "input": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "output": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "total": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                }
+              }
+            },
+            {
+              "source_file": "t066_original_openmanus_mcp_retest.jsonl",
+              "run_status": "setup_error",
+              "elapsed_ms": 183.0,
+              "provider_attempts": 0,
+              "provider_tokens": {
+                "input": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "output": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "total": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                }
+              }
+            }
+          ],
+          "provider_attempts": 2,
+          "provider_status_counts": {
+            "200": 2
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 3398,
+              "known_sum": 3398,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 234,
+              "known_sum": 234,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 3632,
+              "known_sum": 3632,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 3769.4,
+            "llm": 2644.4,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-016",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "failure",
+          "source_file": "t066_original_openmanus_mcp_retest_2.jsonl",
+          "prior_setup_failures": [
+            {
+              "source_file": "t066_original_openmanus_v1.jsonl",
+              "run_status": "setup_error",
+              "elapsed_ms": 167.2,
+              "provider_attempts": 0,
+              "provider_tokens": {
+                "input": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "output": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "total": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                }
+              }
+            },
+            {
+              "source_file": "t066_original_openmanus_mcp_retest.jsonl",
+              "run_status": "setup_error",
+              "elapsed_ms": 169.5,
+              "provider_attempts": 0,
+              "provider_tokens": {
+                "input": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "output": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                },
+                "total": {
+                  "value": 0,
+                  "known_sum": 0,
+                  "unknown_attempts": 0
+                }
+              }
+            }
+          ],
+          "provider_attempts": 2,
+          "provider_status_counts": {
+            "200": 2
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 3319,
+              "known_sum": 3319,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 232,
+              "known_sum": 232,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 3551,
+              "known_sum": 3551,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 3489.6,
+            "llm": 2332.5,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-017",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "business_outcome": "unsupported",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": null,
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": null,
+            "llm": null,
+            "embedding": null,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-018",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "failure",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 6,
+          "provider_status_counts": {
+            "200": 6
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 12448,
+              "known_sum": 12448,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 692,
+              "known_sum": 692,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 13140,
+              "known_sum": 13140,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 12649.5,
+            "llm": 7212.4,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-019",
+          "support": "unsupported",
+          "mode": "unsupported",
+          "business_outcome": "unsupported",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": null,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": null,
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": null,
+            "llm": null,
+            "embedding": null,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-020",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "failure",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 6,
+          "provider_status_counts": {
+            "200": 6
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 14065,
+              "known_sum": 14065,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1280,
+              "known_sum": 1280,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 15345,
+              "known_sum": 15345,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 19691.7,
+            "llm": 8155.1,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        },
+        {
+          "sample_id": "core-021",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "failure",
+          "source_file": "t066_original_openmanus_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 6,
+          "provider_status_counts": {
+            "200": 6
+          },
+          "tool_attempt_status_counts": null,
+          "provider_tokens": {
+            "input": {
+              "value": 14118,
+              "known_sum": 14118,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1456,
+              "known_sum": 1456,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 15574,
+              "known_sum": 15574,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": null,
+          "latency_ms": {
+            "end_to_end": 11182.3,
+            "llm": 9121.4,
+            "embedding": 0,
+            "tool": null,
+            "retry": null,
+            "human_wait": null
+          },
+          "agent_trace_ms": null
+        }
+      ]
+    },
+    "taskpilot_full": {
+      "provenance": {
+        "raw_file": "t067_full_tools_v1.jsonl",
+        "raw_sha256": "4f7c3ddc59ac3988eea7c36bfafd8c63c2a52b345511275e41049ab437f4be99",
+        "review_file": "t067_full_tools_review.json",
+        "review_sha256": "10dd9aef3e66783126bae377f36a798f992d658c29fc524d8c002642d1d67f9a"
+      },
+      "prior_setup_failures": {
+        "attempts": 0,
+        "elapsed_ms": {
+          "eligible": 0,
+          "available": 0,
+          "missing": 0,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "provider_attempts": 0
+      },
+      "provider_attempt_status_counts": {
+        "success": 44
+      },
+      "tool_attempt_status_counts": {
+        "failure": 8,
+        "success": 51,
+        "unknown": 12
+      },
+      "coverage": {
+        "holdout": 21,
+        "supported_attempted": 21,
+        "unsupported": 0,
+        "natural_model": 12,
+        "controlled_zero_llm": 9,
+        "business_outcomes": {
+          "not_verified": 3,
+          "success": 18
+        }
+      },
+      "all_supported": {
+        "eligible": 21,
+        "provider_attempts": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 44,
+          "total": 44,
+          "mean": 2.0952380952380953,
+          "median": 2
+        },
+        "tokens": {
+          "input": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 231765,
+            "total": 231765,
+            "mean": 11036.42857142857,
+            "median": 1484
+          },
+          "output": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 11543,
+            "total": 11543,
+            "mean": 549.6666666666666,
+            "median": 121
+          },
+          "total": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 243308,
+            "total": 243308,
+            "mean": 11586.095238095239,
+            "median": 1591
+          }
+        },
+        "unknown_provider_attempts": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "latency_ms": {
+          "end_to_end": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 110591.7,
+            "total": 110591.7,
+            "mean": 5266.271428571428,
+            "median": 1929.8
+          },
+          "llm": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 68721.32769378368,
+            "total": 68721.32769378368,
+            "mean": 3272.444175894461,
+            "median": 1621.2611539522186
+          },
+          "embedding": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 0.0,
+            "total": 0.0,
+            "mean": 0.0,
+            "median": 0.0
+          },
+          "tool": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 38626.92935811356,
+            "total": 38626.92935811356,
+            "mean": 1839.377588481598,
+            "median": 916.8406961252913
+          },
+          "retry": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 100.30143393669277,
+            "total": 100.30143393669277,
+            "mean": 4.776258758890132,
+            "median": 0.0
+          },
+          "human_wait": {
+            "eligible": 21,
+            "available": 18,
+            "missing": 3,
+            "known_sum": 0.0,
+            "total": null,
+            "mean": 0.0,
+            "median": 0.0
+          }
+        },
+        "embedding_calls": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_index_calls": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_query_calls": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_index_duration_ms": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_query_duration_ms": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "retry_tool_extra_attempts": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 1,
+          "total": 1,
+          "mean": 0.047619047619047616,
+          "median": 0
+        },
+        "retry_llm_extra_attempts": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "retry_extra_attempt_duration_ms": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 916.26603808254,
+          "total": 916.26603808254,
+          "mean": 43.63171609916857,
+          "median": 0
+        },
+        "retry_extra_provider_tokens": {
+          "input": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "output": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "total": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          }
+        }
+      },
+      "natural_model": {
+        "eligible": 12,
+        "provider_attempts": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 44,
+          "total": 44,
+          "mean": 3.6666666666666665,
+          "median": 3.5
+        },
+        "tokens": {
+          "input": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 231765,
+            "total": 231765,
+            "mean": 19313.75,
+            "median": 11725.5
+          },
+          "output": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 11543,
+            "total": 11543,
+            "mean": 961.9166666666666,
+            "median": 991.5
+          },
+          "total": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 243308,
+            "total": 243308,
+            "mean": 20275.666666666668,
+            "median": 12784.0
+          }
+        },
+        "unknown_provider_attempts": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "latency_ms": {
+          "end_to_end": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 104971.1,
+            "total": 104971.1,
+            "mean": 8747.591666666667,
+            "median": 8949.65
+          },
+          "llm": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 68721.32769378368,
+            "total": 68721.32769378368,
+            "mean": 5726.777307815307,
+            "median": 5659.311630006414
+          },
+          "embedding": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0.0,
+            "total": 0.0,
+            "mean": 0.0,
+            "median": 0.0
+          },
+          "tool": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 34596.95503790863,
+            "total": 34596.95503790863,
+            "mean": 2883.0795864923857,
+            "median": 3155.9049975476228
+          },
+          "retry": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0.0,
+            "total": 0.0,
+            "mean": 0.0,
+            "median": 0.0
+          },
+          "human_wait": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0.0,
+            "total": 0.0,
+            "mean": 0.0,
+            "median": 0.0
+          }
+        },
+        "embedding_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_index_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_query_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_index_duration_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "embedding_query_duration_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "retry_tool_extra_attempts": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "retry_llm_extra_attempts": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "retry_extra_attempt_duration_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "retry_extra_provider_tokens": {
+          "input": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0.0
+          },
+          "output": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0.0
+          },
+          "total": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0.0
+          }
+        }
+      },
+      "controlled_zero_llm": {
+        "eligible": 9,
+        "provider_attempts": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "tokens": {
+          "input": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "output": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "total": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          }
+        },
+        "unknown_provider_attempts": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "latency_ms": {
+          "end_to_end": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 5620.6,
+            "total": 5620.6,
+            "mean": 624.5111111111111,
+            "median": 801.5
+          },
+          "llm": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0.0,
+            "total": 0.0,
+            "mean": 0.0,
+            "median": 0.0
+          },
+          "embedding": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0.0,
+            "total": 0.0,
+            "mean": 0.0,
+            "median": 0.0
+          },
+          "tool": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 4029.9743202049285,
+            "total": 4029.9743202049285,
+            "mean": 447.7749244672143,
+            "median": 50.64582405611873
+          },
+          "retry": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 100.30143393669277,
+            "total": 100.30143393669277,
+            "mean": 11.144603770743641,
+            "median": 0.0
+          },
+          "human_wait": {
+            "eligible": 9,
+            "available": 6,
+            "missing": 3,
+            "known_sum": 0.0,
+            "total": null,
+            "mean": 0.0,
+            "median": 0.0
+          }
+        },
+        "embedding_calls": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_index_calls": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_query_calls": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_index_duration_ms": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_query_duration_ms": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "retry_tool_extra_attempts": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 1,
+          "total": 1,
+          "mean": 0.1111111111111111,
+          "median": 0
+        },
+        "retry_llm_extra_attempts": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "retry_extra_attempt_duration_ms": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 916.26603808254,
+          "total": 916.26603808254,
+          "mean": 101.80733756472667,
+          "median": 0
+        },
+        "retry_extra_provider_tokens": {
+          "input": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "output": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "total": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          }
+        }
+      },
+      "samples": [
+        {
+          "sample_id": "core-001",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 2,
+          "provider_status_counts": {
+            "success": 2
+          },
+          "tool_attempt_status_counts": {
+            "success": 2,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 3543,
+              "known_sum": 3543,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 555,
+              "known_sum": 555,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 4098,
+              "known_sum": 4098,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 5161.8,
+            "llm": 3097.2992500755936,
+            "embedding": 0.0,
+            "tool": 1332.1365419542417,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 4435.228659072891
+        },
+        {
+          "sample_id": "core-002",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 5,
+          "provider_status_counts": {
+            "success": 5
+          },
+          "tool_attempt_status_counts": {
+            "success": 6,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 36017,
+              "known_sum": 36017,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1724,
+              "known_sum": 1724,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 37741,
+              "known_sum": 37741,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 13241.1,
+            "llm": 9440.822148928419,
+            "embedding": 0.0,
+            "tool": 3766.5475719841197,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 13218.034108984284
+        },
+        {
+          "sample_id": "core-003",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 2,
+          "provider_status_counts": {
+            "success": 2
+          },
+          "tool_attempt_status_counts": {
+            "success": 1,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 5424,
+              "known_sum": 5424,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1007,
+              "known_sum": 1007,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 6431,
+              "known_sum": 6431,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 6846.4,
+            "llm": 5305.210473015904,
+            "embedding": 0.0,
+            "tool": 1516.5542368777096,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 6825.526098022237
+        },
+        {
+          "sample_id": "core-004",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 3,
+          "provider_status_counts": {
+            "success": 3
+          },
+          "tool_attempt_status_counts": {
+            "success": 3,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 7535,
+              "known_sum": 7535,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 864,
+              "known_sum": 864,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 8399,
+              "known_sum": 8399,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 8279.4,
+            "llm": 5156.199426855892,
+            "embedding": 0.0,
+            "tool": 3098.045142018236,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 8260.051689925604
+        },
+        {
+          "sample_id": "core-005",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "not_verified",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 8,
+          "provider_status_counts": {
+            "success": 8
+          },
+          "tool_attempt_status_counts": {
+            "failure": 2,
+            "success": 11
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 71388,
+              "known_sum": 71388,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1746,
+              "known_sum": 1746,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 73134,
+              "known_sum": 73134,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 18577.7,
+            "llm": 10836.157287005335,
+            "embedding": 0.0,
+            "tool": 7690.21939788945,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 18548.263509990647
+        },
+        {
+          "sample_id": "core-006",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "not_verified",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 7,
+          "provider_status_counts": {
+            "success": 7
+          },
+          "tool_attempt_status_counts": {
+            "failure": 3,
+            "success": 8,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 55286,
+              "known_sum": 55286,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1728,
+              "known_sum": 1728,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 57014,
+              "known_sum": 57014,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 16987.8,
+            "llm": 10862.34298988711,
+            "embedding": 0.0,
+            "tool": 6078.311563120224,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 16959.503062069416
+        },
+        {
+          "sample_id": "core-007",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "success": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 1428.3,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 1408.48918503616,
+            "retry": 0.0,
+            "human_wait": null
+          },
+          "agent_trace_ms": 1410.0611810572445
+        },
+        {
+          "sample_id": "core-008",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "success": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 890.7,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 869.837264996022,
+            "retry": 0.0,
+            "human_wait": null
+          },
+          "agent_trace_ms": 871.4448800310493
+        },
+        {
+          "sample_id": "core-009",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {},
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 17.9,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 0.0,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 0.3965600626543164
+        },
+        {
+          "sample_id": "core-010",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {},
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 17.5,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 0.0,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 0.6007780320942402
+        },
+        {
+          "sample_id": "core-011",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "not_verified",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 4,
+          "provider_status_counts": {
+            "success": 4
+          },
+          "tool_attempt_status_counts": {
+            "success": 5,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 16565,
+              "known_sum": 16565,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 976,
+              "known_sum": 976,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 17541,
+              "known_sum": 17541,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 9619.9,
+            "llm": 6013.412786996923,
+            "embedding": 0.0,
+            "tool": 3572.066179011017,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 9595.675567979924
+        },
+        {
+          "sample_id": "core-012",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 1,
+          "provider_status_counts": {
+            "success": 1
+          },
+          "tool_attempt_status_counts": {
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 818,
+              "known_sum": 818,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 201,
+              "known_sum": 201,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 1019,
+              "known_sum": 1019,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 1527.1,
+            "llm": 1507.3542470345274,
+            "embedding": 0.0,
+            "tool": 0.1899689668789506,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 1509.5210840227082
+        },
+        {
+          "sample_id": "core-013",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 2,
+          "provider_status_counts": {
+            "success": 2
+          },
+          "tool_attempt_status_counts": {
+            "success": 1,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 1484,
+              "known_sum": 1484,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 107,
+              "known_sum": 107,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 1591,
+              "known_sum": 1591,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 2261.4,
+            "llm": 1943.230586941354,
+            "embedding": 0.0,
+            "tool": 2.90890596807003,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 1950.1704029971734
+        },
+        {
+          "sample_id": "core-014",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "success": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 312.2,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 1.482947962358594,
+            "retry": 0.0,
+            "human_wait": null
+          },
+          "agent_trace_ms": 2.690439927391708
+        },
+        {
+          "sample_id": "core-015",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 2,
+          "provider_status_counts": {
+            "success": 2
+          },
+          "tool_attempt_status_counts": {
+            "success": 1,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 1526,
+              "known_sum": 1526,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 121,
+              "known_sum": 121,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 1647,
+              "known_sum": 1647,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 1929.8,
+            "llm": 1621.2611539522186,
+            "embedding": 0.0,
+            "tool": 2.1787110017612576,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 1626.9127409905195
+        },
+        {
+          "sample_id": "core-016",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "failure": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 309.0,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 1.0460190242156386,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 1.6847900114953518
+        },
+        {
+          "sample_id": "core-017",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 804.7,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 50.64582405611873,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 51.99935496784747
+        },
+        {
+          "sample_id": "core-018",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "failure": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 801.5,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 781.6323830047622,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 782.7496399404481
+        },
+        {
+          "sample_id": "core-019",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "failure": 1,
+            "success": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 1,
+            "llm_extra_attempts": 0,
+            "wait_ms": 100.30143393669277,
+            "extra_attempt_duration_ms": 916.26603808254,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 1038.8,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 916.8406961252913,
+            "retry": 100.30143393669277,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 1018.9931429922581
+        },
+        {
+          "sample_id": "core-020",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 4,
+          "provider_status_counts": {
+            "success": 4
+          },
+          "tool_attempt_status_counts": {
+            "success": 4,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 15916,
+              "known_sum": 15916,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1253,
+              "known_sum": 1253,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 17169,
+              "known_sum": 17169,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 10004.2,
+            "llm": 6758.757062023506,
+            "embedding": 0.0,
+            "tool": 3213.7648530770093,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 9981.458785943687
+        },
+        {
+          "sample_id": "core-021",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t067_full_tools_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 4,
+          "provider_status_counts": {
+            "success": 4
+          },
+          "tool_attempt_status_counts": {
+            "success": 5,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 16263,
+              "known_sum": 16263,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1261,
+              "known_sum": 1261,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 17524,
+              "known_sum": 17524,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 10534.5,
+            "llm": 6179.2802810668945,
+            "embedding": 0.0,
+            "tool": 4324.031966039911,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 10512.135138036683
+        }
+      ]
+    },
+    "taskpilot_k3": {
+      "provenance": {
+        "raw_file": "t068_k3_v1.jsonl",
+        "raw_sha256": "5af426c7e1285cdefa0b7ec5e9859ec1a984e5747873cac8059e87903993656b",
+        "review_file": "t068_k3_review.json",
+        "review_sha256": "8e06ad03b97e88726b508ef3ee2f4f1989e1cacb81f56734f88037a3cbcf46f3"
+      },
+      "prior_setup_failures": {
+        "attempts": 0,
+        "elapsed_ms": {
+          "eligible": 0,
+          "available": 0,
+          "missing": 0,
+          "known_sum": 0,
+          "total": null,
+          "mean": null,
+          "median": null
+        },
+        "provider_attempts": 0
+      },
+      "provider_attempt_status_counts": {
+        "success": 48
+      },
+      "tool_attempt_status_counts": {
+        "failure": 10,
+        "success": 43,
+        "unknown": 12
+      },
+      "coverage": {
+        "holdout": 21,
+        "supported_attempted": 21,
+        "unsupported": 0,
+        "natural_model": 12,
+        "controlled_zero_llm": 9,
+        "business_outcomes": {
+          "not_verified": 3,
+          "success": 18
+        }
+      },
+      "all_supported": {
+        "eligible": 21,
+        "provider_attempts": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 48,
+          "total": 48,
+          "mean": 2.2857142857142856,
+          "median": 2
+        },
+        "tokens": {
+          "input": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 227438,
+            "total": 227438,
+            "mean": 10830.380952380952,
+            "median": 1242
+          },
+          "output": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 9698,
+            "total": 9698,
+            "mean": 461.8095238095238,
+            "median": 124
+          },
+          "total": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 237136,
+            "total": 237136,
+            "mean": 11292.190476190477,
+            "median": 1357
+          }
+        },
+        "unknown_provider_attempts": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "latency_ms": {
+          "end_to_end": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 107668.6,
+            "total": 107668.6,
+            "mean": 5127.07619047619,
+            "median": 1745.6
+          },
+          "llm": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 67036.76814388018,
+            "total": 67036.76814388018,
+            "mean": 3192.2270544704847,
+            "median": 1695.1448150211945
+          },
+          "embedding": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 2508.251008228399,
+            "total": 2508.251008228399,
+            "mean": 119.44052420135233,
+            "median": 20.335805951617658
+          },
+          "tool": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 35076.99999236502,
+            "total": 35076.99999236502,
+            "mean": 1670.3333329697628,
+            "median": 829.2690810048953
+          },
+          "retry": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 100.25343589950353,
+            "total": 100.25343589950353,
+            "mean": 4.773973138071597,
+            "median": 0.0
+          },
+          "human_wait": {
+            "eligible": 21,
+            "available": 18,
+            "missing": 3,
+            "known_sum": 0.0,
+            "total": null,
+            "mean": 0.0,
+            "median": 0.0
+          }
+        },
+        "embedding_calls": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 52,
+          "total": 52,
+          "mean": 2.4761904761904763,
+          "median": 2
+        },
+        "embedding_index_calls": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 4,
+          "total": 4,
+          "mean": 0.19047619047619047,
+          "median": 0
+        },
+        "embedding_query_calls": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 48,
+          "total": 48,
+          "mean": 2.2857142857142856,
+          "median": 2
+        },
+        "embedding_index_duration_ms": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 2103.3509387634695,
+          "total": 2103.3509387634695,
+          "mean": 100.15956851254616,
+          "median": 0
+        },
+        "embedding_query_duration_ms": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 404.9000694649294,
+          "total": 404.9000694649294,
+          "mean": 19.280955688806163,
+          "median": 8.90994188375771
+        },
+        "retry_tool_extra_attempts": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 1,
+          "total": 1,
+          "mean": 0.047619047619047616,
+          "median": 0
+        },
+        "retry_llm_extra_attempts": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "retry_extra_attempt_duration_ms": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 944.3288169568405,
+          "total": 944.3288169568405,
+          "mean": 44.96803890270669,
+          "median": 0
+        },
+        "retry_extra_provider_tokens": {
+          "input": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "output": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "total": {
+            "eligible": 21,
+            "available": 21,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          }
+        }
+      },
+      "natural_model": {
+        "eligible": 12,
+        "provider_attempts": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 48,
+          "total": 48,
+          "mean": 4,
+          "median": 3.5
+        },
+        "tokens": {
+          "input": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 227438,
+            "total": 227438,
+            "mean": 18953.166666666668,
+            "median": 8528.5
+          },
+          "output": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 9698,
+            "total": 9698,
+            "mean": 808.1666666666666,
+            "median": 882.5
+          },
+          "total": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 237136,
+            "total": 237136,
+            "mean": 19761.333333333332,
+            "median": 9503.0
+          }
+        },
+        "unknown_provider_attempts": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "latency_ms": {
+          "end_to_end": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 102120.5,
+            "total": 102120.5,
+            "mean": 8510.041666666666,
+            "median": 8980.75
+          },
+          "llm": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 67036.76814388018,
+            "total": 67036.76814388018,
+            "mean": 5586.397345323348,
+            "median": 6491.061172564514
+          },
+          "embedding": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 2508.251008228399,
+            "total": 2508.251008228399,
+            "mean": 209.02091735236658,
+            "median": 31.333256978541613
+          },
+          "tool": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 31105.193407391198,
+            "total": 31105.193407391198,
+            "mean": 2592.099450615933,
+            "median": 2219.0519050927833
+          },
+          "retry": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0.0,
+            "total": 0.0,
+            "mean": 0.0,
+            "median": 0.0
+          },
+          "human_wait": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0.0,
+            "total": 0.0,
+            "mean": 0.0,
+            "median": 0.0
+          }
+        },
+        "embedding_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 52,
+          "total": 52,
+          "mean": 4.333333333333333,
+          "median": 3.5
+        },
+        "embedding_index_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 4,
+          "total": 4,
+          "mean": 0.3333333333333333,
+          "median": 0.0
+        },
+        "embedding_query_calls": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 48,
+          "total": 48,
+          "mean": 4,
+          "median": 3.5
+        },
+        "embedding_index_duration_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 2103.3509387634695,
+          "total": 2103.3509387634695,
+          "mean": 175.2792448969558,
+          "median": 0.0
+        },
+        "embedding_query_duration_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 404.9000694649294,
+          "total": 404.9000694649294,
+          "mean": 33.741672455410786,
+          "median": 29.962492524646223
+        },
+        "retry_tool_extra_attempts": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "retry_llm_extra_attempts": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "retry_extra_attempt_duration_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0.0
+        },
+        "retry_extra_provider_tokens": {
+          "input": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0.0
+          },
+          "output": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0.0
+          },
+          "total": {
+            "eligible": 12,
+            "available": 12,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0.0
+          }
+        }
+      },
+      "controlled_zero_llm": {
+        "eligible": 9,
+        "provider_attempts": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "tokens": {
+          "input": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "output": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "total": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          }
+        },
+        "unknown_provider_attempts": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "latency_ms": {
+          "end_to_end": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 5548.1,
+            "total": 5548.1,
+            "mean": 616.4555555555555,
+            "median": 806.4
+          },
+          "llm": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0.0,
+            "total": 0.0,
+            "mean": 0.0,
+            "median": 0.0
+          },
+          "embedding": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0.0,
+            "total": 0.0,
+            "mean": 0.0,
+            "median": 0.0
+          },
+          "tool": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 3971.8065849738196,
+            "total": 3971.8065849738196,
+            "mean": 441.31184277486886,
+            "median": 50.69546599406749
+          },
+          "retry": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 100.25343589950353,
+            "total": 100.25343589950353,
+            "mean": 11.139270655500392,
+            "median": 0.0
+          },
+          "human_wait": {
+            "eligible": 9,
+            "available": 6,
+            "missing": 3,
+            "known_sum": 0.0,
+            "total": null,
+            "mean": 0.0,
+            "median": 0.0
+          }
+        },
+        "embedding_calls": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_index_calls": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_query_calls": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_index_duration_ms": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "embedding_query_duration_ms": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "retry_tool_extra_attempts": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 1,
+          "total": 1,
+          "mean": 0.1111111111111111,
+          "median": 0
+        },
+        "retry_llm_extra_attempts": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0
+        },
+        "retry_extra_attempt_duration_ms": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 944.3288169568405,
+          "total": 944.3288169568405,
+          "mean": 104.9254241063156,
+          "median": 0
+        },
+        "retry_extra_provider_tokens": {
+          "input": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "output": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          },
+          "total": {
+            "eligible": 9,
+            "available": 9,
+            "missing": 0,
+            "known_sum": 0,
+            "total": 0,
+            "mean": 0,
+            "median": 0
+          }
+        }
+      },
+      "samples": [
+        {
+          "sample_id": "core-001",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 2,
+          "provider_status_counts": {
+            "success": 2
+          },
+          "tool_attempt_status_counts": {
+            "success": 1,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 3074,
+              "known_sum": 3074,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 385,
+              "known_sum": 385,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 3459,
+              "known_sum": 3459,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 3,
+            "index_calls": 1,
+            "query_calls": 2,
+            "duration_ms": 2057.866392075084,
+            "index_duration_ms": 2046.358906896785,
+            "query_duration_ms": 11.507485178299248,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 5480.0,
+            "llm": 2070.3261081362143,
+            "embedding": 2057.866392075084,
+            "tool": 829.2690810048953,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 4963.8089829823
+        },
+        {
+          "sample_id": "core-002",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 3,
+          "provider_status_counts": {
+            "success": 3
+          },
+          "tool_attempt_status_counts": {
+            "success": 2,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 10030,
+              "known_sum": 10030,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1061,
+              "known_sum": 1061,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 11091,
+              "known_sum": 11091,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 3,
+            "index_calls": 0,
+            "query_calls": 3,
+            "duration_ms": 30.746782897040248,
+            "index_duration_ms": 0,
+            "query_duration_ms": 30.746782897040248,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 8965.5,
+            "llm": 7125.128697836772,
+            "embedding": 30.746782897040248,
+            "tool": 1780.0672721350566,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 8943.530910997652
+        },
+        {
+          "sample_id": "core-003",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 2,
+          "provider_status_counts": {
+            "success": 2
+          },
+          "tool_attempt_status_counts": {
+            "success": 1,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 5196,
+              "known_sum": 5196,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 877,
+              "known_sum": 877,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 6073,
+              "known_sum": 6073,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 2,
+            "index_calls": 0,
+            "query_calls": 2,
+            "duration_ms": 20.335805951617658,
+            "index_duration_ms": 0,
+            "query_duration_ms": 20.335805951617658,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 6375.8,
+            "llm": 5010.60735899955,
+            "embedding": 20.335805951617658,
+            "tool": 1320.0843851082027,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 6356.123684090562
+        },
+        {
+          "sample_id": "core-004",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 7,
+          "provider_status_counts": {
+            "success": 7
+          },
+          "tool_attempt_status_counts": {
+            "success": 6,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 35255,
+              "known_sum": 35255,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1138,
+              "known_sum": 1138,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 36393,
+              "known_sum": 36393,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 7,
+            "index_calls": 0,
+            "query_calls": 7,
+            "duration_ms": 59.32182201649994,
+            "index_duration_ms": 0,
+            "query_duration_ms": 59.32182201649994,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 13400.2,
+            "llm": 8081.210796837695,
+            "embedding": 59.32182201649994,
+            "tool": 5213.278210023418,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 13373.03185206838
+        },
+        {
+          "sample_id": "core-005",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "not_verified",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 8,
+          "provider_status_counts": {
+            "success": 8
+          },
+          "tool_attempt_status_counts": {
+            "failure": 2,
+            "success": 10
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 41418,
+              "known_sum": 41418,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 743,
+              "known_sum": 743,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 42161,
+              "known_sum": 42161,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 8,
+            "index_calls": 0,
+            "query_calls": 8,
+            "duration_ms": 69.81803697999567,
+            "index_duration_ms": 0,
+            "query_duration_ms": 69.81803697999567,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 14114.3,
+            "llm": 6706.433488172479,
+            "embedding": 69.81803697999567,
+            "tool": 7283.359812106937,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 14084.855828084983
+        },
+        {
+          "sample_id": "core-006",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "not_verified",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 4,
+          "provider_status_counts": {
+            "success": 4
+          },
+          "tool_attempt_status_counts": {
+            "failure": 3,
+            "success": 1,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 7027,
+              "known_sum": 7027,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 888,
+              "known_sum": 888,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 7915,
+              "known_sum": 7915,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 4,
+            "index_calls": 0,
+            "query_calls": 4,
+            "duration_ms": 29.178202152252197,
+            "index_duration_ms": 0,
+            "query_duration_ms": 29.178202152252197,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 8996.0,
+            "llm": 6275.688856956549,
+            "embedding": 29.178202152252197,
+            "tool": 2658.03653805051,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 8974.612161051482
+        },
+        {
+          "sample_id": "core-007",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "success": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 1369.9,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 1349.0609700093046,
+            "retry": 0.0,
+            "human_wait": null
+          },
+          "agent_trace_ms": 1350.7850170135498
+        },
+        {
+          "sample_id": "core-008",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "success": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 821.2,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 798.9747009705752,
+            "retry": 0.0,
+            "human_wait": null
+          },
+          "agent_trace_ms": 800.4814609885216
+        },
+        {
+          "sample_id": "core-009",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {},
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 17.3,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 0.0,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 0.34314696677029133
+        },
+        {
+          "sample_id": "core-010",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {},
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 17.1,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 0.0,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 0.6447359919548035
+        },
+        {
+          "sample_id": "core-011",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 8,
+          "provider_status_counts": {
+            "success": 8
+          },
+          "tool_attempt_status_counts": {
+            "failure": 2,
+            "success": 6,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 77098,
+              "known_sum": 77098,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1528,
+              "known_sum": 1528,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 78626,
+              "known_sum": 78626,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 8,
+            "index_calls": 0,
+            "query_calls": 8,
+            "duration_ms": 79.4533642474562,
+            "index_duration_ms": 0,
+            "query_duration_ms": 79.4533642474562,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 16466.0,
+            "llm": 11591.074233991094,
+            "embedding": 79.4533642474562,
+            "tool": 4745.076930965297,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 16436.795337009244
+        },
+        {
+          "sample_id": "core-012",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 1,
+          "provider_status_counts": {
+            "success": 1
+          },
+          "tool_attempt_status_counts": {
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 707,
+              "known_sum": 707,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 242,
+              "known_sum": 242,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 949,
+              "known_sum": 949,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 1,
+            "index_calls": 0,
+            "query_calls": 1,
+            "duration_ms": 4.344547051005065,
+            "index_duration_ms": 0,
+            "query_duration_ms": 4.344547051005065,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 1745.6,
+            "llm": 1719.7340209968388,
+            "embedding": 4.344547051005065,
+            "tool": 0.15435600653290749,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 1727.0065949996933
+        },
+        {
+          "sample_id": "core-013",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 2,
+          "provider_status_counts": {
+            "success": 2
+          },
+          "tool_attempt_status_counts": {
+            "success": 1,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 1242,
+              "known_sum": 1242,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 115,
+              "known_sum": 115,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 1357,
+              "known_sum": 1357,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 3,
+            "index_calls": 1,
+            "query_calls": 2,
+            "duration_ms": 29.53080483712256,
+            "index_duration_ms": 20.62086295336485,
+            "query_duration_ms": 8.90994188375771,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 2029.7,
+            "llm": 1695.1448150211945,
+            "embedding": 29.53080483712256,
+            "tool": 2.551635028794408,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 1733.1521769519895
+        },
+        {
+          "sample_id": "core-014",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "success": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 305.5,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 1.2182309292256832,
+            "retry": 0.0,
+            "human_wait": null
+          },
+          "agent_trace_ms": 2.6086269645020366
+        },
+        {
+          "sample_id": "core-015",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 2,
+          "provider_status_counts": {
+            "success": 2
+          },
+          "tool_attempt_status_counts": {
+            "success": 1,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 1290,
+              "known_sum": 1290,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 124,
+              "known_sum": 124,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 1414,
+              "known_sum": 1414,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 3,
+            "index_calls": 1,
+            "query_calls": 2,
+            "duration_ms": 25.60657903086394,
+            "index_duration_ms": 14.896602951921523,
+            "query_duration_ms": 10.709976078942418,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 1675.0,
+            "llm": 1337.7579399384558,
+            "embedding": 25.60657903086394,
+            "tool": 2.5623199762776494,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 1371.6510960366577
+        },
+        {
+          "sample_id": "core-016",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "failure": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 299.7,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 1.0923700174316764,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 1.7371060093864799
+        },
+        {
+          "sample_id": "core-017",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 806.4,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 50.69546599406749,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 52.26752802263945
+        },
+        {
+          "sample_id": "core-018",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "failure": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 845.4,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 825.9480260312557,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 827.0593930501491
+        },
+        {
+          "sample_id": "core-019",
+          "support": "supported",
+          "mode": "controlled_zero_llm",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 0,
+          "provider_status_counts": {},
+          "tool_attempt_status_counts": {
+            "failure": 1,
+            "success": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 0,
+              "known_sum": 0,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 0,
+            "index_calls": 0,
+            "query_calls": 0,
+            "duration_ms": 0.0,
+            "index_duration_ms": 0,
+            "query_duration_ms": 0,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 1,
+            "llm_extra_attempts": 0,
+            "wait_ms": 100.25343589950353,
+            "extra_attempt_duration_ms": 944.3288169568405,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 1065.6,
+            "llm": 0.0,
+            "embedding": 0.0,
+            "tool": 944.8168210219592,
+            "retry": 100.25343589950353,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 1046.7135610524565
+        },
+        {
+          "sample_id": "core-020",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "not_verified",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 5,
+          "provider_status_counts": {
+            "success": 5
+          },
+          "tool_attempt_status_counts": {
+            "success": 5,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 29919,
+              "known_sum": 29919,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1314,
+              "known_sum": 1314,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 31233,
+              "known_sum": 31233,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 6,
+            "index_calls": 1,
+            "query_calls": 5,
+            "duration_ms": 70.12893992941827,
+            "index_duration_ms": 21.474565961398184,
+            "query_duration_ms": 48.65437396802008,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 11871.9,
+            "llm": 8225.450324011035,
+            "embedding": 70.12893992941827,
+            "tool": 3536.6369469556957,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 11847.226794925518
+        },
+        {
+          "sample_id": "core-021",
+          "support": "supported",
+          "mode": "natural_model",
+          "business_outcome": "success",
+          "source_file": "t068_k3_v1.jsonl",
+          "prior_setup_failures": [],
+          "provider_attempts": 4,
+          "provider_status_counts": {
+            "success": 4
+          },
+          "tool_attempt_status_counts": {
+            "success": 5,
+            "unknown": 1
+          },
+          "provider_tokens": {
+            "input": {
+              "value": 15182,
+              "known_sum": 15182,
+              "unknown_attempts": 0
+            },
+            "output": {
+              "value": 1283,
+              "known_sum": 1283,
+              "unknown_attempts": 0
+            },
+            "total": {
+              "value": 16465,
+              "known_sum": 16465,
+              "unknown_attempts": 0
+            }
+          },
+          "embedding": {
+            "calls": 4,
+            "index_calls": 0,
+            "query_calls": 4,
+            "duration_ms": 31.919731060042977,
+            "index_duration_ms": 0,
+            "query_duration_ms": 31.919731060042977,
+            "failed_calls": 0
+          },
+          "retry": {
+            "tool_extra_attempts": 0,
+            "llm_extra_attempts": 0,
+            "wait_ms": 0,
+            "extra_attempt_duration_ms": 0,
+            "extra_attempts_missing_duration": 0,
+            "extra_provider_tokens": {
+              "input": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "output": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              },
+              "total": {
+                "value": 0,
+                "known_sum": 0,
+                "unknown_attempts": 0
+              }
+            }
+          },
+          "latency_ms": {
+            "end_to_end": 11000.5,
+            "llm": 7198.2115029823035,
+            "embedding": 31.919731060042977,
+            "tool": 3734.1159200295806,
+            "retry": 0.0,
+            "human_wait": 0.0
+          },
+          "agent_trace_ms": 10977.338954107836
+        }
+      ]
+    }
+  },
+  "taskpilot_paired": {
+    "all_21": {
+      "eligible": 21,
+      "k3_minus_full": {
+        "end_to_end_ms": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": -2923.1000000000004,
+          "total": -2923.1000000000004,
+          "mean": -139.19523809523812,
+          "median": -0.5999999999999979,
+          "k3_higher": 9,
+          "k3_lower": 12,
+          "same": 0
+        },
+        "llm_ms": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": -1684.559549903497,
+          "total": -1684.559549903497,
+          "mean": -80.21712142397605,
+          "median": 0.0,
+          "k3_higher": 5,
+          "k3_lower": 7,
+          "same": 9
+        },
+        "embedding_ms": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": 2508.251008228399,
+          "total": 2508.251008228399,
+          "mean": 119.44052420135233,
+          "median": 20.335805951617658,
+          "k3_higher": 12,
+          "k3_lower": 0,
+          "same": 9
+        },
+        "tool_ms": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": -3549.9293657485396,
+          "total": -3549.9293657485396,
+          "mean": -169.04425551183522,
+          "median": -0.03561296034604311,
+          "k3_higher": 8,
+          "k3_lower": 11,
+          "same": 2
+        },
+        "retry_wait_ms": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": -0.047998037189245224,
+          "total": -0.047998037189245224,
+          "mean": -0.0022856208185354867,
+          "median": 0.0,
+          "k3_higher": 0,
+          "k3_lower": 1,
+          "same": 20
+        },
+        "human_wait_ms": {
+          "eligible": 21,
+          "available": 18,
+          "missing": 3,
+          "known_sum": 0.0,
+          "total": null,
+          "mean": 0.0,
+          "median": 0.0,
+          "k3_higher": 0,
+          "k3_lower": 0,
+          "same": 18
+        },
+        "input_tokens": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": -4327,
+          "total": -4327,
+          "mean": -206.04761904761904,
+          "median": 0,
+          "k3_higher": 3,
+          "k3_lower": 9,
+          "same": 9
+        },
+        "output_tokens": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": -1845,
+          "total": -1845,
+          "mean": -87.85714285714286,
+          "median": 0,
+          "k3_higher": 7,
+          "k3_lower": 5,
+          "same": 9
+        },
+        "total_tokens": {
+          "eligible": 21,
+          "available": 21,
+          "missing": 0,
+          "known_sum": -6172,
+          "total": -6172,
+          "mean": -293.9047619047619,
+          "median": 0,
+          "k3_higher": 3,
+          "k3_lower": 9,
+          "same": 9
+        }
+      }
+    },
+    "natural_12": {
+      "eligible": 12,
+      "k3_minus_full": {
+        "end_to_end_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": -2850.6000000000004,
+          "total": -2850.6000000000004,
+          "mean": -237.55000000000004,
+          "median": -6.600000000000023,
+          "k3_higher": 6,
+          "k3_lower": 6,
+          "same": 0
+        },
+        "llm_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": -1684.559549903497,
+          "total": -1684.559549903497,
+          "mean": -140.37996249195808,
+          "median": -265.7944929669611,
+          "k3_higher": 5,
+          "k3_lower": 7,
+          "same": 0
+        },
+        "embedding_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 2508.251008228399,
+          "total": 2508.251008228399,
+          "mean": 209.02091735236658,
+          "median": 31.333256978541613,
+          "k3_higher": 12,
+          "k3_lower": 0,
+          "same": 0
+        },
+        "tool_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": -3491.7616305174306,
+          "total": -3491.7616305174306,
+          "mean": -290.98013587645255,
+          "median": -98.41356135439128,
+          "k3_higher": 4,
+          "k3_lower": 8,
+          "same": 0
+        },
+        "retry_wait_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0.0,
+          "total": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "k3_higher": 0,
+          "k3_lower": 0,
+          "same": 12
+        },
+        "human_wait_ms": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": 0.0,
+          "total": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "k3_higher": 0,
+          "k3_lower": 0,
+          "same": 12
+        },
+        "input_tokens": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": -4327,
+          "total": -4327,
+          "mean": -360.5833333333333,
+          "median": -239.0,
+          "k3_higher": 3,
+          "k3_lower": 9,
+          "same": 0
+        },
+        "output_tokens": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": -1845,
+          "total": -1845,
+          "mean": -153.75,
+          "median": 5.5,
+          "k3_higher": 7,
+          "k3_lower": 5,
+          "same": 0
+        },
+        "total_tokens": {
+          "eligible": 12,
+          "available": 12,
+          "missing": 0,
+          "known_sum": -6172,
+          "total": -6172,
+          "mean": -514.3333333333334,
+          "median": -296.0,
+          "k3_higher": 3,
+          "k3_lower": 9,
+          "same": 0
+        }
+      }
+    },
+    "controlled_9": {
+      "eligible": 9,
+      "k3_minus_full": {
+        "end_to_end_ms": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": -72.5,
+          "total": -72.5,
+          "mean": -8.055555555555555,
+          "median": -0.5999999999999979,
+          "k3_higher": 3,
+          "k3_lower": 6,
+          "same": 0
+        },
+        "llm_ms": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0.0,
+          "total": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "k3_higher": 0,
+          "k3_lower": 0,
+          "same": 9
+        },
+        "embedding_ms": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0.0,
+          "total": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "k3_higher": 0,
+          "k3_lower": 0,
+          "same": 9
+        },
+        "tool_ms": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": -58.16773523110896,
+          "total": -58.16773523110896,
+          "mean": -6.46308169234544,
+          "median": 0.0,
+          "k3_higher": 4,
+          "k3_lower": 3,
+          "same": 2
+        },
+        "retry_wait_ms": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": -0.047998037189245224,
+          "total": -0.047998037189245224,
+          "mean": -0.005333115243249469,
+          "median": 0.0,
+          "k3_higher": 0,
+          "k3_lower": 1,
+          "same": 8
+        },
+        "human_wait_ms": {
+          "eligible": 9,
+          "available": 6,
+          "missing": 3,
+          "known_sum": 0.0,
+          "total": null,
+          "mean": 0.0,
+          "median": 0.0,
+          "k3_higher": 0,
+          "k3_lower": 0,
+          "same": 6
+        },
+        "input_tokens": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0,
+          "k3_higher": 0,
+          "k3_lower": 0,
+          "same": 9
+        },
+        "output_tokens": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0,
+          "k3_higher": 0,
+          "k3_lower": 0,
+          "same": 9
+        },
+        "total_tokens": {
+          "eligible": 9,
+          "available": 9,
+          "missing": 0,
+          "known_sum": 0,
+          "total": 0,
+          "mean": 0,
+          "median": 0,
+          "k3_higher": 0,
+          "k3_lower": 0,
+          "same": 9
+        }
+      }
+    },
+    "samples": [
+      {
+        "sample_id": "core-001",
+        "mode": "natural_model",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": -469,
+          "output": -170,
+          "total": -639
+        },
+        "delta_latency_ms": {
+          "end_to_end": 318.1999999999998,
+          "llm": -1026.9731419393793,
+          "embedding": 2057.866392075084,
+          "tool": -502.8674609493464,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-002",
+        "mode": "natural_model",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": -25987,
+          "output": -663,
+          "total": -26650
+        },
+        "delta_latency_ms": {
+          "end_to_end": -4275.6,
+          "llm": -2315.693451091647,
+          "embedding": 30.746782897040248,
+          "tool": -1986.4802998490632,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-003",
+        "mode": "natural_model",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": -228,
+          "output": -130,
+          "total": -358
+        },
+        "delta_latency_ms": {
+          "end_to_end": -470.59999999999945,
+          "llm": -294.6031140163541,
+          "embedding": 20.335805951617658,
+          "tool": -196.46985176950693,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-004",
+        "mode": "natural_model",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": 27720,
+          "output": 274,
+          "total": 27994
+        },
+        "delta_latency_ms": {
+          "end_to_end": 5120.800000000001,
+          "llm": 2925.011369981803,
+          "embedding": 59.32182201649994,
+          "tool": 2115.233068005182,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-005",
+        "mode": "natural_model",
+        "full_business_outcome": "not_verified",
+        "k3_business_outcome": "not_verified",
+        "delta_tokens": {
+          "input": -29970,
+          "output": -1003,
+          "total": -30973
+        },
+        "delta_latency_ms": {
+          "end_to_end": -4463.4000000000015,
+          "llm": -4129.723798832856,
+          "embedding": 69.81803697999567,
+          "tool": -406.859585782513,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-006",
+        "mode": "natural_model",
+        "full_business_outcome": "not_verified",
+        "k3_business_outcome": "not_verified",
+        "delta_tokens": {
+          "input": -48259,
+          "output": -840,
+          "total": -49099
+        },
+        "delta_latency_ms": {
+          "end_to_end": -7991.799999999999,
+          "llm": -4586.654132930562,
+          "embedding": 29.178202152252197,
+          "tool": -3420.2750250697136,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-007",
+        "mode": "controlled_zero_llm",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "delta_latency_ms": {
+          "end_to_end": -58.399999999999864,
+          "llm": 0.0,
+          "embedding": 0.0,
+          "tool": -59.42821502685547,
+          "retry": 0.0,
+          "human_wait": null
+        }
+      },
+      {
+        "sample_id": "core-008",
+        "mode": "controlled_zero_llm",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "delta_latency_ms": {
+          "end_to_end": -69.5,
+          "llm": 0.0,
+          "embedding": 0.0,
+          "tool": -70.86256402544677,
+          "retry": 0.0,
+          "human_wait": null
+        }
+      },
+      {
+        "sample_id": "core-009",
+        "mode": "controlled_zero_llm",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "delta_latency_ms": {
+          "end_to_end": -0.5999999999999979,
+          "llm": 0.0,
+          "embedding": 0.0,
+          "tool": 0.0,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-010",
+        "mode": "controlled_zero_llm",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "delta_latency_ms": {
+          "end_to_end": -0.3999999999999986,
+          "llm": 0.0,
+          "embedding": 0.0,
+          "tool": 0.0,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-011",
+        "mode": "natural_model",
+        "full_business_outcome": "not_verified",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": 60533,
+          "output": 552,
+          "total": 61085
+        },
+        "delta_latency_ms": {
+          "end_to_end": 6846.1,
+          "llm": 5577.661446994171,
+          "embedding": 79.4533642474562,
+          "tool": 1173.0107519542798,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-012",
+        "mode": "natural_model",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": -111,
+          "output": 41,
+          "total": -70
+        },
+        "delta_latency_ms": {
+          "end_to_end": 218.5,
+          "llm": 212.37977396231145,
+          "embedding": 4.344547051005065,
+          "tool": -0.03561296034604311,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-013",
+        "mode": "natural_model",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": -242,
+          "output": 8,
+          "total": -234
+        },
+        "delta_latency_ms": {
+          "end_to_end": -231.70000000000005,
+          "llm": -248.08577192015946,
+          "embedding": 29.53080483712256,
+          "tool": -0.35727093927562237,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-014",
+        "mode": "controlled_zero_llm",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "delta_latency_ms": {
+          "end_to_end": -6.699999999999989,
+          "llm": 0.0,
+          "embedding": 0.0,
+          "tool": -0.26471703313291073,
+          "retry": 0.0,
+          "human_wait": null
+        }
+      },
+      {
+        "sample_id": "core-015",
+        "mode": "natural_model",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": -236,
+          "output": 3,
+          "total": -233
+        },
+        "delta_latency_ms": {
+          "end_to_end": -254.79999999999995,
+          "llm": -283.5032140137628,
+          "embedding": 25.60657903086394,
+          "tool": 0.38360897451639175,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-016",
+        "mode": "controlled_zero_llm",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "delta_latency_ms": {
+          "end_to_end": -9.300000000000011,
+          "llm": 0.0,
+          "embedding": 0.0,
+          "tool": 0.04635099321603775,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-017",
+        "mode": "controlled_zero_llm",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "delta_latency_ms": {
+          "end_to_end": 1.6999999999999318,
+          "llm": 0.0,
+          "embedding": 0.0,
+          "tool": 0.04964193794876337,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-018",
+        "mode": "controlled_zero_llm",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "delta_latency_ms": {
+          "end_to_end": 43.89999999999998,
+          "llm": 0.0,
+          "embedding": 0.0,
+          "tool": 44.31564302649349,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-019",
+        "mode": "controlled_zero_llm",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": 0,
+          "output": 0,
+          "total": 0
+        },
+        "delta_latency_ms": {
+          "end_to_end": 26.799999999999955,
+          "llm": 0.0,
+          "embedding": 0.0,
+          "tool": 27.976124896667898,
+          "retry": -0.047998037189245224,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-020",
+        "mode": "natural_model",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "not_verified",
+        "delta_tokens": {
+          "input": 14003,
+          "output": 61,
+          "total": 14064
+        },
+        "delta_latency_ms": {
+          "end_to_end": 1867.699999999999,
+          "llm": 1466.6932619875297,
+          "embedding": 70.12893992941827,
+          "tool": 322.8720938786864,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      },
+      {
+        "sample_id": "core-021",
+        "mode": "natural_model",
+        "full_business_outcome": "success",
+        "k3_business_outcome": "success",
+        "delta_tokens": {
+          "input": -1081,
+          "output": 22,
+          "total": -1059
+        },
+        "delta_latency_ms": {
+          "end_to_end": 466.0,
+          "llm": 1018.931221915409,
+          "embedding": 31.919731060042977,
+          "tool": -589.9160460103303,
+          "retry": 0.0,
+          "human_wait": 0.0
+        }
+      }
+    ],
+    "fixed_contract_verified": true
+  }
+}

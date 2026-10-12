@@ -1,0 +1,943 @@
+{
+  "review_kind": "T066 original OpenManus per-sample evidence index, not formal benchmark metrics",
+  "dataset_version": "1.0.0",
+  "dataset_sha256": "8251f53ac812684507bfe85086214393bcbb3dd955d19a54d5df12a0d3affafe",
+  "scoring_sha256": "289db810fda451dee8a6d9aa2765e79995eae2b38401c1512da249b547608c2a",
+  "upstream_commit": "3309bf4e416fb1c74b008f3e86494439a31bad53",
+  "samples": [
+    {
+      "sample_id": "core-001",
+      "support": "supported",
+      "outcome": "success",
+      "review_reason": "Pinned README fetch and final answer cite two capabilities at the pinned ref.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 1,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 1
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_nYaJ7rSeGFDbs31kHnT27619",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_QlKSnZ8rEXYFlrun7tx10404",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_d63zyzxUVwgnHSH5wcgB3683",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_aQVNXzvOwhkV3zPlk8jN4721",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_3c9s9ym0MGL5vYqErE517648",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_inGnsFi8Of09NB2w3NUF9522",
+          "tool": "terminate"
+        }
+      ],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 17242,
+        "output_tokens": 1560,
+        "total_tokens": 18802
+      },
+      "elapsed_ms": 16757.8
+    },
+    {
+      "sample_id": "core-002",
+      "support": "supported",
+      "outcome": "failure",
+      "review_reason": "Six-step budget ended without the required pinned source explanation.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 2,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 2
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_JLKCvftvNomk28OndPUH9125",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_2BsnORiy2tyYtrPBpmeL8072",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_UcIlgLwcIXlmnUcizooL2323",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_Oyy0L5dPcW9ehhlyim4s3733",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_Ug0c9dxq7fk2oL9nP8GU7109",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_hOIzIolljEB1psEzQPwu9537",
+          "tool": "python_execute"
+        }
+      ],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 17143,
+        "output_tokens": 994,
+        "total_tokens": 18137
+      },
+      "elapsed_ms": 14669.7
+    },
+    {
+      "sample_id": "core-003",
+      "support": "supported",
+      "outcome": "success",
+      "review_reason": "Issue #895 body was fetched and the answer cites the issue and reported cookie conflict.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 3,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 3
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_8EgxLxRNrBBFfmCONXis3783",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_Z8Wn16O9AqV5NTF6kIJS9811",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_hU7wmSULz25ti2rCP0Z67341",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_nwswllWoYHSP6K1p8jnj5926",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_8R3Ey6COObAY5hXvDf0z0864",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_J74NjIGzr7NQJtFzT5DO1011",
+          "tool": "terminate"
+        }
+      ],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 19823,
+        "output_tokens": 1694,
+        "total_tokens": 21517
+      },
+      "elapsed_ms": 17107.9
+    },
+    {
+      "sample_id": "core-004",
+      "support": "supported",
+      "outcome": "failure",
+      "review_reason": "Six-step budget ended without verified issue investigation output.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 4,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 4
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_prP9L3cN4K2yLQvipJKm3492",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_01_VAJBnLVtbwujCEcdQOvi8006",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_roRqzGs6rgRcWcDaaRDV3560",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_01_eykMKNLUWx5QoETNetHt0899",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_3CL962bGclrak3EOpbgQ6263",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_ocVe7edNkV5Ne7Ok99R82145",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_01_Kg8LO4ShSgVli9wweyRC9707",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_rdwk65uSocRWBL7DwouJ0007",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_01_UnSgZt8eXB1PF6AysqOB6755",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_lSQym3q3QS3NvrERG5Bf2587",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_01_zZIIZeZOyHiMHXYiDxNN5050",
+          "tool": "python_execute"
+        }
+      ],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 17341,
+        "output_tokens": 1915,
+        "total_tokens": 19256
+      },
+      "elapsed_ms": 24103.7
+    },
+    {
+      "sample_id": "core-005",
+      "support": "supported",
+      "outcome": "failure",
+      "review_reason": "Six-step budget ended without linked issue-to-code evidence.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 5,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 5
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_PZkFLChcCOfyPdxpkcRK0712",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_bK8sVjd5K6yhJ52u3MBf0140",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_699Sah3Mhh7tKMjSk9rt0359",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_d20cxb6DvXjVZY6zLioG3502",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_hKHP2cNq6z43i2xaM4kU7651",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_aRgabT4pt4X6dN4nrRjM4303",
+          "tool": "python_execute"
+        }
+      ],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 12933,
+        "output_tokens": 870,
+        "total_tokens": 13803
+      },
+      "elapsed_ms": 13236.6
+    },
+    {
+      "sample_id": "core-006",
+      "support": "supported",
+      "outcome": "failure",
+      "review_reason": "Six-step budget ended without linked issue-to-code evidence.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 6,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 6
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_djHQpjvCnkx4RVcjND8V6444",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_C0u5DOMXU0vGZvkQ5uzm9305",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_SJSWvptvSJc076d5QHu76641",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_01_a621fnYthyt6tz7eFeK17192",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_uWRnYF1KK0Ozdc8ydeFS9836",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_01_G7O5VrnUFS0jtRpkdyqG8606",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_OhkmHhvbnTdwgTci7izm5472",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_1M9ENI9iwg6sHl5EiiAq5511",
+          "tool": "python_execute"
+        }
+      ],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 15274,
+        "output_tokens": 1254,
+        "total_tokens": 16528
+      },
+      "elapsed_ms": 15146.2
+    },
+    {
+      "sample_id": "core-007",
+      "support": "unsupported",
+      "outcome": "unsupported",
+      "review_reason": "No GitHub issue-detail tool or forced missing-parameter clarification boundary.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 7,
+          "run_status": "not_run_unsupported"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 7
+      },
+      "run_status": "not_run_unsupported",
+      "cleanup_status": "not_started",
+      "tool_calls": [],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [],
+      "provider_reported_usage": "NOT AVAILABLE",
+      "elapsed_ms": null
+    },
+    {
+      "sample_id": "core-008",
+      "support": "unsupported",
+      "outcome": "unsupported",
+      "review_reason": "No GitHub file-read tool or forced missing-path clarification boundary.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 8,
+          "run_status": "not_run_unsupported"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 8
+      },
+      "run_status": "not_run_unsupported",
+      "cleanup_status": "not_started",
+      "tool_calls": [],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [],
+      "provider_reported_usage": "NOT AVAILABLE",
+      "elapsed_ms": null
+    },
+    {
+      "sample_id": "core-009",
+      "support": "unsupported",
+      "outcome": "unsupported",
+      "review_reason": "No GitHub file-read tool to receive the malformed JSON fixture at its dispatch boundary.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 9,
+          "run_status": "not_run_unsupported"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 9
+      },
+      "run_status": "not_run_unsupported",
+      "cleanup_status": "not_started",
+      "tool_calls": [],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [],
+      "provider_reported_usage": "NOT AVAILABLE",
+      "elapsed_ms": null
+    },
+    {
+      "sample_id": "core-010",
+      "support": "unsupported",
+      "outcome": "unsupported",
+      "review_reason": "No GitHub issue-detail schema validator for the invalid boolean fixture.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 10,
+          "run_status": "not_run_unsupported"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 10
+      },
+      "run_status": "not_run_unsupported",
+      "cleanup_status": "not_started",
+      "tool_calls": [],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [],
+      "provider_reported_usage": "NOT AVAILABLE",
+      "elapsed_ms": null
+    },
+    {
+      "sample_id": "core-011",
+      "support": "unsupported",
+      "outcome": "unsupported",
+      "review_reason": "No T065-labelled GitHub issue/code-search tools or semantic routing candidate pool.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 11,
+          "run_status": "not_run_unsupported"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 11
+      },
+      "run_status": "not_run_unsupported",
+      "cleanup_status": "not_started",
+      "tool_calls": [],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [],
+      "provider_reported_usage": "NOT AVAILABLE",
+      "elapsed_ms": null
+    },
+    {
+      "sample_id": "core-012",
+      "support": "unsupported",
+      "outcome": "unsupported",
+      "review_reason": "Original PythonExecute could reveal process environment; this unsafe request is not run.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 12,
+          "run_status": "not_run_unsupported"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 12
+      },
+      "run_status": "not_run_unsupported",
+      "cleanup_status": "not_started",
+      "tool_calls": [],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [],
+      "provider_reported_usage": "NOT AVAILABLE",
+      "elapsed_ms": null
+    },
+    {
+      "sample_id": "core-013",
+      "support": "supported",
+      "outcome": "success",
+      "review_reason": "v1 MCP audit has one echo_read(text=holdout-v1); returned echo:holdout-v1.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 13,
+          "run_status": "setup_error"
+        },
+        {
+          "file": "t066_original_openmanus_mcp_retest.jsonl",
+          "line": 1,
+          "run_status": "setup_error"
+        },
+        {
+          "file": "t066_original_openmanus_mcp_retest_2.jsonl",
+          "line": 1,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_mcp_retest_2.jsonl",
+        "line": 1
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_feGmZT3h16QQWo2Q3EQi6438",
+          "tool": "mcp_fixture_echo_read"
+        },
+        {
+          "tool_call_id": "call_00_vJ4elnfVA1MqkIa4TXYw9314",
+          "tool": "terminate"
+        }
+      ],
+      "mcp_server_dispatches": 1,
+      "provider_http_statuses": [
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 3355,
+        "output_tokens": 203,
+        "total_tokens": 3558
+      },
+      "elapsed_ms": 3165.2
+    },
+    {
+      "sample_id": "core-014",
+      "support": "unsupported",
+      "outcome": "unsupported",
+      "review_reason": "No non-blocking forced clarification/merge boundary for a controlled missing MCP text field.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 14,
+          "run_status": "not_run_unsupported"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 14
+      },
+      "run_status": "not_run_unsupported",
+      "cleanup_status": "not_started",
+      "tool_calls": [],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [],
+      "provider_reported_usage": "NOT AVAILABLE",
+      "elapsed_ms": null
+    },
+    {
+      "sample_id": "core-015",
+      "support": "supported",
+      "outcome": "success",
+      "review_reason": "v2 MCP audit has one echo_read(text=base,suffix=tail); returned echo:base:tail.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 15,
+          "run_status": "setup_error"
+        },
+        {
+          "file": "t066_original_openmanus_mcp_retest.jsonl",
+          "line": 2,
+          "run_status": "setup_error"
+        },
+        {
+          "file": "t066_original_openmanus_mcp_retest_2.jsonl",
+          "line": 2,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_mcp_retest_2.jsonl",
+        "line": 2
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_JXX015Qu2q8dgVsnvSu12023",
+          "tool": "mcp_fixture_echo_read"
+        },
+        {
+          "tool_call_id": "call_00_B7If7JWJIgSGvmphUi0F4787",
+          "tool": "terminate"
+        }
+      ],
+      "mcp_server_dispatches": 1,
+      "provider_http_statuses": [
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 3398,
+        "output_tokens": 234,
+        "total_tokens": 3632
+      },
+      "elapsed_ms": 3769.4
+    },
+    {
+      "sample_id": "core-016",
+      "support": "supported",
+      "outcome": "failure",
+      "review_reason": "Server returned a controlled isError failure, but original MCP ToolResult lost failure status and Agent declared terminate(success).",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 16,
+          "run_status": "setup_error"
+        },
+        {
+          "file": "t066_original_openmanus_mcp_retest.jsonl",
+          "line": 3,
+          "run_status": "setup_error"
+        },
+        {
+          "file": "t066_original_openmanus_mcp_retest_2.jsonl",
+          "line": 3,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_mcp_retest_2.jsonl",
+        "line": 3
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_rUc7obZ1vfboTobZ1ri92703",
+          "tool": "mcp_fixture_fail_read"
+        },
+        {
+          "tool_call_id": "call_00_c8xcnM4rir2w4oy2rv7w1314",
+          "tool": "terminate"
+        }
+      ],
+      "mcp_server_dispatches": 1,
+      "provider_http_statuses": [
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 3319,
+        "output_tokens": 232,
+        "total_tokens": 3551
+      },
+      "elapsed_ms": 3489.6
+    },
+    {
+      "sample_id": "core-017",
+      "support": "unsupported",
+      "outcome": "unsupported",
+      "review_reason": "No 50 ms per-tool deadline or safe unknown-result timeout policy in original MCP client.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 17,
+          "run_status": "not_run_unsupported"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 17
+      },
+      "run_status": "not_run_unsupported",
+      "cleanup_status": "not_started",
+      "tool_calls": [],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [],
+      "provider_reported_usage": "NOT AVAILABLE",
+      "elapsed_ms": null
+    },
+    {
+      "sample_id": "core-018",
+      "support": "supported",
+      "outcome": "failure",
+      "review_reason": "Agent did not obtain or classify an actual GitHub 404 before step budget ended.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 18,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 18
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_XpzG0NZHhRJHtMm9zAaB7212",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_FsSI8vvWooC8tI68zSU48022",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_l5EEL7dN40uMoj31w41L2296",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_dOk8owVviYMhYiuRjl8l2448",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_PbIcQa3MZogH5Zf6L72L5682",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_33q2oZ12JvDeIBDDDqQX4081",
+          "tool": "python_execute"
+        }
+      ],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 12448,
+        "output_tokens": 692,
+        "total_tokens": 13140
+      },
+      "elapsed_ms": 12649.5
+    },
+    {
+      "sample_id": "core-019",
+      "support": "unsupported",
+      "outcome": "unsupported",
+      "review_reason": "No original GitHub read tool or T065 controlled-first-503 transport fixture.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 19,
+          "run_status": "not_run_unsupported"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 19
+      },
+      "run_status": "not_run_unsupported",
+      "cleanup_status": "not_started",
+      "tool_calls": [],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [],
+      "provider_reported_usage": "NOT AVAILABLE",
+      "elapsed_ms": null
+    },
+    {
+      "sample_id": "core-020",
+      "support": "supported",
+      "outcome": "failure",
+      "review_reason": "Six-step budget ended without the required next-step issue/source evidence.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 20,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 20
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_vRX84lTiisD5eFOdgu195967",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_mEaQ8ZIW8A07sQrFkgEH7843",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_AOTiH3sfyEft2Gdc0jqH8304",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_FK81HLTROgILWUMhm3I13939",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_xY8cWCV2FHv3W0eWnRIo2844",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_iMYC8iXeO3WynlbvizST3740",
+          "tool": "python_execute"
+        }
+      ],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 14065,
+        "output_tokens": 1280,
+        "total_tokens": 15345
+      },
+      "elapsed_ms": 19691.7
+    },
+    {
+      "sample_id": "core-021",
+      "support": "supported",
+      "outcome": "failure",
+      "review_reason": "Six-step budget ended without the required multi-step issue/source evidence.",
+      "attempts": [
+        {
+          "file": "t066_original_openmanus_v1.jsonl",
+          "line": 21,
+          "run_status": "returned"
+        }
+      ],
+      "selected_attempt": {
+        "file": "t066_original_openmanus_v1.jsonl",
+        "line": 21
+      },
+      "run_status": "returned",
+      "cleanup_status": "complete",
+      "tool_calls": [
+        {
+          "tool_call_id": "call_00_EnV16KocZmg8llMi7hl45507",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_eLWEf9gEHDSlwbJsIbXH6911",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_iBxaKZBxwp59886651bK3254",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_o4DdKrDOlCs6G4UqfS7V3303",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_n9lFt8XZX005pKF8eXfQ8123",
+          "tool": "python_execute"
+        },
+        {
+          "tool_call_id": "call_00_phEF43OiLKKKkb7NBYuA4866",
+          "tool": "python_execute"
+        }
+      ],
+      "mcp_server_dispatches": 0,
+      "provider_http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "provider_reported_usage": {
+        "input_tokens": 14118,
+        "output_tokens": 1456,
+        "total_tokens": 15574
+      },
+      "elapsed_ms": 11182.3
+    }
+  ]
+}

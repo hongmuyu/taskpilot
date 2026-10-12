@@ -1,0 +1,144 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TaskPilot Core final benchmark holdout v1",
+  "type": "object",
+  "required": ["dataset", "version", "split", "frozen_at_utc", "source_catalog_sha256", "scoring_sha256", "prior_sets", "profiles", "samples"],
+  "additionalProperties": false,
+  "properties": {
+    "dataset": {"const": "taskpilot_core_final"},
+    "version": {"const": "1.0.0"},
+    "split": {"const": "independent_holdout"},
+    "frozen_at_utc": {"type": "string", "format": "date-time"},
+    "source_catalog_sha256": {"$ref": "#/definitions/sha256"},
+    "scoring_sha256": {"$ref": "#/definitions/sha256"},
+    "prior_sets": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/definitions/prior_set"}},
+    "profiles": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/definitions/profile"}},
+    "samples": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/sample"}}
+  },
+  "definitions": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nonempty": {"type": "string", "minLength": 1},
+    "prior_set": {
+      "type": "object",
+      "required": ["path", "version", "role", "sample_count", "sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {"$ref": "#/definitions/nonempty"},
+        "version": {"const": "1.1.0"},
+        "role": {"enum": ["k_selection_experiment", "routing_stage_evaluation_used_in_t030"]},
+        "sample_count": {"type": "integer", "minimum": 1},
+        "sha256": {"$ref": "#/definitions/sha256"}
+      }
+    },
+    "profile": {
+      "type": "object",
+      "required": ["id", "source", "tools", "control_tools"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"enum": ["github_readonly", "mcp_stdio_v1", "mcp_stdio_v2"]},
+        "source": {"enum": ["local", "mcp"]},
+        "tools": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/definitions/nonempty"}},
+        "control_tools": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/nonempty"}}
+      }
+    },
+    "context": {
+      "type": "object",
+      "required": ["repository", "ref", "provenance", "issue_number"],
+      "additionalProperties": false,
+      "properties": {
+        "repository": {"type": ["string", "null"]},
+        "ref": {"type": ["string", "null"]},
+        "provenance": {"enum": ["confirmed_user", "not_applicable"]},
+        "issue_number": {"type": ["integer", "null"], "minimum": 1}
+      }
+    },
+    "setup": {
+      "type": "object",
+      "required": ["mode"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": {"enum": ["natural_task", "controlled_tool_call", "controlled_fault"]},
+        "tool": {"$ref": "#/definitions/nonempty"},
+        "arguments_json": {"type": "string"},
+        "clarification_reply": {"type": "object"},
+        "fault": {"$ref": "#/definitions/nonempty"},
+        "timeout_ms": {"type": "integer", "minimum": 1},
+        "notes": {"$ref": "#/definitions/nonempty"}
+      }
+    },
+    "slot": {
+      "type": "object",
+      "required": ["source"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {"enum": ["task", "confirmed_context", "observation", "user_reply", "missing", "invalid"]},
+        "value": {"type": ["string", "integer", "boolean"]}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "required": ["origin", "from_step", "source_ref", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "origin": {"enum": ["live_previous_tool", "user_reply"]},
+        "from_step": {"type": "integer", "minimum": 1},
+        "source_ref": {"type": ["string", "null"]},
+        "summary": {"$ref": "#/definitions/nonempty"}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "required": ["tool_dispatches", "transport_attempts", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "tool_dispatches": {"type": "integer", "minimum": 0},
+        "transport_attempts": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["success", "failure", "unknown", "pending", "rejected", "none"]}
+      }
+    },
+    "step": {
+      "type": "object",
+      "required": ["index", "observation", "expected_action", "acceptable_tools", "pending_tool", "selection_eligible", "critical_slots", "expected_execution", "label_rationale"],
+      "additionalProperties": false,
+      "properties": {
+        "index": {"type": "integer", "minimum": 1},
+        "observation": {"oneOf": [{"type": "null"}, {"$ref": "#/definitions/observation"}]},
+        "expected_action": {"enum": ["tool", "clarify", "reject", "no_match"]},
+        "acceptable_tools": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/nonempty"}},
+        "pending_tool": {"type": ["string", "null"]},
+        "selection_eligible": {"type": "boolean"},
+        "critical_slots": {"type": "object", "additionalProperties": {"$ref": "#/definitions/slot"}},
+        "expected_execution": {"$ref": "#/definitions/execution"},
+        "label_rationale": {"$ref": "#/definitions/nonempty"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["kind", "source_ref", "criterion"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"enum": ["github_file", "github_issue", "http", "mcp_audit", "trace", "answer_citation"]},
+        "source_ref": {"type": ["string", "null"]},
+        "criterion": {"$ref": "#/definitions/nonempty"}
+      }
+    },
+    "sample": {
+      "type": "object",
+      "required": ["id", "category", "task", "profile", "source_id", "context", "setup", "steps", "business_evidence", "failure_conditions", "unsupported_conditions"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^core-[0-9]{3}$"},
+        "category": {"enum": ["repository_understanding", "issue_investigation", "issue_to_code", "parameter_validation", "semantic_routing", "real_mcp", "failure_timeout_retry", "multi_step_investigation"]},
+        "task": {"$ref": "#/definitions/nonempty"},
+        "profile": {"enum": ["github_readonly", "mcp_stdio_v1", "mcp_stdio_v2"]},
+        "source_id": {"type": ["string", "null"]},
+        "context": {"$ref": "#/definitions/context"},
+        "setup": {"$ref": "#/definitions/setup"},
+        "steps": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/step"}},
+        "business_evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/evidence"}},
+        "failure_conditions": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/nonempty"}},
+        "unsupported_conditions": {"type": "array", "minItems": 1, "items": {"$ref": "#/definitions/nonempty"}}
+      }
+    }
+  }
+}

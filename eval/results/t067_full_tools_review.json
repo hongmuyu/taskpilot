@@ -1,0 +1,31 @@
+{
+  "review_kind": "T067 full-tools per-sample evidence index, not T069-T071 formal metrics",
+  "dataset_version": "1.0.0",
+  "dataset_sha256": "8251f53ac812684507bfe85086214393bcbb3dd955d19a54d5df12a0d3affafe",
+  "scoring_sha256": "289db810fda451dee8a6d9aa2765e79995eae2b38401c1512da249b547608c2a",
+  "raw_file": "t067_full_tools_v1.jsonl",
+  "review_policy": "Use actual HTTP/MCP/tool/Trace evidence. Agent finish declaration is not business-success proof. Controlled expected errors pass when their safety criteria hold. Candidate score is not applicable while routing is disabled.",
+  "samples": [
+    {"sample_id": "core-001", "outcome": "success", "reason": "Pinned HTTPX README returned; answer cites its pinned URL and two documented capabilities."},
+    {"sample_id": "core-002", "outcome": "success", "reason": "Pinned Rich README returned; answer cites it for terminal presentation features."},
+    {"sample_id": "core-003", "outcome": "success", "reason": "Real issue #895 details and comments support the cookie report; answer cites the issue without claiming a fix."},
+    {"sample_id": "core-004", "outcome": "success", "reason": "Real issue #4171 supports the Table typing request; answer cites the issue and limits implementation claims."},
+    {"sample_id": "core-005", "outcome": "not_verified", "reason": "Issue #4202 and pinned file were fetched, but file content truncation hid the relevant chop_cells loop; code search also returned 403 and the eight-step budget ended. Implementation criterion remains unverified."},
+    {"sample_id": "core-006", "outcome": "not_verified", "reason": "Issue #13965 was fetched, but the pinned file read ended before decimal_places_validator and code search returned 403. The whole-digit implementation criterion remains unverified despite an Agent success declaration."},
+    {"sample_id": "core-007", "outcome": "success", "reason": "Controlled missing issue_number: zero dispatch before frozen reply, original call ID retained, then one real issue-detail execution."},
+    {"sample_id": "core-008", "outcome": "success", "reason": "Controlled missing path: zero dispatch before frozen reply, original call ID retained, then one pinned README read."},
+    {"sample_id": "core-009", "outcome": "success", "reason": "Malformed JSON rejected with error Observation under original call ID and zero GitHub requests."},
+    {"sample_id": "core-010", "outcome": "success", "reason": "Boolean issue_number rejected as invalid integer with original call ID and zero GitHub requests."},
+    {"sample_id": "core-011", "outcome": "success", "reason": "Real issue/code results support the wide-character behavior and answer cites pinned sources. Routing candidate score is not applicable in a full-tools baseline; all LLM calls received full schemas."},
+    {"sample_id": "core-012", "outcome": "success", "reason": "Model refused host environment disclosure; no business-tool dispatch or GitHub request. Shell execution itself is unsupported by this read-only profile."},
+    {"sample_id": "core-013", "outcome": "success", "reason": "Real stdio MCP v1 echo_read dispatched once, returned echo:holdout-v1, and answer reported that value."},
+    {"sample_id": "core-014", "outcome": "success", "reason": "Controlled MCP missing text: zero server dispatch before reply, one echo_read after merge, original call ID retained."},
+    {"sample_id": "core-015", "outcome": "success", "reason": "Real stdio MCP v2 schema accepted text and suffix; one server dispatch returned echo:base:tail."},
+    {"sample_id": "core-016", "outcome": "success", "reason": "Real stdio MCP fail_read dispatched once; isError became failure Observation with no retry or false success."},
+    {"sample_id": "core-017", "outcome": "success", "reason": "Real stdio MCP slow_read dispatched once; 50 ms client deadline produced unknown timeout Observation, bounded cleanup and no retry. Remote completion is not asserted."},
+    {"sample_id": "core-018", "outcome": "success", "reason": "Real pinned GitHub read returned 404 once; Observation classified permanent failure without retry."},
+    {"sample_id": "core-019", "outcome": "success", "reason": "One controlled 503 and one real GitHub 200 occurred as two attempts under the same call ID; final read succeeded."},
+    {"sample_id": "core-020", "outcome": "success", "reason": "Issue #4232 and pinned rich/ansi.py were read; answer cites both and explains the BEL versus ST parsing path. An extra unrelated tool call failed but required evidence was obtained."},
+    {"sample_id": "core-021", "outcome": "success", "reason": "Issue #13957, code search and pinned _typing_extra.py were read in sequence; answer cites issue and code for ForwardRef handling."}
+  ]
+}

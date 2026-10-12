@@ -2,22 +2,22 @@
 
 ## Dashboard
 
-- Current Phase: Phase 7 — Productization
-- Current PR: PR-08c — Core delivery（T059–T060、T062 DONE，待评审）
-- Next Task: 待后续授权；本轮不开始其他任务
+- Current Phase: Phase 8 — Final Evaluation
+- Current PR: PR-09 — T065–T073 完成，Core MVP 正式冻结使用合并后 `main` 的 `core-mvp-v1`
+- Next Task: Core MVP 已完成；收尾后停止，新任务须单独授权
 - Total Tasks: 73
-- Completed: 44
-- TODO: 28
+- Completed: 53
+- TODO: 19
 - OPTIONAL: 1
 - IN_PROGRESS: 0
 - BLOCKED: 0
-- Remaining P0: 9
+- Remaining P0: 0
 - Remaining P1: 19
 - Remaining P2: 1
 - Total P0 / P1 / P2: 53 / 19 / 1
-- State verified: 2026-10-11；PR-08c 起点 main `f88d0ca`
+- State verified: 2026-10-12；PR-09 起点 main `f80dffb`，T073 Core MVP 出口与最终指标已核验
 
-本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a 和 PR-08b 已合并；PR-08c 已完成 T059–T060，尚未合并。
+本文是后续 MVP 开发的唯一任务总账，负责状态、优先级、依赖、PR 与验收；产品背景见 [Product Context](TASKPILOT_CONTEXT.md)，源码分析见 [Source Analysis](TASKPILOT_ANALYSIS.md)，开发规则见 [AGENTS.md](../AGENTS.md)。PR-03、PR-04、PR-05、PR-08a、PR-08b 和 PR-08c 已合并；PR-09 的 T065–T073 已完成，合并与正式冻结状态以 GitHub PR 和 `core-mvp-v1` tag 为准；候选 `core-mvp-candidate-v1` 保留在 T073 验收提交。
 
 ## Maintenance and priority rules
 
@@ -28,7 +28,7 @@
 - Depends On 是直接交付依赖，不只是编号顺序；`—` 表示无任务依赖。允许引用后置 ID，但依赖图必须无环。同一 PR 内按依赖实施，整个 Feature 验收后才合并。
 - Target PR 的 PR-00…PR-09 是项目阶段标识，不是 GitHub PR number。PR-01 对应 GitHub #5，PR-02 对应 #6；后续真实 URL 在相应任务 Notes 更新。必要拆分小 PR 时更新 Target PR，保持 ID 不变。
 - DONE 部分不重开或夸大；新增能力另建 TODO 并注明与既有部分的区别。临时 test doubles、静态源码、历史真实 E2E、本轮重测分开记录。
-- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 44 + 28 + 1 + 0 + 0 = 73；剩余 9 + 19 + 1 = 29。
+- 每次状态变更同步更新 Dashboard。Completed = Status 为 DONE 的数量；Remaining Px = 该 Priority 且 Status 非 DONE 的数量，包含 OPTIONAL/BLOCKED；TODO 单独计数，不把 OPTIONAL 混入 TODO。当前 Completed + TODO + OPTIONAL + IN_PROGRESS + BLOCKED = 53 + 19 + 1 + 0 + 0 = 73；剩余 0 + 19 + 1 = 20。
 - 删除可选范围时保留原 ID，使用 OPTIONAL 并在 Notes 写“移出本次交付”及原因，不用 DONE 冒充完成；它仍进入非 DONE 计数，但不阻塞 Exit Criteria。
 - 下一 PR 只实现当前批准的任务范围。此总账不是对后续所有副作用操作的预授权；真实写入仍必须走代码级校验、风险检查和用户确认。
 
@@ -77,7 +77,7 @@ Core 保持 read-only：不启用写工具即可延期整套写入增强。若�
 - Phase 5：T039–T046，Controlled Developer Actions，PR-06，Engineering Enhancement after Core MVP。
 - Phase 6：T047–T052，Memory，PR-07，Engineering Enhancement。
 - Phase 7：T053–T064，Productization，PR-08 或按依赖拆成小 PR。
-- Phase 8：T065–T073，Final Evaluation，计划 PR-09。
+- Phase 8：T065–T073，Final Evaluation，PR-09 已完成 T065 冻结数据、T066–T068 三组运行、T069–T071 正式指标、T072 失败与复现审计及 T073 Core MVP 出口验收；正式冻结仅使用合并后的 `main` revision。
 
 后续 Task 的 Acceptance Criteria 和 Tests 是验收要求，不是已通过的结果；实施完成时必须附具体命令、版本、结果和脱敏证据位置。未验收不得将 TODO 改为 DONE。
 
@@ -1099,14 +1099,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Final benchmark dataset
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T028
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 在开发过程中逐步冻结可复现、带标注的 Core Benchmark 数据集。
 - **Acceptance Criteria:** Core 覆盖 Repository Understanding、Issue Investigation、Issue→Code、Missing Parameters、Invalid Parameters、Semantic Routing、Real MCP、Tool Failure/Timeout/Retry 和 multi-step investigation；固定 repo/ref/Issue 快照或采集时间，明确期望证据/工具/slot，与调参集分开。
 - **Tests:** 数据 schema/引用有效性检查、人工标注复核、预先冻结评分口径；按已完成的核心能力逐步补样本，最终 Core 数据集版本冻结。
 - **Out of Scope:** 仅重复三个 Demo case、事后剔除失败题。
-- **Notes:** 主要依赖 T028，数据准备不等待 Docker/Deployment；复用 v0 并补版本/标注。Controlled Actions/Advanced Memory 仅在实际交付后增加独立 subset，未完成 P1 不阻塞 T065/T068/T073；v0 DONE 不等于本项完成。
+- **Notes:** 2026-10-11 冻结 [独立 holdout v1.0.0](../eval/datasets/core_benchmark_v1_holdout.json) 21 条/8 类场景；[Schema](../eval/datasets/core_benchmark_v1.schema.json)、[来源快照](../eval/datasets/core_benchmark_v1_sources.json)、[评分口径](../eval/datasets/core_benchmark_v1_scoring.json)、[人工标注复核](T065_BENCHMARK_REVIEW.json) 与 [说明](T065_BENCHMARK_DATASET.md)成套保存。T028 的 28 条 experiment 已用于选 K、12 条 evaluation 已用于 T030，均仅作为 provenance，不混入新的 holdout；新题使用另外三个 GitHub repo/固定 commit。采集时 8 个 Issue title/body hash/updated_at、11 个文件 blob SHA 全部再次核对，MCP SDK 1.5.0 的真实 stdio v1/v2 discovery schema 通过隔离校验。T065/T028 targeted **9 passed**；TaskPilot + baseline/Browser MCP 回归 **346 passed**。没有运行正式 Benchmark 或产生性能数字；Issue 后续漂移、真实模型/基线执行及受控 503 runner 均 **NOT VERIFIED**。Controlled Actions/Advanced Memory 只在实际交付后另建 subset，未完成 P1 不阻塞 Core。
 
 ### T066 — Original OpenManus baseline
 
@@ -1114,14 +1114,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Original OpenManus baseline
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T003, T065
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 运行固定上游原始装配的产品参照。
 - **Acceptance Criteria:** 使用 commit 3309bf4e416fb1c74b008f3e86494439a31bad53；记录原工具池、环境、模型和限制；无对应能力/无法安全运行的任务明确标 unsupported/NOT VERIFIED，单列分母。
 - **Tests:** 独立 checkout、真实 provider/工具运行；核验无 TaskPilot 实现混入；保存原始记录。
 - **Out of Scope:** 为使 baseline 好看而改造上游、启用不受控危险动作。
-- **Notes:** 安全可比子集与全量可用性分开；不能把新增 GitHub 工具收益全归因 Top-K。
+- **Notes:** 2026-10-11 在独立 checkout 固定上游 `3309bf4e416fb1c74b008f3e86494439a31bad53`，原始 Manus/Tool 装配通过隔离 Docker + 真实 DeepSeek Provider 运行冻结 v1.0.0 的 21 条 holdout：12 条 supported 实际执行（4 条业务证据达成、8 条失败），9 条 unsupported 未 dispatch。原始 21 行及两次 MCP setup failure/复测全部保留在 [原始证据](../eval/results/t066_original_openmanus_v1.jsonl)、[MCP 首次复测](../eval/results/t066_original_openmanus_mcp_retest.jsonl)、[MCP 最终复测](../eval/results/t066_original_openmanus_mcp_retest_2.jsonl)；[逐项复核](../eval/results/t066_original_openmanus_review.json) 和 [环境/限制/复现](T066_ORIGINAL_OPENMANUS.md) 单列分母与 NOT VERIFIED。原始工具池仅 `ask_human/python_execute/str_replace_editor/terminate`，MCP fixture 经上游接口接入；没有混入 TaskPilot GitHub Tools、Routing、Validation 或 Reliability。MCP `fail_read` 真实 `isError=true`，但原始结果状态丢失且 Agent 声明 success，按冻结规则记失败。安全可比子集与全量可用性分开，不能把新增 GitHub 工具收益全归因 Top-K；未计算 T069–T071 正式指标。
 
 ### T067 — Same-tool-pool full-tool baseline
 
@@ -1129,14 +1129,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Same-tool-pool full-tool baseline
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T030, T065
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 隔离路由候选裁剪的影响。
 - **Acceptance Criteria:** 与 TaskPilot 使用同模型、任务、工具池、参数校验、可靠性和 Memory，仅关闭 semantic candidate filtering；记录控制工具、预算和配置差异。
 - **Tests:** 真实执行并断言全部允许工具 schema 被发送；多次运行使用相同口径和数据版本。
 - **Out of Scope:** 与原始 OpenManus baseline 混为一组。
-- **Notes:** 与 T066 分开报告；这组用于路由因果对照。
+- **Notes:** 2026-10-11 以冻结 v1.0.0 的全部 21 条 Holdout 执行真实 TaskPilot full-tools 组，独立于 T066；[原始 21 条记录](../eval/results/t067_full_tools_v1.jsonl)、[逐项证据复核](../eval/results/t067_full_tools_review.json)及[环境、配置、失败与复现](T067_FULL_TOOL_BASELINE.md)已保存。12 条自然任务调用真实 DeepSeek，9 条冻结受控边界/故障任务执行真实 GitHub REST/MCP stdio 或零 dispatch 校验；每条均为独立 Agent/LLM/Context/Trace，8/8 Issue 与 11/11 pinned file 来源复核匹配。`routing_top_k=None` 且无 Retriever/Embedding，44/44 次实际 LLM Tool Calling 收到当前 profile 全部 6 个 schema；21/21 Trace 校验与 cleanup 完成。逐项复核为 19 success、2 NOT VERIFIED（`core-005`/`006` 的关键代码在 12k 文件截断后，Code Search 403）；这是证据状态数量，不是 T069–T071 的正式指标。初始 MCP preflight 的 runner LLM singleton 复用失败及修正复测均保留；未改冻结数据、评分口径或 T066 结果。真实模型 revision、自然缺参/人工等待、外部提供方重复运行仍 NOT VERIFIED；不在本轮运行 K=3。
 
 ### T068 — TaskPilot comparison runs
 
@@ -1144,14 +1144,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** TaskPilot comparison runs
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T055, T065, T066, T067
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 运行最终版本并形成三组可比证据。
 - **Acceptance Criteria:** 固定 TaskPilot revision、K、索引/模型/工具版本和采样参数；Core 真实集成至少覆盖 GitHub REST、real MCP、parameter clarification、routing 和 reliability；保留所有尝试/失败/限流，人工等待策略一致并单列。
 - **Tests:** 真实 GitHub REST/MCP 与参数澄清、路由、可靠性、多步调查集成；重复运行或明确样本/重复次数限制；审计 run manifest。Phase 5 完成后才增加 Controlled Action subset，Advanced Memory 同理。
 - **Out of Scope:** Mock 产品能力、只挑最佳 run。
-- **Notes:** 受控文件写和 Advanced Memory 不作为 P0 benchmark blocker；P1 未做记 disabled，选做 subset 单列且不改变 Core 分母；对照统一相关配置，不隐去成本。
+- **Notes:** 2026-10-11 基于冻结 v1.0.0 全部 21 条 Holdout 完成真实 TaskPilot K=3 组；[原始 manifest/21 条记录](../eval/results/t068_k3_v1.jsonl)、[真实五条预检](../eval/results/t068_k3_preflight.jsonl)、[逐项证据复核](../eval/results/t068_k3_review.json)及[配置、三组完整性和复现说明](T068_K3_COMPARISON_RUN.md)已保存。12 条自然任务调用真实 `deepseek-flash`、GitHub REST/FastMCP stdio；9 条冻结受控参数/故障任务明确标注零 LLM 调用，不冒充模型自主选择。48/48 次实际 LLM Tool Calling 发送 3 个业务 schema + `terminate`，各有候选分数、选择、索引版本和 Trace 对应；21/21 Trace 有效且 cleanup 完成。T067/T068 的应用树、环境、模型配置、21 条 task/context、Tool schema、控制工具、归一化及预算一致，只有 semantic filtering 与 embedding/index 成本不同；T066 原始工具池差异另列。逐项复核 18 success、3 NOT VERIFIED（`core-005/006` 缺关键源码证据、`core-020` 最终代码/评论引用不完整），仅为原始证据状态，非 T069–T071 正式指标。仅完成一次全量 K=3 和五条预检，Provider revision/统计重复性、自然模型缺参及真人等待仍 NOT VERIFIED。受控写与 Advanced Memory 未启用；不在本轮开展 T069。
 
 ### T069 — Tool Selection Accuracy / Task Success Rate
 
@@ -1159,14 +1159,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Tool Selection Accuracy / Task Success Rate
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T068
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 以标注与真实证据计算选择和任务成功。
 - **Acceptance Criteria:** 定义正确工具集合、每步/每任务分母及多工具判定；成功需满足证据要求；terminate(success) 不构成独立成功。
 - **Tests:** 人工抽查评分与原始 trace、失败/unsupported 分母核对、确定性指标计算测试。
 - **Out of Scope:** 将候选召回率当最终准确率、排除失败后报成功率。
-- **Notes:** 报告样本数量、绝对结果和不确定性；不要求预设提升才能完成。
+- **Notes:** 2026-10-11 基于冻结 v1.0.0 的 21 条 Holdout 和 T066–T068 原始记录完成 [可重复评分脚本](../eval/t069_score_accuracy_success.py)、[63 条逐样本/逐步结果](../eval/results/t069_accuracy_success_v1.json)及[评分口径与人工 Trace 抽查](T069_ACCURACY_SUCCESS.md)。自主工具选择：Original OpenManus 2/15、TaskPilot full-tools 6/16、K=3 7/16；任务级完整选择分别 2/10、5/11、7/11。冻结业务证据成功：上游 4/12 supported（另有 9 unsupported；全量覆盖 4/21），Full-tools 18/21，K=3 18/21；9 条 TaskPilot 受控零 LLM 样本单列且不进入自主工具选择分母。Full-tools `core-011` 旧复核 success 与冻结路由分数要求冲突，正式评分显式记 NOT VERIFIED，原复核/原始记录不改；`core-005/006` 和 K=3 `core-020` 保留证据不足。单次 21 样本、原始工具池与预算差异、自然模型缺参及真人等待为限制；不宣称统计显著性或整体提升。T070/T071 成本与参数指标未计算。
 
 ### T070 — Token Usage / End-to-end Latency
 
@@ -1174,14 +1174,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Token Usage / End-to-end Latency
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T055, T068
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 对比完整执行成本与耗时。
 - **Acceptance Criteria:** provider input/output、embedding、重试分别记账，摘要仅在启用时计入；缺失 usage 明示；报告端到端及分阶段延迟、人类等待、重复次数与聚合口径。
 - **Tests:** 汇总值与原始 usage/时间戳抽样核对；失败 attempts 计入；可重复运行计算。
 - **Out of Scope:** 只计最终成功请求、把估算混成实测。
-- **Notes:** 不将 PR-02 >100k→约1.9k 的单次观察当整体 Benchmark 提升。
+- **Notes:** 2026-10-11 以冻结 21 条 Holdout 和 T066–T068 原始运行完成 [可复算脚本](../eval/t070_cost_latency.py)、[63 条逐样本成本与 21 对差值](../eval/results/t070_cost_latency_v1.json)及[计量口径、阶段/缺失/负收益报告](T070_TOKEN_LATENCY.md)。Provider total tokens / 完整端到端总耗时：Original OpenManus 162,843 / 154.970 秒（12 supported；9 unsupported 不计零）、TaskPilot Full-tools 243,308 / 110.592 秒（21 条）、K=3 237,136 / 107.669 秒（21 条）；三组分别记录 60/44/48 次真实 Provider usage，无缺失。TaskPilot 按 12 条真实模型和 9 条零 LLM 受控任务分层，21 对同 ID 的 K=3−Full-tools 为 −6,172 tokens、−2.923 秒，但 K=3 在 9/21 条更慢、3/12 条真实模型任务使用更多 token。K=3 embedding 52 次/2.508 秒；两组各 1 次受控 503 后 Tool retry。上游 Tool/Retry/Human Waiting 分段 NOT AVAILABLE；3 条受控即时澄清没有真实人工等待时钟。上游 MCP 六次先前 setup failure/1.058 秒单列实验复测开销，不并入已选定执行。T069 的 `core-011` routing 证据适用性和 Business Success/Expected Outcome 区别原样保留到 T072；不将 PR-02 单次 context 观察当整体提升，也不宣称统计显著性。
 
 ### T071 — Parameter / Slot metrics
 
@@ -1189,14 +1189,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Parameter / Slot metrics
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T065, T068
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 测量参数提取与澄清质量。
 - **Acceptance Criteria:** 定义字段级 precision/recall/F1 或明确等价指标；关键参数准确率、缺参检测、澄清后有效率与无依据猜测单列；标注来源可追踪。
 - **Tests:** 基于真实调用与用户回复评分；缺参/错误类型/多轮改值样本；人工核验关键 slot。
 - **Out of Scope:** 凭模型自评填分、把 schema 合法等同用户意图正确。
-- **Notes:** 口径在 T065 冻结，报告实际样本与零分母处理。
+- **Notes:** 2026-10-12 按 T065 v1.0.0 冻结口径、T066–T068 原始记录完成 [可复算评分脚本](../eval/t071_slot_metrics.py)、[63 条逐样本/逐字段来源与结果](../eval/results/t071_slot_metrics_v1.json)和[人工复核与分母说明](T071_PARAMETER_SLOT_METRICS.md)。结构化字段自然任务：上游仅 2 个 MCP step、TP/FP/FN=3/0/0（9 个 GitHub Python 调查无可比 typed slot）；Full-tools 16 step 为 41/10/4，Precision/Recall/F1=0.804/0.911/0.854；K=3 16 step 为 40/12/5，0.769/0.889/0.825。模型显式提取仅按 task/Observation 17 个 gold 字段计分，Full-tools 13/10/4、K=3 12/12/5；确认的 Context 与 9 个零 LLM 受控样本另列。两组均在 3/3 个受控缺参字段上触发零执行澄清，3/3 条脚本回复有效且原 call ID 保持，2/2 条非法参数类型识别并零 dispatch；无 gold 字段分母记 NOT APPLICABLE。没有确认的错误 gold 值猜测；额外参数是否无依据与自然多轮改值仍 NOT VERIFIED。T070 仅加测试未删测试；363 与 359 的历史命令差异无法精确复原，当前相关回归覆盖 TaskPilot/baseline/Browser MCP。
 
 ### T072 — Failure analysis / benchmark reproducibility
 
@@ -1204,14 +1204,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Failure analysis / benchmark reproducibility
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T069, T070, T071
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 解释失败并让结果可复跑。
 - **Acceptance Criteria:** 按 routing/parameter/tool/MCP/context/permission/network 分类，附代表性证据；提供 manifest、命令、数据版本、评分脚本和脱敏结果；真实失败不被隐藏。
 - **Tests:** 独立 clean 环境重跑代表性样本和指标计算；记录网络/模型漂移；核验无凭据入库。
 - **Out of Scope:** 为补分扩大 Feature、未经授权升级上游。
-- **Notes:** 验收阻塞缺陷回原 Task 修复并重测；非 P0 改进仅记后续建议，不自动开工。
+- **Notes:** 2026-10-12 完成[失败与复现审计](T072_FAILURE_REPRODUCIBILITY.md)、[14 条非成功/9 条上游 unsupported/8 条预期故障的脱敏索引](../eval/results/t072_failure_audit_v1.json)及[可复算脚本](../eval/t072_failure_audit.py)。冻结 T069–T071 结果、审阅和 Holdout 均未修改；core-011 full-tools 的冻结 routing-score 条件与真 full baseline 不适配，正式结果维持 NOT VERIFIED，诊断性业务证据单列，无评分实现勘误。无网络独立 Docker 源码副本复算 T069/T070 与提交结果逐字段一致，T071 `--check` 通过；[当前环境 K=3 六条真实复跑](../eval/results/t072_replay_k3_v1.jsonl)和[独立 clean checkout Docker 四条真实复跑](../eval/results/t072_replay_clean_full_v1.jsonl)与冻结记录分开保存。初次 clean 容器复跑因镜像缺 Git 在执行前停止；临时只读挂载 Git 后真实 Provider/GitHub/MCP/404/503 样本通过，不改产品镜像。TaskPilot 回归 372 passed；外部服务漂移、Provider revision、超时后的远端完成、自然缺参/人工等待及单次运行方差仍 NOT VERIFIED。非 P0 改进仅记后续建议，不自动开工。
 
 ### T073 — Final resume metrics / Core MVP exit review
 
@@ -1219,14 +1219,14 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 - **Title:** Final resume metrics / Core MVP exit review
 - **Phase:** Phase 8
 - **Priority:** P0
-- **Status:** TODO
+- **Status:** DONE
 - **Depends On:** T060, T062, T072
 - **Target PR:** PR-09 (evaluation/docs)
 - **Goal:** 用真实结果完成最终交付并停止扩展。
 - **Acceptance Criteria:** README/最终报告/简历数字均能追溯真实 run 和计算口径；复核所有 Core P0 DONE、Core MVP Exit Criteria 全满足；不夸大收益；冻结 Core MVP revision；未实现 P1/P2 不阻塞交付。
 - **Tests:** 核验数字和引用；运行当时全部已交付 TaskPilot scope tests；按 Core MVP Exit Criteria 核对真实只读/GitHub/MCP E2E、Docker、可复现部署和文档证据；已交付 Enhancement subset 另附结果。
 - **Out of Scope:** 预写提升百分比、为了简历数字继续堆 Feature。
-- **Notes:** 若未优于 baseline 就如实报告绝对指标与失败分析；Core P0 全完成即停止新增 Feature，Engineering Enhancements 留待后续独立授权。
+- **Notes:** 2026-10-12 完成[Core MVP 最终报告、28 项出口证据与保守简历表述](T073_CORE_MVP_FINAL.md)，README 加入冻结 21 条 Holdout 的三组正式结果和复算入口。T069–T071 指标均直接引用原始结果及评分脚本；T072 的 core-011 full-tools 口径限制、所有失败/NOT VERIFIED 和 K=3 负收益继续保留。所有 53 项 P0 DONE、Exit Criteria 28/28 核对，Dashboard Remaining P0=0；TaskPilot + baseline/Browser MCP 已交付范围 **390 passed / 12 warnings**，真实 GitHub/MCP/Trace/FastAPI/Docker/受限部署证据逐项引用，不把受控样本当模型自主成功。独立 clean checkout 的无网络复算、Docker 真实复跑和镜像缺 Git 的复现约束见 T072；候选 revision 以 T073 commit 和本地 `core-mvp-candidate-v1` tag 冻结。未运行的上游完整 sandbox suite、其他平台/transport、自然模型漏参、真实人工等待及 Provider revision 保留 NOT VERIFIED。P1/P2 仍延期；T073 验收时 PR-09 未合并，正式冻结使用随后合并到 main 的 `core-mvp-v1`，不继续增加 Feature。
 
 ## Explicit Deferred / Non-goals
 
@@ -1271,55 +1271,55 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 ### Business
 
-- [ ] Real Repository Investigation works：Repository Understanding、Issue Investigation、Issue→Code Investigation 均由真实证据支持，Dynamic Tool Calling 按 Observation 决定下一步；T007–T012 的历史验收在最终版本通过 T068/T073 回归。
+- [x] Real Repository Investigation works：Repository Understanding、Issue Investigation、Issue→Code Investigation 均由真实证据支持，Dynamic Tool Calling 按 Observation 决定下一步；T007–T012 的历史验收在最终版本通过 T068/T073 回归。
 
 ### Reliable Execution
 
-- [ ] Parameter validation works：required/type/enum/invalid JSON 不绕过 dispatch；T013–T015、T020、T021。
-- [ ] Missing parameter clarification works：missing parameter → clarification → merge → revalidation → real GitHub execution，调用与结果关联正确；T016–T019、T021。
+- [x] Parameter validation works：required/type/enum/invalid JSON 不绕过 dispatch；T013–T015、T020、T021。
+- [x] Missing parameter clarification works：missing parameter → clarification → merge → revalidation → real GitHub execution，调用与结果关联正确；T016–T019、T021。
 
 ### Routing
 
-- [ ] Semantic Tool Routing works：真实 semantic retrieval、候选选择和控制工具保留有效；T022–T028。
-- [ ] Top-K comes from experiments：多个 K 与同工具池全量对照已运行，K=3 仅是实验起点；T029–T030。
+- [x] Semantic Tool Routing works：真实 semantic retrieval、候选选择和控制工具保留有效；T022–T028。
+- [x] Top-K comes from experiments：多个 K 与同工具池全量对照已运行，K=3 仅是实验起点；T029–T030。
 
 ### Integrations
 
-- [ ] Real GitHub Tool execution works：真实 GitHub REST 工具闭环通过；T021、T068。
-- [ ] At least one real MCP transport/server works：真实 connect/discovery/call/disconnect/reconnect 与参数调用有记录；T035/T038。T020 的 fixture 不能代替真实集成。
+- [x] Real GitHub Tool execution works：真实 GitHub REST 工具闭环通过；T021、T068。
+- [x] At least one real MCP transport/server works：真实 connect/discovery/call/disconnect/reconnect 与参数调用有记录；T035/T038。T020 的 fixture 不能代替真实集成。
 
 ### Reliability
 
-- [ ] Result status is correct：保留 MCP isError，业务失败不记成功；T031。
-- [ ] Timeout is bounded：per-tool/connection 预算有界，状态明确；T032。
-- [ ] Read retry classification works：幂等读取按类别有界重试，永久错误不重试；T033。
-- [ ] Real failure cases do not report false success：真实 GitHub/MCP 失败、超时或断连有证据；T035、T037–T038。不要求 T034 的写策略。
+- [x] Result status is correct：保留 MCP isError，业务失败不记成功；T031。
+- [x] Timeout is bounded：per-tool/connection 预算有界，状态明确；T032。
+- [x] Read retry classification works：幂等读取按类别有界重试，永久错误不重试；T033。
+- [x] Real failure cases do not report false success：真实 GitHub/MCP 失败、超时或断连有证据；T035、T037–T038。不要求 T034 的写策略。
 
 ### Productization
 
-- [ ] Structured execution trace works：task/step/tool/attempt 可关联，覆盖核心链路且脱敏，token/latency 可归因；T053–T055。
-- [ ] FastAPI / equivalent thin service works：任务启动/状态/取消、资源清理和非阻塞参数澄清通过；T056–T057。不要求写入确认或同实例连续 run hardening。
-- [ ] Docker startup works：干净镜像可启动并完成真实只读任务，不依赖宿主环境；T059。
-- [ ] README / architecture complete：与最终 Core 功能及边界一致，命令和引用核验通过；T060、T073。
-- [ ] Reproducible deployment exists：local/server 受限部署可按文档复现；T062。公网安全/上线 T061/T063 非 Core blocker。
+- [x] Structured execution trace works：task/step/tool/attempt 可关联，覆盖核心链路且脱敏，token/latency 可归因；T053–T055。
+- [x] FastAPI / equivalent thin service works：任务启动/状态/取消、资源清理和非阻塞参数澄清通过；T056–T057。不要求写入确认或同实例连续 run hardening。
+- [x] Docker startup works：干净镜像可启动并完成真实只读任务，不依赖宿主环境；T059。
+- [x] README / architecture complete：与最终 Core 功能及边界一致，命令和引用核验通过；T060、T073。
+- [x] Reproducible deployment exists：local/server 受限部署可按文档复现；T062。公网安全/上线 T061/T063 非 Core blocker。
 
 ### Evaluation
 
-- [ ] Final benchmark dataset frozen：Core 场景、数据版本、标注和评分口径已冻结；T065。
-- [ ] Original OpenManus baseline run：固定上游参照已运行，unsupported/NOT VERIFIED 与分母明确；T066。
-- [ ] Same-tool-pool full-tool baseline run：同工具池全量对照已运行；T067。
-- [ ] TaskPilot comparison run：真实 GitHub REST、MCP、clarification、routing、reliability、多步调查已测；T068。
-- [ ] Tool Selection Accuracy measured；Task Success Rate measured，任务成功按证据判定而非 terminate(success)；T069。
-- [ ] Token Usage measured；Latency measured，失败/重试成本、人类等待和未知 usage 口径明确；T070。
-- [ ] Parameter / Slot metrics measured，字段标注与真实调用可核验；T071。
-- [ ] Failure analysis completed，原始记录、配置、命令与评分可复现；T072。
-- [ ] Resume metrics traceable to real runs：每个简历数字可回溯真实数据、版本与计算口径；T073。
+- [x] Final benchmark dataset frozen：Core 场景、数据版本、标注和评分口径已冻结；T065。
+- [x] Original OpenManus baseline run：固定上游参照已运行，unsupported/NOT VERIFIED 与分母明确；T066。
+- [x] Same-tool-pool full-tool baseline run：同工具池全量对照已运行；T067。
+- [x] TaskPilot comparison run：真实 GitHub REST、MCP、clarification、routing、reliability、多步调查已测；T068。
+- [x] Tool Selection Accuracy measured；Task Success Rate measured，任务成功按证据判定而非 terminate(success)；T069。
+- [x] Token Usage measured；Latency measured，失败/重试成本、人类等待和未知 usage 口径明确；T070。
+- [x] Parameter / Slot metrics measured，字段标注与真实调用可核验；T071。
+- [x] Failure analysis completed，原始记录、配置、命令与评分可复现；T072。
+- [x] Resume metrics traceable to real runs：每个简历数字可回溯真实数据、版本与计算口径；T073。
 
 ### Quality
 
-- [ ] All Core MVP P0 tasks DONE：Dashboard 重算 Remaining P0 = 0；无 P0 BLOCKED/IN_PROGRESS/TODO；DONE 均有相应验收证据。
-- [ ] TaskPilot scope tests pass：所有已交付范围的 unit/integration/regression 检查通过，真实 E2E 另附记录；未运行项明确 NOT VERIFIED；T073。
-- [ ] No fabricated metrics：无预写提升、无将 Mock 当产品集成、无用单次 context reduction 冒充整体 Benchmark。
+- [x] All Core MVP P0 tasks DONE：Dashboard 重算 Remaining P0 = 0；无 P0 BLOCKED/IN_PROGRESS/TODO；DONE 均有相应验收证据。
+- [x] TaskPilot scope tests pass：所有已交付范围的 unit/integration/regression 检查通过，真实 E2E 另附记录；未运行项明确 NOT VERIFIED；T073。
+- [x] No fabricated metrics：无预写提升、无将 Mock 当产品集成、无用单次 context reduction 冒充整体 Benchmark。
 
 **一旦 Core P0 全部完成且上述出口验收通过，停止继续增加 Feature。** 即使 Benchmark 没有提升，也如实报告绝对结果、权衡与失败；不为追求漂亮指标扩大 Scope。
 
@@ -1335,4 +1335,4 @@ PR-09 是计划中的最终评测 PR；不挤入 PR-03。所有指标来自真�
 
 未完成的增强保持 TODO/OPTIONAL，不标为 DONE，也不进入 Core Benchmark 的必测分母。实际完成后增加对应 Benchmark subset，并附真实测试与安全验收；不能用 Core 已完成为尚未测试的写入/Memory 增强背书。
 
-PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 已完成 T056–T057 并合并，T058 保持 TODO；PR-08c 已完成 T059–T060、T062，尚未合并。
+PR-03 已完成 T013–T021，GitHub PR #13 记录交付；PR-04 已完成 T022–T030，GitHub PR #14 已合并；PR-05 已完成 T031–T033、T035、T037–T038 并合并；T034/T036 保持 P1 TODO。PR-08a 已完成 T053–T055 并合并；PR-08b 已完成 T056–T057 并合并，T058 保持 TODO；PR-08c 已完成 T059–T060、T062 并合并；PR-09 的 T065 已在本分支完成，未合并。
