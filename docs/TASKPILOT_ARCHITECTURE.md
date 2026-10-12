@@ -1,6 +1,6 @@
 # TaskPilot 当前架构（Core，只读）
 
-本文对应当前源码，不把 [产品背景](TASKPILOT_CONTEXT.md) 中的规划或 [Phase 0 分析](TASKPILOT_ANALYSIS.md) 的历史快照当作已实现能力。运行命令见 [README](../README.md)，各项验收与剩余任务见 [TASKS.md](TASKS.md)。
+本文对应已交付的只读 Core MVP 源码。运行命令见 [README](../README.md) 和 [使用指南](USAGE.md)；真实调用证据、正式评测及限制见 [公开文档索引](README.md) 与 [Benchmark](BENCHMARK.md)。
 
 ## 调用边界
 
@@ -60,7 +60,7 @@ FastAPI 的 `POST /tasks` 在严格请求校验后创建每任务独立 Agent �
 
 [`Dockerfile.taskpilot`](../Dockerfile.taskpilot) 与 [`compose.taskpilot.yaml`](../compose.taskpilot.yaml)固定 Linux amd64 / Python 3.12.14 的已验收运行组合。容器启动先校验只读挂载的模型配置，再预热固定 embedding 模型；首启下载到 Docker 命名卷，热启动复用。下载失败不会开放 HTTP。宿主 loopback proxy 不能被默认 Docker bridge 访问的场景，使用 [T059 指南](T059_DOCKER.md)中**同镜像、空 volume 的临时容器**预热，再离线启动。真实 HTTP + Provider + GitHub GET、健康、Trace 和清理证据见 [T059 交付记录](evidence/t059_docker_delivery.json)。
 
-尚未交付的 P1/P2 包括受控写入与审批、advanced Memory、通用 fallback、Demo UI 和公开服务安全；现有 Compose 只绑定本机，也没有数据库、多租户或持久任务恢复。自然模型缺参、其他 MCP transport、默认 thinking mode 多轮兼容与跨平台 Docker 行为仍有 NOT VERIFIED 项。Phase 8 的任务级 Benchmark 与 OpenManus 正式对照尚未完成，不把 T029/T030 的阶段结果当成最终指标。以上状态以 [TASKS.md](TASKS.md) 为准。
+尚未交付的后续能力包括受控写入与审批、advanced Memory、通用 fallback、Demo UI 和公开服务安全；现有 Compose 只绑定本机，也没有数据库、多租户或持久任务恢复。自然模型缺参、其他 MCP transport、默认 thinking mode 多轮兼容与跨平台 Docker 行为仍有 NOT VERIFIED 项。正式 21 条任务级 Benchmark 与 OpenManus 对照已完成，结果及失败限制见 [Benchmark](BENCHMARK.md)；T029/T030 仍只属于早期单步路由实验。
 
 ## 上游与许可
 

@@ -1,4 +1,11 @@
 ### Project-specific ###
+# Local development guidance and reviews; private backup lives outside this repository
+/AGENTS.md
+/docs/TASKS.md
+/docs/TASKPILOT_CONTEXT.md
+/docs/TASKPILOT_ANALYSIS.md
+/docs/T073_CORE_MVP_FINAL.md
+
 # Logs
 logs/
 

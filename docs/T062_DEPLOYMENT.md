@@ -11,7 +11,7 @@
 
 ## 从干净 checkout 启动
 
-先按 [README](../README.md#本地安装与配置) 准备**外部**模型配置文件，不要提交或粘贴 Key。以下示例使用独立 Compose project 和本机端口；`TASKPILOT_MODEL_CONFIG` 必须是已存在配置文件的绝对路径。
+先按 [使用指南](USAGE.md#本地配置) 准备**外部**模型配置文件，不要提交或粘贴 Key。以下示例使用独立 Compose project 和本机端口；`TASKPILOT_MODEL_CONFIG` 必须是已存在配置文件的绝对路径。
 
 ```bash
 export TASKPILOT_MODEL_CONFIG=/absolute/path/to/config.toml

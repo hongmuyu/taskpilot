@@ -1,4 +1,4 @@
-name: PR Diff Summarization
+name: Upstream OpenManus PR diff summarization
 on:
   # pull_request:
   #   branches: [main]
@@ -12,11 +12,12 @@ jobs:
   pr-diff-summarization:
     runs-on: ubuntu-latest
     if: |
-      (github.event_name == 'pull_request') ||
+      github.repository == 'FoundationAgents/OpenManus' &&
+      ((github.event_name == 'pull_request') ||
       (github.event_name == 'issue_comment' &&
        contains(github.event.comment.body, '!pr-diff') &&
        (github.event.comment.author_association == 'CONTRIBUTOR' || github.event.comment.author_association == 'COLLABORATOR' || github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') &&
-       github.event.issue.pull_request)
+       github.event.issue.pull_request))
     steps:
       - name: Get PR head SHA
         id: get-pr-sha

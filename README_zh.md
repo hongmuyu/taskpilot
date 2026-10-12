@@ -1,3 +1,5 @@
+> **上游历史文档：**本页保留 OpenManus 的原始说明，不代表 TaskPilot 已交付的功能或安装方式。TaskPilot 当前说明请见 [TaskPilot README](README.md)。
+
 <p align="center">
   <img src="assets/logo.jpg" width="200"/>
 </p>
@@ -146,7 +148,7 @@ python run_flow.py
 [runflow]
 use_data_analysis_agent = true     # 默认关闭，将其改为true则为激活
 ```
-除此之外，你还需要安装相关的依赖来确保智能体正常运行：[具体安装指南](app/tool/chart_visualization/README_zh.md##安装)
+除此之外，你还需要安装相关的依赖来确保智能体正常运行：[具体安装指南](app/tool/chart_visualization/README_zh.md)
 
 
 ## 贡献指南
@@ -162,7 +164,7 @@ use_data_analysis_agent = true     # 默认关闭，将其改为true则为激活
 加入我们的飞书交流群，与其他开发者分享经验！
 
 <div align="center" style="display: flex; gap: 20px;">
-    <img src="assets/community_group.jpg" alt="OpenManus 交流群" width="300" />
+    <img src="assets/community_group.png" alt="OpenManus 交流群" width="300" />
 </div>
 
 ## Star 数量

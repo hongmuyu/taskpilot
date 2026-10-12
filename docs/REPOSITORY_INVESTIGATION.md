@@ -1,5 +1,7 @@
 # 只读 Repository Investigation
 
+> **PR-02 历史验收记录：**下文“当前”与“尚未实现”仅指 PR-02 验收时。已交付 Core MVP 的状态、命令和限制请看 [README](../README.md) 与 [架构文档](TASKPILOT_ARCHITECTURE.md)。
+
 TaskPilot PR-02 增加单 Agent 的 GitHub 只读调查入口。它复用 OpenManus 的 `ToolCallAgent`、`BaseTool`、`ToolCollection` 和现有 step/observation 循环。模型根据用户请求和前一步 Observation 动态选择工具；应用不规定固定的 Issue → Code 工作流。
 
 ## GitHub 接入

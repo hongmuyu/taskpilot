@@ -1,5 +1,9 @@
 # PR-05 Core P0 reliability regression matrix (T037)
 
+> Historical T037 test record. The later real failure E2E is documented in
+> [T038 evidence](evidence/t038_real_failure_e2e.json); current capability
+> boundaries are in the [architecture guide](TASKPILOT_ARCHITECTURE.md).
+
 This matrix covers deterministic and isolated integration behavior on the
 `codex/pr-05-t031` branch. The real external failure E2E remains T038.
 

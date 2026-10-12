@@ -1,5 +1,5 @@
 name: "🤔 Request new features"
-description: Suggest ideas or features you’d like to see implemented in OpenManus.
+description: Suggest ideas or features for TaskPilot.
 labels: enhancement
 body:
   - type: textarea
