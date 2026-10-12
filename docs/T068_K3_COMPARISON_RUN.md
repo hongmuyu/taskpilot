@@ -1,5 +1,8 @@
 # T068 — TaskPilot K=3 comparison run
 
+> Historical raw-run record. T069–T071 scoring was completed later; see the
+> [final Benchmark](BENCHMARK.md) for current aggregate results and limits.
+
 This is the **raw K=3 execution group** over the unchanged
 [T065 v1.0.0 holdout](../eval/datasets/core_benchmark_v1_holdout.json). It is
 separate from the [original OpenManus T066 baseline](T066_ORIGINAL_OPENMANUS.md)

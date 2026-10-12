@@ -1,9 +1,13 @@
 # TaskPilot Core MVP Benchmark
 
 This is the public, reproducible report for the frozen `core-mvp-v1` revision.
+This report was published after that tag: the tag pins the product tree and
+raw evidence, while this document is available from the later `main` branch.
 TaskPilot is a single-agent, read-only GitHub investigation system built on
-OpenManus. The 21-task holdout was run once per group. The results show
-measured outcomes and limits, without a general performance claim.
+OpenManus. Formal scoring selects one result per holdout task and group;
+upstream MCP setup retests and later T072 replays remain separate evidence.
+The results show measured outcomes and limits, without a general performance
+claim.
 
 ## Evidence and scoring provenance
 

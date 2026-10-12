@@ -1,4 +1,4 @@
-name: Environment Corruption Check
+name: Upstream OpenManus environment check
 on:
   push:
     branches: ["main"]
@@ -13,6 +13,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   test-python-versions:
+    # This checks the upstream requirements.txt, not TaskPilot's locked service.
+    if: github.repository == 'FoundationAgents/OpenManus'
     runs-on: ubuntu-latest
     strategy:
       matrix:

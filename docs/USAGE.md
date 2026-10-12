@@ -6,6 +6,8 @@ TaskPilot 的专用入口只启用五个 GitHub 只读工具和终止控制工�
 
 在仓库根目录使用 Python 3.12 和 `uv`：
 
+TaskPilot 使用 `requirements-service.lock.txt`；根目录 `setup.py` 和 `requirements.txt` 仍是上游 OpenManus 的打包与依赖入口。
+
 ```bash
 uv venv --python 3.12
 uv pip install --python .venv/bin/python --torch-backend cpu -r requirements-service.lock.txt
@@ -14,6 +16,8 @@ chmod 600 config/config.toml
 ```
 
 在 Git 忽略的 `config/config.toml` 中填写 `[llm]` 下的 `model`、`base_url`、`api_key`；保留示例 `[daytona]` 占位字段。该配置不支持 `${ENV_VAR}` 插值。不要把凭据写进命令、提交或日志。普通公开仓库 GET 可不带 GitHub 凭据；Code Search 需要安全注入环境变量 `GITHUB_TOKEN`。TaskPilot 不读取 `.env` 文件。
+
+若主机代理使 `api.github.com` 的 HTTPS 请求失败，但直连可用，可将 `api.github.com` 加入 `NO_PROXY`（保留已有条目）。这只调整该主机的网络路径；不要把 Agent 的结束声明当作 GitHub 读取成功证据，应核对 Tool/HTTP 状态和来源。
 
 ## CLI
 

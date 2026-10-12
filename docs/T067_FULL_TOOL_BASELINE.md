@@ -1,5 +1,8 @@
 # T067 — same-tool-pool full-tools baseline
 
+> Historical raw-run record. T069–T071 scoring was completed later; see the
+> [final Benchmark](BENCHMARK.md) for current aggregate results and limits.
+
 This is the TaskPilot **full-tools execution group** over the frozen
 [T065 v1.0.0 holdout](../eval/datasets/core_benchmark_v1_holdout.json). It is
 separate from the [original OpenManus T066 group](T066_ORIGINAL_OPENMANUS.md).

@@ -1,4 +1,4 @@
-name: Build and upload Python package
+name: Upstream OpenManus package publishing
 
 on:
   workflow_dispatch:
@@ -7,6 +7,8 @@ on:
 
 jobs:
   deploy:
+    # setup.py still describes upstream OpenManus; TaskPilot does not publish it.
+    if: github.repository == 'FoundationAgents/OpenManus'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

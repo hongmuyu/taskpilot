@@ -1,5 +1,8 @@
 # T065 — Core final benchmark dataset v1.0.0
 
+> Historical dataset-freeze record. The final three-group results were produced
+> later and are published in the [Core MVP Benchmark](BENCHMARK.md).
+
 This is a **frozen dataset and scoring contract**, not a benchmark result. No
 original OpenManus, full-tools, or TaskPilot benchmark run has been performed
 for this holdout. The T029 experiment and T030 evaluation results remain

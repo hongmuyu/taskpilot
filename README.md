@@ -37,7 +37,7 @@ OPENMANUS_DISABLE_BROWSER_USE=1 .venv/bin/python taskpilot.py \
 
 ## Installation
 
-本地安装使用固定的服务依赖锁文件；模型配置只从 `config/config.toml` 读取，不对 `${ENV_VAR}` 做插值。公开仓库的常规读取可无 GitHub token；Code Search 需要以环境变量 `GITHUB_TOKEN` 安全注入只读凭据。Docker 固定 Python 3.12.14，首次启动会下载并缓存 embedding 模型；冷启动、离线预热与代理限制见[Docker 指南](docs/T059_DOCKER.md)。
+本地安装使用固定的服务依赖锁文件；根目录 `setup.py` / `requirements.txt` 仍属上游 OpenManus 打包入口，不用于安装 TaskPilot 服务。模型配置只从 `config/config.toml` 读取，不对 `${ENV_VAR}` 做插值。公开仓库的常规读取可无 GitHub token；Code Search 需要以环境变量 `GITHUB_TOKEN` 安全注入只读凭据。Docker 固定 Python 3.12.14，首次启动会下载并缓存 embedding 模型；冷启动、离线预热与代理限制见[Docker 指南](docs/T059_DOCKER.md)。
 
 ## Usage
 
@@ -61,13 +61,13 @@ TaskPilot 复用 OpenManus 的 Agent Loop 和 ToolCollection。在每一步，Ag
 
 ## Benchmark
 
-固定的 **21 条独立 Holdout** 各运行一次：自主模型工具选择正确步数为原始 OpenManus **2/15**、TaskPilot 全量工具 **6/16**、K=3 **7/16**。冻结预期结果达标为上游 **4/12 supported**（另有 **9/21 unsupported**）、两组 TaskPilot 均 **18/21**；两组正向调查均为 **8/11**。18/21 包含安全拒绝与故障正确处理，不能当作正向业务成功率。
+固定的 **21 条独立 Holdout** 每组各选定一条正式评分记录；上游 MCP 初始化复测和后续可复现性复跑另行保留，不混入该分母。自主模型工具选择正确步数为原始 OpenManus **2/15**、TaskPilot 全量工具 **6/16**、K=3 **7/16**。冻结预期结果达标为上游 **4/12 supported**（另有 **9/21 unsupported**）、两组 TaskPilot 均 **18/21**；两组正向调查均为 **8/11**。18/21 包含安全拒绝与故障正确处理，不能当作正向业务成功率。
 
 同工具池对照中，K=3 的 Provider token 总量较全量工具低，但 **9/21** 条任务更慢；单次小样本不支持整体提升或统计显著性结论。完整的 Slot、Token、Latency、失败、限制及可复算入口见[正式 Benchmark](docs/BENCHMARK.md)。
 
 ## Documentation
 
-从[公开文档索引](docs/README.md)进入[使用指南](docs/USAGE.md)、[架构](docs/TASKPILOT_ARCHITECTURE.md)、[部署验收](docs/T062_DEPLOYMENT.md)、[测试](docs/TESTING.md)和[Benchmark](docs/BENCHMARK.md)。原始脱敏运行记录、评分脚本及冻结数据保留在 `eval/`；真实 GitHub/MCP/Docker 证据链接也在文档索引中。
+从[公开文档索引](docs/README.md)进入[使用指南](docs/USAGE.md)、[架构](docs/TASKPILOT_ARCHITECTURE.md)、[部署验收](docs/T062_DEPLOYMENT.md)、[测试](docs/TESTING.md)和[Benchmark](docs/BENCHMARK.md)。这些公开入口在 `core-mvp-v1` 冻结后整理，应从后续 `main` 阅读；冻结 Tag 保留原始源码与证据。原始脱敏运行记录、评分脚本及冻结数据保留在 `eval/`；真实 GitHub/MCP/Docker 证据链接也在文档索引中。
 
 ## Acknowledgements
 

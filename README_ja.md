@@ -1,3 +1,5 @@
+> **OpenManus の履歴文書：**このページは上流プロジェクトの説明を保存したもので、TaskPilot の現在の機能やセットアップ手順ではありません。[TaskPilot README](README.md) を参照してください。
+
 <p align="center">
   <img src="assets/logo.jpg" width="200"/>
 </p>
@@ -147,7 +149,7 @@ python run_flow.py
 use_data_analysis_agent = true     # デフォルトでは無効、trueに変更すると有効化されます
 ```
 
-これに加えて、エージェントが正常に動作するために必要な依存関係をインストールする必要があります：[具体的なインストールガイド](app/tool/chart_visualization/README_ja.md##インストール)
+これに加えて、エージェントが正常に動作するために必要な依存関係をインストールする必要があります：[具体的なインストールガイド](app/tool/chart_visualization/README_ja.md)
 
 
 ## 貢献方法
@@ -162,7 +164,7 @@ use_data_analysis_agent = true     # デフォルトでは無効、trueに変更
 Feishuのネットワーキンググループに参加して、他の開発者と経験を共有しましょう！
 
 <div align="center" style="display: flex; gap: 20px;">
-    <img src="assets/community_group.jpg" alt="OpenManus 交流群" width="300" />
+    <img src="assets/community_group.png" alt="OpenManus 交流群" width="300" />
 </div>
 
 ## スター履歴
