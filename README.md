@@ -67,11 +67,11 @@ TaskPilot 复用 OpenManus 的 Agent Loop 和 ToolCollection。在每一步，Ag
 
 ## Documentation
 
-从[公开文档索引](docs/README.md)进入[使用指南](docs/USAGE.md)、[架构](docs/TASKPILOT_ARCHITECTURE.md)、[部署验收](docs/T062_DEPLOYMENT.md)、[测试](docs/TESTING.md)和[Benchmark](docs/BENCHMARK.md)。这些公开入口在 `core-mvp-v1` 冻结后整理，应从后续 `main` 阅读；冻结 Tag 保留原始源码与证据。原始脱敏运行记录、评分脚本及冻结数据保留在 `eval/`；真实 GitHub/MCP/Docker 证据链接也在文档索引中。
+从[公开文档索引](docs/INDEX.md)进入[使用指南](docs/USAGE.md)、[架构](docs/TASKPILOT_ARCHITECTURE.md)、[部署验收](docs/T062_DEPLOYMENT.md)、[测试](docs/TESTING.md)和[Benchmark](docs/BENCHMARK.md)。这些公开入口在 `core-mvp-v1` 冻结后整理，应从后续 `main` 阅读；冻结 Tag 保留原始源码与证据。原始脱敏运行记录、评分脚本及冻结数据保留在 `eval/`；真实 GitHub/MCP/Docker 证据链接也在文档索引中。
 
 ## Acknowledgements
 
-TaskPilot 基于 [FoundationAgents/OpenManus](https://github.com/FoundationAgents/OpenManus) 的源码与祖先历史开发，固定上游基线为 [`3309bf4`](https://github.com/FoundationAgents/OpenManus/commit/3309bf4e416fb1c74b008f3e86494439a31bad53)。感谢 OpenManus 原作者及贡献者；仓库中的上游多语言 README 描述的是原项目，不代表 TaskPilot 专用入口已开放的能力。
+TaskPilot 基于 [FoundationAgents/OpenManus](https://github.com/FoundationAgents/OpenManus) 的源码与祖先历史开发，固定上游基线为 [`3309bf4`](https://github.com/FoundationAgents/OpenManus/commit/3309bf4e416fb1c74b008f3e86494439a31bad53)。感谢 OpenManus 原作者及贡献者；上游项目的完整介绍和多语言说明请见其[官方仓库](https://github.com/FoundationAgents/OpenManus)。本仓库保留的上游组件指南不代表 TaskPilot 专用入口已交付这些能力。
 
 ## License
 

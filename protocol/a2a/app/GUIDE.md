@@ -1,5 +1,7 @@
 # Manus Agent with A2A Protocol
 
+> Historical experimental OpenManus guide. TaskPilot's FastAPI service does not expose this A2A server; the instructions and example response below are not current TaskPilot acceptance evidence. See the [TaskPilot usage guide](../../../docs/USAGE.md).
+
 This is an experimental integration of the A2A protocol (https://google.github.io/A2A/#/documentation) with OpenManus, currently supporting only non-streaming mode.
 
 ## Prerequisites
