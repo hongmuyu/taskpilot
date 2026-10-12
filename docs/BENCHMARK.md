@@ -1,12 +1,9 @@
-# TaskPilot Core MVP — final exit review and benchmark
+# TaskPilot Core MVP Benchmark
 
-**Scope:** local or access-restricted, single-agent, read-only GitHub repository
-investigation. This report records the accepted Core MVP, not a public service
-or a claim of statistically significant improvement. The T073 acceptance
-candidate remains frozen at `f016437ff4cbfa25e8a07f502d1d57b8b3b70637`
-under `core-mvp-candidate-v1`. The official `core-mvp-v1` tag is created only
-on the PR-09 squash-merge commit in `main`; it identifies the final merged
-revision, while the candidate tag preserves the earlier acceptance snapshot.
+This is the public, reproducible report for the frozen `core-mvp-v1` revision.
+TaskPilot is a single-agent, read-only GitHub investigation system built on
+OpenManus. The 21-task holdout was run once per group. The results show
+measured outcomes and limits, without a general performance claim.
 
 ## Evidence and scoring provenance
 
@@ -43,7 +40,7 @@ revision, while the candidate tag preserves the earlier acceptance snapshot.
   [T072 failure index](../eval/results/t072_failure_audit_v1.json) and
   [reproducibility audit](T072_FAILURE_REPRODUCIBILITY.md) retain all
   failures and `NOT VERIFIED` outcomes. None of these frozen inputs or
-  historical outputs was changed for T073.
+  historical outputs was changed after the Core MVP freeze.
 
 ## Formal benchmark results
 
@@ -147,79 +144,28 @@ and public deployment remain **NOT VERIFIED** or out of Core scope. The
 normal Docker service is local/restricted and read-only. P1/P2 write safety,
 approval, advanced Memory, fallback, UI and public deployment remain deferred.
 
-## Core MVP Exit Criteria — 28/28 evidence review
+## Reproduce the published metrics
 
-The 53 Core P0 task cards comprise T001–T033, T035, T037–T038, T053–T057,
-T059–T060, T062, and T065–T073. All must be `DONE` before marking this
-review complete. The following checks correspond in order to
-[the ledger's 28 exit items](TASKS.md#core-mvp-exit-criteria):
+From a clean checkout with Python 3.12 and the locked dependencies in
+`requirements-service.lock.txt`, run the commands below. They read committed
+raw evidence and write T069/T070 recomputations outside the repository;
+`--check` compares T071/T072 directly with committed results.
 
-1. **Three real investigations and dynamic steps:** [T021 GitHub E2E](PR03_PARAMETER_E2E.md), [T068 runs](T068_K3_COMPARISON_RUN.md) and multi-step `core-020/021` raw Trace. Individual holdout failures remain in the denominator.
-2. **Parameter validation:** T013–T015/T020 deterministic matrices and T021 invalid-input zero real HTTP.
-3. **Clarification:** [T021](PR03_PARAMETER_E2E.md), [T057 service](evidence/t057_service_clarification.json) and [T062 HTTP](evidence/t062_clarification_http.json): forced pending, original call ID, zero pre-reply dispatch, one post-validation real GitHub call. Model omission was controlled.
-4. **Semantic routing:** T022–T028 metadata/index/retrieval/control tests and K=3 routing events in [T068 raw runs](../eval/results/t068_k3_v1.jsonl).
-5. **Top-K experiment origin:** [T029](T029_TOPK_EXPERIMENT.md), [T030](T030_ROUTING_COMPARISON.md); K=3 was selected before this frozen holdout.
-6. **Real GitHub Tool:** [T021](PR03_PARAMETER_E2E.md), [T068](T068_K3_COMPARISON_RUN.md) and [T072 replay](../eval/results/t072_replay_clean_full_v1.jsonl) contain actual REST status/call evidence.
-7. **Real MCP lifecycle:** [T035](evidence/t035_real_mcp_e2e.json) and [T038](evidence/t038_real_failure_e2e.json) use FastMCP 1.5.0 stdio connect/discover/call/disconnect/reconnect; fixture-only T020 evidence is not substituted.
-8. **Result status:** T031 regression and T035/T038 `isError=true` failure Observation.
-9. **Bounded timeout:** T032/T037 regression and T038 real stdio timeout with unknown remote result.
-10. **Read retry:** T033/T037 classification tests and T068 `core-018/019` permanent 404 versus controlled 503→200 attempts.
-11. **No false success on real failures:** [T038](evidence/t038_real_failure_e2e.json), [T062 404](evidence/t062_not_found_http.json) and T069 evidence-based scoring.
-12. **Trace/cost:** Trace Schema 1.1 T053–T055, [real Provider/GitHub Trace](evidence/t055_provider_github_trace.json), T070 attempt-level cost.
-13. **FastAPI/non-blocking clarification:** T056–T057 API and concurrency regression plus [real service trace](evidence/t057_service_clarification.json); finish declaration remains separate from business success.
-14. **Docker startup:** [T059 guide](T059_DOCKER.md), [image/startup evidence](evidence/t059_docker_delivery.json) and [real HTTP smoke](evidence/t059_docker_github_smoke.json).
-15. **README/architecture:** [README](../README.md) and [source-grounded architecture](TASKPILOT_ARCHITECTURE.md) checked against actual API/config and this final report.
-16. **Reproducible restricted deployment:** [T062 record](T062_DEPLOYMENT.md), [three real HTTP cases](evidence/t062_reproducible_deployment.json), [restart/cleanup](evidence/t062_restart.json), [isolated no-cache build](evidence/t062_no_cache_builder_review.json).
-17. **Frozen dataset:** [T065 contract and review](T065_BENCHMARK_DATASET.md), 21 independent samples, pinned refs/source snapshots.
-18. **Original baseline:** [T066 environment/results](T066_ORIGINAL_OPENMANUS.md), original pool and nine unsupported cases kept separate.
-19. **Same-tool-pool full baseline:** [T067](T067_FULL_TOOL_BASELINE.md), manifest/44 LLM schema checks and zero routing events.
-20. **K=3 comparison:** [T068](T068_K3_COMPARISON_RUN.md), 21 retained outcomes, real GitHub/MCP and controlled probes labelled.
-21. **Selection/success scoring:** [T069](T069_ACCURACY_SUCCESS.md), frozen evidence and explicit denominators; core-011 limitation retained.
-22. **Token/latency scoring:** [T070](T070_TOKEN_LATENCY.md), provider usage, embedding/retry/phase overlap and unavailable waiting reported.
-23. **Slot scoring:** [T071](T071_PARAMETER_SLOT_METRICS.md), model/context/scripted channels separated.
-24. **Failure/reproduction audit:** [T072](T072_FAILURE_REPRODUCIBILITY.md), clean offline metric replay and separate real integration reruns.
-25. **Resume traceability:** conservative claims below cite these frozen sources and explicit denominators.
-26. **All Core P0 DONE:** task-card count and Dashboard are checked after updating T073; deferred P1/P2 do not gate Core.
-27. **Scope tests:** `tests/taskpilot tests/baseline/test_runtime.py tests/baseline/test_t066_original_baseline.py tests/tools/test_browser_use_mcp.py` **390 passed, 12 warnings**: 372 TaskPilot tests, 13 runtime/Browser MCP tests and five T066 original-baseline tests. The 12 warnings are seven Pydantic class-config deprecations, four Pydantic removed-config-key warnings and one Requests dependency-version warning; pytest-asyncio also emits a pre-run fixture-loop-scope deprecation. These existing dependency/configuration warnings are not test failures. T071 documented that historical 363-versus-359 command selection cannot be reconstructed; no T070 test was deleted, and the current explicit suite avoids that ambiguity. Historical live evidence is separately linked. The unrelated upstream full-suite sandbox assertion remains outside this passing claim.
-28. **No fabricated metrics:** no mock labelled live, no unsupported as zero-token attempt, no finish declaration as independent business success, no statistical or overall improvement claim.
+```bash
+.venv/bin/python -m eval.t069_score_accuracy_success --output /tmp/taskpilot-t069-recomputed.json
+.venv/bin/python -m eval.t070_cost_latency --output /tmp/taskpilot-t070-recomputed.json
+.venv/bin/python -m eval.t071_slot_metrics --check
+.venv/bin/python -m eval.t072_failure_audit --check
+```
 
-## Clean-checkout evaluation route and candidate freeze
+For exact clean-checkout setup, Docker replay, source drift checks, separate
+real GitHub/MCP replays and known environment limits, use the
+[T072 reproducibility record](T072_FAILURE_REPRODUCIBILITY.md). Real reruns
+need the existing model configuration and network access, may incur provider
+charges and must use new output paths. The evaluation runner records Git HEAD
+and therefore needs `git`; the deployed service image omits it. Historical
+GitHub/MCP/Docker integration evidence is indexed in [the public docs](README.md).
 
-Use the [README](../README.md) for locked local/Docker setup and
-[T072's exact offline metric commands](T072_FAILURE_REPRODUCIBILITY.md) to
-recalculate T069–T071 from committed raw records without host `.venv` or
-network. The no-network Docker replay of T069/T070 matched committed JSON;
-T071 `--check` passed. The clean-checkout real full-tools replay needed a
-Git executable for the runner's HEAD capture because the deployment image
-does not bundle Git; [T072](T072_FAILURE_REPRODUCIBILITY.md) records the
-mount-only workaround, exact command, failure and separate results. A fresh
-real run also needs the existing ignored model config and safe GitHub token
-injection; never put secret values in arguments or output. The pinned
-deployment image and lockfile are verified on Linux amd64; Docker bridge
-proxy restrictions, embedding cold download and isolated-builder no-cache
-build are documented in [T059](T059_DOCKER.md) and [T062](T062_DEPLOYMENT.md).
-T073 and the final PR review recompute committed metrics and run scope tests;
-the real Provider/GitHub/MCP/Docker E2E records linked above come from their
-named earlier tasks, including T072's separate replay. They are not new T073
-live executions. Final review removed one unused `Path` import from the T071
-scorer to satisfy autoflake; its recomputed output is unchanged.
-
-The candidate tag stays on the T073 acceptance commit. After PR-09 is merged
-and verified, `core-mvp-v1` points to the resulting `main` squash commit.
-Use `git fetch origin --tags` and `git rev-parse core-mvp-v1^{commit}` to
-resolve the official frozen revision. A Git tag does not imply public-service
-deployment.
-
-## Resume-safe wording
-
-The following may be adapted for a resume **with its sample-size context**:
-
-> 基于 OpenManus 实现只读 GitHub 仓库调查 Agent，集成参数校验与澄清、语义 Top-K、真实 stdio MCP、有界超时/读取重试、结构化 Trace、FastAPI 和 Docker；建立 21 条冻结 Core Holdout 与三组可复算评测。单次同工具池对照中，K=3 与全量工具的模型选工具正确步数分别为 7/16 与 6/16，冻结预期结果均为 18/21；K=3 的 Provider token 总量为 237,136（全量 243,308），但 9/21 条任务更慢，未证明统计显著提升。
-
-Shorter variants should retain **21 tasks, one run, same-tool-pool**, and
-the negative latency result if they quote a K=3 comparison. Do not quote
-18/21 as positive investigation success; the positive investigation subset
-is 8/11 for both TaskPilot groups. Original OpenManus's 4/12 supported
-outcome is a different-tool-pool capability baseline, not a causal routing
-improvement. Do not present controlled missing-parameter/fault probes as
-natural model autonomy or an independently verified human production study.
+Provider/GitHub/MCP/Docker E2E evidence was recorded in its named earlier
+tasks, with separate T072 replays. The publication of this report did not
+perform new live E2E or change the frozen data, raw runs, or scoring rules.

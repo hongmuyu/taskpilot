@@ -1,131 +1,78 @@
 # TaskPilot
 
-TaskPilot 是基于 [OpenManus](https://github.com/FoundationAgents/OpenManus) 二次开发的单 Agent、只读 GitHub 仓库调查工具。用户明确指定 `owner/repo` 后，Agent 根据任务及每一步的 Observation 动态调查仓库结构、Issue 和源码，并尽量在回答中给出文件路径、Issue 编号及来源 URL。它不是固定的调查工作流，也不提供仓库写入或 Shell 执行权限。
+TaskPilot 是基于 [OpenManus](https://github.com/FoundationAgents/OpenManus) 二次开发的只读 GitHub 仓库调查 Agent。它根据任务和最新工具结果调查仓库、Issue 与源码，并保留可追溯的调用、失败及评测证据。当前交付的是供本机或受限环境使用的 **Core MVP**。
 
-当前交付的是**仅供本地或受限访问的 Core MVP**，含冻结的最终任务级 Benchmark；不是公开服务。[最终验收与三组评测](docs/T073_CORE_MVP_FINAL.md)列出分母、失败及限制，功能状态以 [任务总账](docs/TASKS.md) 为准；实际调用链见 [架构文档](docs/TASKPILOT_ARCHITECTURE.md)。正式冻结使用 PR-09 合并后 `main` 上的 `core-mvp-v1` tag；`core-mvp-candidate-v1` 保留 T073 验收时的候选提交。
+## Demo
 
-## 已实现的 Core
+试着问：**“调查 OpenManus #1427 中的 MCP 错误，并定位相关源码。”** 已记录的[真实 Issue → Code 调查](docs/PR03_PARAMETER_E2E.md)依次使用 Issue、Code Search 和文件读取，最终引用 Issue 与源码。这里链接的是历史真实运行证据，不是在线演示服务。
 
-- 五个 GitHub REST 只读工具：`github_repository_info`、`github_issue_search`、`github_issue_detail`、`github_code_search`、`github_read_file`，以及 `terminate`。专用 Agent 的工具池不含 OpenManus 的 Shell、Python、浏览器或文件编辑工具。
-- 参数 JSON 与现有 Tool schema 的执行前校验；缺少 required 字段时强制澄清，回复合并后重校验，原 `tool_call_id` 保持关联。已确认的 repository/ref 可在当前任务中复用。
-- 基于当前任务和最近相关 Tool Observation 的内存 embedding 检索。FastAPI 服务默认向模型发送最多三个业务工具 schema，并额外保留必要控制工具；完整 ToolCollection 仍负责真实 dispatch。CLI 保持未启用 routing 时的全量工具行为。
-- Tool 结果状态、MCP `isError`、有界 timeout、只对显式幂等读取的有界 retry，以及版本化 Trace 1.1。Trace 记录调用关系及 provider 明确报告的 token usage；缺失 usage 保持 unknown。
-- CLI 与进程内 FastAPI 服务。服务支持任务启动、状态/结果查询、取消和非阻塞缺参回复；每个任务有独立 Agent、Repository Context 和 pending 状态。
+## Features
 
-通用 MCP 客户端已在受控真实 stdio Server 上验证连接、发现、调用、断连和重连；**上述专用 GitHub 调查入口不会自动连接 MCP Server**。相关证据见 [MCP 验收](docs/evidence/t035_real_mcp_e2e.json)与[故障验收](docs/evidence/t038_real_failure_e2e.json)。
+- **动态仓库调查：**五个 GitHub REST 只读工具，覆盖仓库概览、Issue 搜索与详情、代码搜索、文件读取；工具顺序由模型结合 Observation 决定。
+- **执行前参数保护：**复用工具原有 schema；缺参进入澄清，回复合并后重新校验，保留原 `tool_call_id`。已确认的仓库与 ref 可在当前任务中复用。
+- **语义工具选择：**服务默认用内存 embedding 检索最多 3 个业务工具，必要控制工具另行保留；完整工具集合继续负责真实执行。CLI 默认使用完整工具 schema。
+- **可靠执行与追踪：**有界超时、仅对明确幂等的读取重试、MCP `isError` 状态保留，以及关联 LLM、路由、工具和成本的 Trace 1.1。
+- **两种入口：**CLI 和进程内 FastAPI；服务提供任务查询、取消及非阻塞缺参回复。通用 MCP 客户端已用真实 stdio Server 验证，但专用 GitHub 入口不会自动连接 MCP Server。
 
-## 本地安装与配置
+## Quick Start
 
-以下命令从含有 TaskPilot 文件的干净 checkout 根目录执行。已验证平台为 Linux amd64；本地方式需要 `uv 0.10.9`、Python 3.12.x 与模型下载网络。Docker 镜像精确固定 Python 3.12.14，不使用宿主 `.venv`。
+需要 Python 3.12、`uv`、可用的模型 API 和网络；以下命令在 Linux amd64 上验证。请在本地填写被 Git 忽略的配置文件中的 `[llm].model`、`base_url`、`api_key`，不要提交凭据。
 
 ```bash
+git clone https://github.com/hongmuyu/taskpilot.git
+cd taskpilot
 uv venv --python 3.12
 uv pip install --python .venv/bin/python --torch-backend cpu -r requirements-service.lock.txt
 cp config/config.example-baseline.toml config/config.toml
 chmod 600 config/config.toml
 ```
 
-在本机编辑被 Git 忽略的 `config/config.toml`，填写 `[llm]` 下的 `model`、`base_url`、`api_key`；保留示例中的 `[daytona]` 占位字段。模型须兼容 OpenAI 风格的 Chat Completions tool calling。配置文件**不支持** `${ENV_VAR}` 插值；不要把真实 key 写入命令、提交或运行日志。TaskPilot 不需要启用上游默认 Browser Use MCP：
+在本机编辑 `config/config.toml` 后运行：
 
 ```bash
-export OPENMANUS_DISABLE_BROWSER_USE=1
-```
-
-公开仓库的 metadata、Issue 和文件读取可不带 GitHub 凭据；GitHub Code Search 需要环境变量 `GITHUB_TOKEN`。仅在确实需要 Code Search 时，通过当前 shell 的安全凭据机制注入只读 token。项目不读取 `.env` 文件。Token 的权限与 GitHub 限流由使用者控制。
-
-## CLI：真实仓库调查
-
-```bash
-.venv/bin/python taskpilot.py \
+OPENMANUS_DISABLE_BROWSER_USE=1 .venv/bin/python taskpilot.py \
   --repository FoundationAgents/OpenManus \
-  --prompt "读取 README.md，结合仓库信息说明这个项目的用途，并给出来源。"
+  --prompt "读取 README.md，说明这个仓库的用途并给出来源。"
 ```
 
-可选 `--ref <branch-or-tag-or-commit>`；未指定时文件读取使用仓库默认分支。若省略 `--repository`，CLI 会通过同步 `AskHuman` 询问；缺少工具 required 参数时也会在 CLI 中询问。以下是另外两类任务示例，实际工具顺序由模型与 Observation 决定：
+## Installation
+
+本地安装使用固定的服务依赖锁文件；模型配置只从 `config/config.toml` 读取，不对 `${ENV_VAR}` 做插值。公开仓库的常规读取可无 GitHub token；Code Search 需要以环境变量 `GITHUB_TOKEN` 安全注入只读凭据。Docker 固定 Python 3.12.14，首次启动会下载并缓存 embedding 模型；冷启动、离线预热与代理限制见[Docker 指南](docs/T059_DOCKER.md)。
+
+## Usage
+
+CLI 可指定 `--ref <branch-or-tag-or-commit>`；省略 `--repository` 时会询问。启动本机服务：
 
 ```bash
-.venv/bin/python taskpilot.py --repository FoundationAgents/OpenManus \
-  --prompt "调查仓库中与 MCP 调用失败相关的 Issue，列出编号和证据。"
-.venv/bin/python taskpilot.py --repository FoundationAgents/OpenManus \
-  --prompt "选取一个与 MCP 失败有关的 Issue，定位可能相关的源码并解释依据。"
+OPENMANUS_DISABLE_BROWSER_USE=1 .venv/bin/python -m uvicorn app.taskpilot.service:app --host 127.0.0.1 --port 8000
 ```
 
-历史三类真实调查见 [PR-02 调查记录](docs/REPOSITORY_INVESTIGATION.md)；其中“尚未实现”的部分是当时状态，当前能力请以本 README、架构文档与任务总账为准。
-
-## FastAPI：任务状态与缺参回复
-
-使用上述本地配置与依赖，从 checkout 根目录启动仅监听本机的服务：
-
-```bash
-.venv/bin/python -m uvicorn app.taskpilot.service:app --host 127.0.0.1 --port 8000
-```
-
-另开终端调用真实 HTTP 接口：
+在另一终端检查服务：
 
 ```bash
 curl --fail http://127.0.0.1:8000/health
-curl --fail -X POST http://127.0.0.1:8000/tasks \
-  -H 'Content-Type: application/json' \
-  -d '{"repository":"FoundationAgents/OpenManus","task":"读取 README.md 并给出仓库用途与来源。"}'
-curl --fail http://127.0.0.1:8000/tasks/TASK_ID
 ```
 
-`POST /tasks` 返回 `202` 与 `task_id`。将返回值替换上面的 `TASK_ID`，轮询 `GET /tasks/{task_id}`；结果含 `status`、`execution_status`、`finish_source`、`business_outcome`、`cleanup_status`、`result` 和 `run_id`。若状态为 `clarification_pending`，响应中的 `clarification` 含原 `tool_call_id` 和 `missing_fields`；通过 `POST /tasks/{task_id}/clarifications/{tool_call_id}/reply` 只回复该 task/call 对应的明确字段，例如：
+API 提供 `POST /tasks`、`GET /tasks/{task_id}`、`DELETE /tasks/{task_id}` 和按 `tool_call_id` 回复的澄清接口。请求、响应、Docker Compose 命令和状态语义见[使用指南](docs/USAGE.md)。服务状态保存在进程内存中，重启后旧任务无法恢复；`terminate(success)` 不代表答案已独立验证。
 
-```bash
-curl --fail -X POST \
-  http://127.0.0.1:8000/tasks/TASK_ID/clarifications/TOOL_CALL_ID/reply \
-  -H 'Content-Type: application/json' \
-  -d '{"reply":"{\"path\":\"README.md\"}"}'
-curl --fail -X DELETE http://127.0.0.1:8000/tasks/TASK_ID
-```
+## Architecture
 
-取消是本地任务取消；远端超时操作是否已停止可能未知。非法输入返回 422，错误 task 返回 404，重复、迟到或不匹配的澄清回复返回 409。等待澄清不阻塞其他 HTTP 请求；默认等待上限为 120 秒。任务状态只在当前服务进程内存中保存，重启后不会恢复。`/health` 表示 HTTP 进程可响应；本地 Uvicorn 启动不预热 embedding 模型。
+TaskPilot 复用 OpenManus 的 Agent Loop 和 ToolCollection。在每一步，Agent 根据任务与最新 Observation 选择工具；路由只改变本回合发送给模型的 schema，执行仍经过参数校验、澄清、超时/重试和 Trace。[架构文档](docs/TASKPILOT_ARCHITECTURE.md)解释完整调用链与 MCP 边界。
 
-## Docker：可复现启动
+## Benchmark
 
-在已填写上述本地配置后：
+固定的 **21 条独立 Holdout** 各运行一次：自主模型工具选择正确步数为原始 OpenManus **2/15**、TaskPilot 全量工具 **6/16**、K=3 **7/16**。冻结预期结果达标为上游 **4/12 supported**（另有 **9/21 unsupported**）、两组 TaskPilot 均 **18/21**；两组正向调查均为 **8/11**。18/21 包含安全拒绝与故障正确处理，不能当作正向业务成功率。
 
-```bash
-export TASKPILOT_MODEL_CONFIG="$PWD/config/config.toml"
-docker compose -f compose.taskpilot.yaml build
-docker compose -f compose.taskpilot.yaml up -d --no-build
-curl --fail http://127.0.0.1:8000/health
-docker compose -f compose.taskpilot.yaml down
-```
+同工具池对照中，K=3 的 Provider token 总量较全量工具低，但 **9/21** 条任务更慢；单次小样本不支持整体提升或统计显著性结论。完整的 Slot、Token、Latency、失败、限制及可复算入口见[正式 Benchmark](docs/BENCHMARK.md)。
 
-镜像固定 Python 3.12.14、CPU 依赖和 embedding revision；配置只读挂载，镜像不包含本地 key。首次启动会将模型下载到 Docker 命名卷，后续复用缓存；下载失败会明确退出，HTTP 不会假装就绪。当前主机的代理只监听宿主 loopback，Docker bridge 无法直接访问它；已验证使用**同一镜像的临时容器**预热空卷，再以 `HF_HUB_OFFLINE=1` 启动。命令和冷/热启动说明见 [T059 Docker 指南](docs/T059_DOCKER.md)，干净 checkout 的实际 HTTP 验收、停止/重启及隔离 builder 无缓存构建复核见 [T062 部署记录](docs/T062_DEPLOYMENT.md)。默认 builder 曾有 BuildKit snapshot 导出故障，详见该记录。Compose 默认只绑定 `127.0.0.1`，不传入 `GITHUB_TOKEN`，不是公开部署配置。
+## Documentation
 
-## 测试与评测入口
+从[公开文档索引](docs/README.md)进入[使用指南](docs/USAGE.md)、[架构](docs/TASKPILOT_ARCHITECTURE.md)、[部署验收](docs/T062_DEPLOYMENT.md)、[测试](docs/TESTING.md)和[Benchmark](docs/BENCHMARK.md)。原始脱敏运行记录、评分脚本及冻结数据保留在 `eval/`；真实 GitHub/MCP/Docker 证据链接也在文档索引中。
 
-服务锁文件只包含运行依赖；运行测试再安装固定版本的测试工具：
+## Acknowledgements
 
-```bash
-uv pip install --python .venv/bin/python --torch-backend cpu pytest==8.3.5 pytest-asyncio==0.25.3
-.venv/bin/python -m pytest -q tests/taskpilot tests/baseline/test_runtime.py tests/baseline/test_t066_original_baseline.py tests/tools/test_browser_use_mcp.py
-```
+TaskPilot 基于 [FoundationAgents/OpenManus](https://github.com/FoundationAgents/OpenManus) 的源码与祖先历史开发，固定上游基线为 [`3309bf4`](https://github.com/FoundationAgents/OpenManus/commit/3309bf4e416fb1c74b008f3e86494439a31bad53)。感谢 OpenManus 原作者及贡献者；仓库中的上游多语言 README 描述的是原项目，不代表 TaskPilot 专用入口已开放的能力。
 
-这些是确定性与隔离集成回归，不能替代真实 Provider/GitHub/MCP 验收；真实脱敏证据索引见 [任务总账](docs/TASKS.md)。上游完整测试集含与当前 Python 版本不符的 sandbox 环境断言，不能把上述相关回归说成全量通过。
+## License
 
-Routing 数据集分为 [28 条 experiment](eval/datasets/routing_v1_experiment.json) 与 [12 条 evaluation](eval/datasets/routing_v1_evaluation.json)，schema 见 [routing_v1.schema.json](eval/datasets/routing_v1.schema.json)。[T029 实验](docs/T029_TOPK_EXPERIMENT.md)用于选 K，[T030 对照](docs/T030_ROUTING_COMPARISON.md)比较 K=3 和真正的全量工具基线；这些是**单步路由阶段实验**，不计入最终任务级结果。
-
-最终评测使用 [T065 冻结的 21 条独立 Holdout](docs/T065_BENCHMARK_DATASET.md)。[最终报告](docs/T073_CORE_MVP_FINAL.md)分别呈现 Original OpenManus、同工具池 full-tools 与 K=3；原始运行、逐样本评分和失败索引均在 `eval/results/`，复现步骤见 [T072 审计](docs/T072_FAILURE_REPRODUCIBILITY.md)。简要结果如下，均为**单次运行**：
-
-- 模型自主 Tool Selection Accuracy：Original OpenManus **2/15** 步，TaskPilot full-tools **6/16**，K=3 **7/16**。九条 TaskPilot 零 LLM 受控任务不进入分母。
-- 冻结预期结果达成：上游 **4/12 supported**，另有 **9/21 unsupported**；full-tools 与 K=3 均为 **18/21**。两组正向调查子集均为 **8/11**；18/21 包含安全拒绝和故障正确处理，不能称为正向业务成功率。
-- 同工具池 21 对样本中，Provider total tokens 为 full-tools **243,308**、K=3 **237,136**；端到端总耗时分别 **110.592 s**、**107.669 s**。K=3 在 **9/21** 条任务更慢，差异没有统计显著性结论。Slot Precision/Recall/F1、分阶段成本及负收益见最终报告。
-
-离线复算提交的原始记录可运行以下命令；第三方 clean-checkout Docker 复算和真实集成复跑的完整命令见 T072。评测 runner 记录 HEAD 时需要 `git`；部署镜像未内置 Git，T072 记录了临时挂载方式。真实重跑需要现有模型配置、必要的 GitHub 只读凭据和网络，会产生费用；始终将 `--output` 指向新文件，勿覆盖冻结证据。
-
-```bash
-.venv/bin/python -m eval.t069_score_accuracy_success --output /tmp/taskpilot-t069-recomputed.json
-.venv/bin/python -m eval.t070_cost_latency --output /tmp/taskpilot-t070-recomputed.json
-.venv/bin/python -m eval.t071_slot_metrics --check
-.venv/bin/python -m eval.t072_failure_audit --check
-```
-
-## 边界、来源与许可证
-
-- 当前 Core 是 GitHub 只读调查；写入、审批/风险门禁、复杂 Memory、通用 fallback、Demo UI 和公开部署安全属于尚未交付的 P1/P2 范围。不要将上游仓库内其他入口视为 TaskPilot 已启用能力。
-- `finished` 或 Agent `terminate(success)` 是执行/声明状态，**不是独立验证的业务成功**；服务目前将 `business_outcome` 保持 `not_verified`。21 条最终 Holdout 仅单次运行，full-tools `core-011` 的冻结 routing-score 条件不适用于未过滤基线，Code Search 403 与源码截断造成未验证结果；真实模型自然遗漏关键参数、默认 thinking mode 多轮兼容、其他 MCP transport 和公开部署仍有 NOT VERIFIED 项，详见[最终报告](docs/T073_CORE_MVP_FINAL.md)。
-- 本仓库保留 OpenManus 的祖先历史，以固定上游 commit `3309bf4e416fb1c74b008f3e86494439a31bad53`（tag `openmanus-baseline-3309bf4`）为二次开发基线。原始多语言 README（[中文](README_zh.md)、[한국어](README_ko.md)、[日本語](README_ja.md)）描述的是上游 OpenManus，不能作为 TaskPilot 功能清单。保留原 [MIT LICENSE](LICENSE)；TaskPilot 的新增说明和代码建立在该基线上。
+本项目保留上游的 [MIT License](LICENSE)，TaskPilot 的二次开发内容在此基础上提供。

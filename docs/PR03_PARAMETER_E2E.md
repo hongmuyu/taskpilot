@@ -105,8 +105,8 @@ The T013–T020 tests cover JSON/schema zero-dispatch, required-field
 clarification, pending reply merge, revalidation, exactly-once resume,
 Repository Context provenance/reuse, and Local/MCP-style schema compatibility.
 T021 adds CLI entry tests for repository clarification and non-execution on
-cancel, empty, or invalid replies. Final counts are also recorded in
-[T021](TASKS.md#t021--parameter-regression-tests--real-e2e-validation).
+cancel, empty, or invalid replies. The frozen Core MVP test scope is described
+in the [public testing guide](TESTING.md).
 Checks were run with `.venv/bin/python -m pytest -q --disable-warnings` and
 these targets:
 
