@@ -4,15 +4,30 @@ TaskPilot 是基于 [OpenManus](https://github.com/FoundationAgents/OpenManus) �
 
 > 💡 从这里开始：先运行命令行版本；需要接口时再启动 API 或 Docker 服务。项目目前没有聊天网页，`/docs` 是 API 调试页面。
 
+环境速览：Linux Bash、Git、curl、Python 3.12（用 uv 自动安装）、可选 Docker（已验收 Linux amd64）；需要一个支持工具调用的 OpenAI-compatible 模型 API。
+
 想先体验：按下面四步操作。准备 Fork 后二次开发：先点 GitHub 页面右上角 Fork，克隆自己的仓库，然后按相同步骤安装；开发分支、同步源仓库和代码入口见[开发指南](docs/DEVELOPMENT.md)。
+
+## 目录
+
+- [✨ 已实现能力](#-已实现能力)
+- [第一步：准备环境](#第一步准备环境)
+- [第二步：填写模型配置](#第二步填写模型配置)
+- [第三步：运行一次命令行调查](#第三步运行一次命令行调查)
+- [第四步：按需启动 API 服务](#第四步按需启动-api-服务)
+- [🐳 使用 Docker 部署](#-使用-docker-部署)
+- [🧰 常见问题](#-常见问题)
+- [📊 架构与评测](#-架构与评测)
+- [📚 文档导航](#-文档导航)
+- [📜 上游来源与许可证](#-上游来源与许可证)
 
 ## ✨ 已实现能力
 
-- 🧭 动态调查：5 个 GitHub REST 只读工具，覆盖仓库概览、Issue 搜索与详情、代码搜索、文件读取；由模型结合工具结果决定下一步。
-- 🛡️ 参数校验与澄清：执行前校验工具参数，缺参时等待补充，沿用原 `tool_call_id` 合并回复并重新校验；已确认的仓库和 ref 可在任务内复用。
-- 🎯 语义工具选择：API 服务默认通过内存 Embedding 检索最多 3 个业务工具，并保留必要控制工具；命令行默认提供全量工具 Schema。
-- 🔍 可靠执行与追踪：有界超时、幂等读取重试、MCP `isError` 状态传递，以及关联模型、路由、工具和成本的结构化 Trace。
-- 📦 服务与部署：提供命令行、FastAPI 和 Docker 入口，支持任务查询、取消与非阻塞缺参回复。通用 MCP 客户端已验证真实 stdio Server；GitHub 专用入口不自动连接 MCP Server。
+- 🧭 仓库调查：输入 `owner/repo` 和自然语言任务，自动查仓库概览、搜 Issue、读文件、搜代码，逐步决定下一步；每条结论附 GitHub 来源，可固定分支、标签或提交。
+- 🛡️ 缺参即问：执行前校验工具参数；信息不全时先追问再执行，不拿猜测的参数调用工具，同一任务内已确认的仓库和 ref 可复用。
+- 🎯 按需给工具：API 服务默认只把与任务最相关的少数工具暴露给模型，降低选错工具的概率；命令行默认提供全量工具。
+- 🔍 过程可查：有界超时、幂等重试、失败状态如实上报；每次调查记录模型、路由、工具调用与成本的结构化 Trace，结果可复现、可审计。
+- 📦 开箱即用：命令行直接跑；需要集成时提供 HTTP API（任务查询、取消、缺参回复）和 Docker Compose 部署。实现机制见[架构说明](docs/TASKPILOT_ARCHITECTURE.md)。
 
 ## 第一步：准备环境
 
@@ -51,7 +66,7 @@ cd taskpilot
 
 上面两种克隆方式选一种即可。
 
-已经有项目时，直接进入现有项目根目录，不要再嵌套克隆。 后面的命令都在包含 `taskpilot.py` 的目录执行。
+已经有项目时，直接进入现有项目根目录，不要再嵌套克隆。后面的命令都在包含 `taskpilot.py` 的目录执行。
 
 安装 Python 和项目依赖：
 
@@ -98,7 +113,7 @@ daytona_api_key = "unused-local-baseline"
 - 保留 `[daytona]` 占位段，这是继承的配置要求；本入口不需要注册或启动 Daytona。
 - 配置文件已被 Git 忽略，不要提交或粘贴密钥，也不要把真实密钥写进命令参数或截图。
 
-公开仓库概览、Issue 和文件读取通常可以不带 GitHub Token，受 GitHub 限流约束。代码搜索需要有相应访问权限的 GitHub Token。 如需使用，在准备启动程序的同一 Bash 终端输入：
+公开仓库概览、Issue 和文件读取通常可以不带 GitHub Token，受 GitHub 限流约束。代码搜索需要有相应访问权限的 GitHub Token。如需使用，在准备启动程序的同一 Bash 终端输入：
 
 ```bash
 read -rsp '请输入 GitHub Token（输入不回显）: ' GITHUB_TOKEN
@@ -119,6 +134,19 @@ OPENMANUS_DISABLE_BROWSER_USE=1 .venv/bin/python taskpilot.py \
 `--repository` 填 `owner/repo`，不是完整 URL；可用 `--ref <分支、标签或提交SHA>` 固定源码版本。省略仓库时会在终端询问；缺少工具必需参数时按提示补充。
 
 正常运行会看到工具执行记录及调查结果。确认结果确实包含读取到的仓库信息和来源；单独看到 `terminate(success)` 只能说明 Agent 声明结束。模型鉴权、网络或工具失败时，先看下方排错说明。
+
+一次成功运行的精简示意如下（依据 `eval/` 中 T030 的脱敏运行记录整理，数字为当时的仓库快照）：
+
+```text
+工具调用：github_repository_info → github_read_file → terminate(success)
+GitHub 请求：GET /repos/FoundationAgents/OpenManus → 200
+            GET /repos/FoundationAgents/OpenManus/contents/README.md → 200
+
+最终结论（节选）：
+## FoundationAgents/OpenManus — Summary
+- Main language: Python（证据：元数据字段 language: "Python"，及 README 中的安装命令）
+- OpenManus 是一个构建通用 AI Agent 的开源框架，无需邀请码即可运行……
+```
 
 更完整的历史示例是“调查 OpenManus #1427 中的 MCP 错误，并定位相关源码”，见[真实 Issue → 源码调查记录](docs/PR03_PARAMETER_E2E.md)。该记录不是在线演示服务。
 
@@ -188,9 +216,15 @@ Compose 默认仅绑定本机，默认不传入 GitHub Token。远程服务器�
 
 TaskPilot 复用 OpenManus 的 Agent Loop 和 ToolCollection。每步按任务与最新工具结果选择工具；Top-K 只改变发送给模型的 Schema，执行仍经过参数校验、澄清、超时/重试和 Trace。见[中文架构文档](docs/TASKPILOT_ARCHITECTURE.md)。
 
-冻结的 21 条独立留出任务（Holdout） 中，每组每条任务选定一条正式评分记录，初始化复测与后续复跑另计。自主模型选工具正确步数：原始 OpenManus 2/15、TaskPilot 全量工具 6/16、K=3 7/16。冻结预期结果达标：上游 4/12 supported，另有 9/21 unsupported；两组 TaskPilot 均 18/21，其中正向调查均 8/11。18/21 包含安全拒绝和故障正确处理，不能当作正向业务成功率。
+冻结的 21 条独立留出任务（Holdout）中，每组每条任务选定一条正式评分记录，初始化复测与后续复跑另计。
 
-同工具池对照中 K=3 的 Provider Token 总量较低，但 9/21 条任务更慢；单次小样本不支持整体提升或统计显著性结论。完整口径见[中文评测报告](docs/BENCHMARK.md)。
+| 组别 | 自主选对工具的步数 | 冻结预期结果达标 |
+| --- | --- | --- |
+| 原始 OpenManus | 2/15 | 4/12 supported |
+| TaskPilot 全量工具 | 6/16 | 18/21 |
+| TaskPilot K=3 | 7/16 | 18/21 |
+
+口径说明：21 条中有 9 条预期结果为 unsupported，上游基线达标 4/12 supported；TaskPilot 正向调查两组均 8/11。18/21 包含安全拒绝和故障正确处理，不能当作正向业务成功率。同工具池对照中 K=3 的 Provider Token 总量较低，但 9/21 条任务更慢；单次小样本不支持整体提升或统计显著性结论。完整口径见[中文评测报告](docs/BENCHMARK.md)。
 
 ## 📚 文档导航
 
