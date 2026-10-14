@@ -1,4 +1,4 @@
-# 只读 Repository Investigation
+# 只读仓库调查
 
 > **PR-02 历史验收记录：**下文“当前”与“尚未实现”仅指 PR-02 验收时。已交付 Core MVP 的状态、命令和限制请看 [README](../README.md) 与 [架构文档](TASKPILOT_ARCHITECTURE.md)。
 
@@ -10,10 +10,10 @@ TaskPilot PR-02 增加单 Agent 的 GitHub 只读调查入口。它复用 OpenMa
 
 当前支持：
 
-- Repository metadata / 基本信息
-- Repository 范围内的 Issue 搜索
+- 仓库元数据与基本信息
+- 仓库范围内的 Issue 搜索
 - Issue 详情和最多十条评论
-- Repository Code Search
+- 仓库代码搜索
 - 指定默认分支或可选 ref 读取文件
 
 通过 `owner/repo` 指定目标，不在产品代码中写死仓库。专用 Agent 只暴露上述五个工具和 `terminate`，不继承 Manus 的 Python、Shell、Browser 或文件编辑工具。
@@ -35,9 +35,9 @@ PYTHONPATH=. .venv/bin/python taskpilot.py \
 
 以下端到端验证由真实模型和 GitHub 数据完成。自动化测试使用确定性 HTTP fixture，不依赖 GitHub 网络。
 
-| Case | 结果 | 实际工具证据 |
+| 用例 | 结果 | 实际工具证据 |
 | --- | --- | --- |
-| A — Repository 理解 | VERIFIED | 真实模型选择 `github_repository_info`（无参数）：HTTP 200，840.5 ms，Observation 成功；随后根据 Observation 选择 `github_read_file(path=README.md)`：HTTP 200，542.9 ms，Observation 成功。模型读取 README 后回答并成功终止。 |
+| A — 仓库理解 | VERIFIED | 真实模型选择 `github_repository_info`（无参数）：HTTP 200，840.5 ms，Observation 成功；随后根据 Observation 选择 `github_read_file(path=README.md)`：HTTP 200，542.9 ms，Observation 成功。模型读取 README 后回答并成功终止。 |
 | B — Issue 调查 | VERIFIED | 真实模型两次选择 `github_issue_search`（`query="MCP state:open type:issue"`：200 / 894.4 ms；`query="MCP in:title,body is:issue is:open"`：200 / 451.5 ms），随后选择 `github_issue_detail(issue_number=1427)`（200 / 478.0 ms）及评论读取（200 / 463.9 ms）。所有成功调用均返回 Observation。结果只有一个符合条件的 open Issue：#1427，Agent 正常终止。 |
 | C — Issue → 代码调查 | VERIFIED | 真实模型读取 #1427 详情（HTTP 200 / 1,116.7 ms）及评论（200 / 419.4 ms），随后根据 Observation 查询仓库信息（200 / 549.1 ms）、动态执行多次 `github_code_search`（包括 `MCPClientTool execute isError`、`CallToolResult isError`、`MCPClientTool` 等，均 HTTP 200，Observation 成功），并读取 `app/tool/mcp.py`、`app/tool/base.py`、`tests/tools/test_browser_use_mcp.py` 和 `app/agent/toolcall.py`（均 HTTP 200，Observation 成功）。Agent 后续继续搜索并读取 Issue 相关实现，最后调用 `terminate`。 |
 

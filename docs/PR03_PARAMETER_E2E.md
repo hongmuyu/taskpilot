@@ -1,130 +1,43 @@
-# PR-03 / T021 validation evidence
+# PR-03 / T021 参数执行验收证据
 
-Run date: 2026-10-04. Product checkout: `codex/pr-03-t013` at
-`f4d4a6bf3314c2c0675dadac1f68caf2474d7ccc` before the T021 commit.
-The model was `deepseek-flash` through the configured DeepSeek OpenAI-compatible
-endpoint, with thinking disabled as in the PR-02 live baseline. The provider
-did not expose a separate model revision. Repository Context was explicitly
-confirmed as `FoundationAgents/OpenManus`, `ref=None` (GitHub default branch,
-reported as `main`), with `source="user_input"`. The process inherited
-`GITHUB_TOKEN`; its value and request headers were not recorded.
+运行日期：2026-10-04。产品检出位置为 `codex/pr-03-t013`，T021 提交前版本为 `f4d4a6bf3314c2c0675dadac1f68caf2474d7ccc`。模型为配置的 DeepSeek OpenAI-compatible 接口提供的 `deepseek-flash`，与 PR-02 真实基线一样关闭 thinking。提供方未公开独立模型 revision。
 
-The live checks used the production `RepositoryInvestigationAgent`, five local
-GitHub tools, `ToolCollection` validator, `LLM`, and `GitHubClient` against
-`api.github.com`. A response hook counted HTTP requests and recorded only URL
-paths and statuses. A tool execution probe recorded validator outcomes and
-call IDs. Human replies were scripted at the existing CLI `AskHuman` boundary.
-Negative tool-call cases changed **only the arguments of a call selected by the
-real model** immediately before the execution boundary. These are fault
-injection checks, not claims that the model naturally emitted bad arguments.
+仓库上下文明确确认为 `FoundationAgents/OpenManus`，`ref=None`（GitHub 默认分支，报告为 `main`），`source="user_input"`。进程继承 `GITHUB_TOKEN`，未记录其值或请求头。
 
-## Parameter cases
+真实检查使用生产 `RepositoryInvestigationAgent`、5 个本地 GitHub 工具、`ToolCollection` 校验器、`LLM` 和 `GitHubClient`，访问 `api.github.com`。响应钩子只统计请求并记录 URL 路径及状态；执行探针记录校验结果和调用 ID。人工回复由脚本在已有 CLI `AskHuman` 边界注入。负向用例只在执行边界前修改**真实模型已选中调用的参数**；这是故障注入，不代表模型自然生成了错误参数。
 
-- **Missing repository at CLI entry:** Omit `--repository`; one `AskHuman`
-  prompt asked for `owner/repo`. A scripted reply of
-  `FoundationAgents/OpenManus` passed `RepositoryContext.parse` with
-  `source="user_input"`. Only then did the real model call
-  `github_repository_info`, `github_read_file(path=README.md)`, and `terminate`.
-  GitHub returned 200 for metadata and README (two requests). The final answer
-  summarized the repository. Cancel, empty, and invalid replies had zero Agent
-  creation and zero tool dispatch in deterministic tests.
-- **Missing path, clarification, merge, revalidation:** The model selected
-  `github_read_file`; fault injection replaced its arguments with `{}` while
-  preserving `tool_call_id=call_00_H181JM7mu6WH0rmHaQv54817`. The first
-  validation returned `MissingParameterFailure` with zero GitHub requests.
-  `AskHuman` asked once for `path` and did not ask for the confirmed repository.
-  The scripted reply `README.md` merged into this pending call. The same
-  `ToolCollection.execute` validator saw `{"path":"README.md"}` and returned
-  `ToolResult`; one real GET to
-  `/repos/FoundationAgents/OpenManus/contents/README.md` returned HTTP 200.
-  The tool observation retained the original call ID and the model finished
-  with `terminate(success)`. Validation attempts: two; real GitHub executions:
-  one.
-- **Valid direct call:** The real model selected
-  `github_read_file({"path":"README.md"})` with
-  `tool_call_id=call_00_C6kS0AbMqPIomIAhSRPY3249`. No clarification occurred.
-  Validation returned `ToolResult`; exactly one README GET returned HTTP 200,
-  the observation retained that call ID, and the model called
-  `terminate(success)`.
-- **Malformed JSON:** The model selected `github_read_file`; fault injection
-  changed its arguments to `{"path":` while preserving
-  `tool_call_id=call_00_eAixk2W2QPBsq2mOJB0B1935`. Parsing produced an
-  error observation with that ID. `ToolCollection.execute` calls: zero;
-  GitHub HTTP requests: zero. The run was intentionally capped at one step.
-- **Wrong basic type:** The model selected `github_read_file`; fault injection
-  supplied `{"path":7}` with
-  `tool_call_id=call_00_gubPPgUSk5FM8kH6kVFX3531`. The validator returned
-  `ToolValidationFailure`; GitHub HTTP requests: zero. The observation kept
-  the original call ID. The run was intentionally capped at one step.
-- **Wrong type then corrected:** A fault-injected `{"path":7}` call
-  (`call_00_NajAxpeXfo42caWoKSoQ1734`) failed validation with zero HTTP
-  requests. The real model then issued a new valid
-  `github_read_file({"path":"README.md"})` call
-  (`call_00_eFGcTu3cRs85JH6XlUHW2350`); one README GET returned HTTP 200.
-  The model's final answer acknowledged the type error and successful read.
-  This was a model correction through a new call, separate from the pending
-  clarification resume case above.
+## 参数用例
 
-An additional natural-language attempt to induce a missing `path` caused the
-model to choose `terminate(failure)` without a GitHub request. Thus spontaneous
-model emission of a missing required tool argument is **NOT VERIFIED**. The
-fault-injected case verifies the production execution, clarification, merge,
-revalidation, and real API path when such a call reaches the boundary.
-An exploratory retry with tool choice required produced
-`github_read_file({"path":""})`, followed by `terminate(failure)`: existing
-file-path business validation rejected the empty string with zero HTTP
-requests and no clarification. This was an invalid value, not an absent JSON
-field, and the retry did not use the product's default `AUTO` tool choice.
+- **CLI 入口缺仓库：**省略 `--repository`，`AskHuman` 询问一次 `owner/repo`。脚本回复 `FoundationAgents/OpenManus`，通过带 `source="user_input"` 的 `RepositoryContext.parse` 后，真实模型才调用 `github_repository_info`、`github_read_file(path=README.md)` 和 `terminate`。仓库信息与 README 两次请求均为 HTTP 200，最终回答概述仓库。取消、空回复及非法回复在确定性测试中均为零 Agent 创建、零工具执行。
+- **缺 path → 澄清 → 合并 → 重校验：**模型选中 `github_read_file`，注入将参数替换为 `{}`，保留 `tool_call_id=call_00_H181JM7mu6WH0rmHaQv54817`。首次校验返回 `MissingParameterFailure`，零 GitHub 请求；`AskHuman` 只问一次 `path`，没有重复询问已确认的仓库。脚本回复 `README.md` 合并到原 pending 调用。同一个 `ToolCollection.execute` 校验器收到 `{"path":"README.md"}` 并返回 `ToolResult`；对 `/repos/FoundationAgents/OpenManus/contents/README.md` 的一次真实 GET 返回 200。Observation 保留原调用 ID，模型最后调用 `terminate(success)`。共两次校验、一次真实 GitHub 执行。
+- **合法直接调用：**模型选中 `github_read_file({"path":"README.md"})`，`tool_call_id=call_00_C6kS0AbMqPIomIAhSRPY3249`。无澄清，校验返回 `ToolResult`，恰好一次 README GET 为 200，Observation 保留调用 ID，模型调用 `terminate(success)`。
+- **畸形 JSON：**模型选中 `github_read_file`，注入改为 `{"path":`，保留 `tool_call_id=call_00_eAixk2W2QPBsq2mOJB0B1935`。解析产生同 ID 的错误 Observation；`ToolCollection.execute` 为零调用，GitHub HTTP 为零请求。该运行有意限制为一步。
+- **基本类型错误：**模型选中 `github_read_file`，注入 `{"path":7}`，`tool_call_id=call_00_gubPPgUSk5FM8kH6kVFX3531`。校验器返回 `ToolValidationFailure`，零 GitHub 请求，Observation 保留原 ID；运行有意限制为一步。
+- **类型错误后修正：**注入 `{"path":7}` 的调用 `call_00_NajAxpeXfo42caWoKSoQ1734` 校验失败，零 HTTP。模型随后新建合法调用 `github_read_file({"path":"README.md"})`，ID 为 `call_00_eFGcTu3cRs85JH6XlUHW2350`；一次 README GET 返回 200。最终回答承认类型错误并说明读取成功。这是模型通过新调用修正，与原 pending 调用的澄清恢复不同。
 
-## PR-02 investigation regression rerun
+另一次通过自然语言诱导缺失 `path` 的尝试，使模型选择 `terminate(failure)`，没有 GitHub 请求。因此模型自然遗漏必需参数仍为 **NOT VERIFIED**。故障注入证明的是这类调用进入边界后，生产执行、澄清、合并、重校验与真实 API 路径有效。
 
-The following are new live runs on the checkout above, separate from the
-historical [PR-02 evidence](REPOSITORY_INVESTIGATION.md). Each used the real
-model and the same explicitly confirmed repository context; all listed HTTP
-responses were 200 and each run produced a nonempty final answer.
+一次强制要求选择工具的探索尝试生成 `github_read_file({"path":""})`，随后 `terminate(failure)`。已有文件路径业务校验拒绝空字符串，零 HTTP、无澄清。这是非法值，不是 JSON 字段缺失；该尝试没有使用产品默认的 `AUTO` 工具选择。
 
-- **A — Repository Understanding:** Model calls:
-  `github_repository_info` → `github_read_file` → `terminate`. HTTP:
-  `/repos/FoundationAgents/OpenManus`, then
-  `/repos/FoundationAgents/OpenManus/contents/README.md` (two requests).
-  Final answer began “OpenManus — Repository Summary”.
-- **B — Issue Investigation:** Model calls: `github_issue_detail` → two
-  `github_code_search` → two `github_read_file` → `terminate`. HTTP: Issue
-  `#1427`, its comments, two `/search/code` requests, and reads of
-  `app/tool/mcp.py` and `app/tool/base.py` (six requests). Final answer
-  summarized Issue `#1427` and the MCP `isError` problem.
-- **C — Issue→Code:** Model calls: `github_issue_detail` →
-  `github_code_search` → two `github_read_file` → `terminate`. HTTP: Issue
-  `#1427`, its comments, `/search/code`, and reads of `app/tool/mcp.py` and
-  `app/tool/base.py` (five requests). Final answer connected Issue `#1427`
-  with `MCPClientTool` code.
+## PR-02 调查回归复跑
 
-## Deterministic and environment checks
+以下为上述检出版本的新真实运行，与[历史 PR-02 证据](REPOSITORY_INVESTIGATION.md)分开。使用真实模型及相同的明确仓库上下文；所有列出的 HTTP 响应均为 200，各运行均产生非空最终回答。
 
-The T013–T020 tests cover JSON/schema zero-dispatch, required-field
-clarification, pending reply merge, revalidation, exactly-once resume,
-Repository Context provenance/reuse, and Local/MCP-style schema compatibility.
-T021 adds CLI entry tests for repository clarification and non-execution on
-cancel, empty, or invalid replies. The frozen Core MVP test scope is described
-in the [public testing guide](TESTING.md).
-Checks were run with `.venv/bin/python -m pytest -q --disable-warnings` and
-these targets:
+- **A — 仓库理解：**`github_repository_info` → `github_read_file` → `terminate`。HTTP 依次读取 `/repos/FoundationAgents/OpenManus` 与 `/repos/FoundationAgents/OpenManus/contents/README.md`，共两次。最终回答以原文“OpenManus — Repository Summary”开头。
+- **B — Issue 调查：**`github_issue_detail` → 两次 `github_code_search` → 两次 `github_read_file` → `terminate`。读取 Issue `#1427`、评论、两次 `/search/code`、`app/tool/mcp.py` 和 `app/tool/base.py`，共六次请求；回答概述该 Issue 和 MCP `isError` 问题。
+- **C — Issue → 源码：**`github_issue_detail` → `github_code_search` → 两次 `github_read_file` → `terminate`。读取 Issue `#1427`、评论、`/search/code`、`app/tool/mcp.py` 和 `app/tool/base.py`，共五次请求；回答关联该 Issue 与 `MCPClientTool` 实现。
 
-- The eight T013–T020 parameter test modules plus
-  `tests/taskpilot/test_parameter_entry.py`.
-- `tests/taskpilot`.
-- `tests/taskpilot/test_github_tools.py tests/baseline/test_runtime.py
-  tests/tools/test_browser_use_mcp.py`.
-- Repository-wide `--maxfail=1` (with the same `-q --disable-warnings` options).
+## 确定性检查与环境检查
 
-The T013–T021 targeted matrix passed **107/107**, all TaskPilot tests passed
-**120/120**, and the PR-02 local regression passed **26/26**. The
-repository-wide `pytest --maxfail=1` stopped after **9 passed, 1 failed** at
-`tests/sandbox/test_client.py::test_sandbox_creation`: its expected Python
-3.10 did not match the sandbox's Python 3.12.14. No sandbox code was changed.
+T013–T020 覆盖非法 JSON/Schema 零执行、必需字段澄清、pending 回复合并、重校验、恰好一次恢复、仓库上下文来源与复用、Local/MCP 风格 Schema 兼容。T021 增加 CLI 仓库澄清，以及取消、空或非法回复时不执行的测试。冻结 Core MVP 范围见[测试指南](TESTING.md)。
 
-**NOT VERIFIED:** Real MCP connect/discovery/server call/disconnect/reconnect
-and real MCP parameter E2E remain T035/T038. Default provider thinking mode
-and spontaneous model emission of invalid/missing tool arguments were not
-proved. The repository-wide pytest suite is not fully verified because the
-unrelated sandbox test asserts Python 3.10 while this environment runs 3.12.14.
+当时使用 `.venv/bin/python -m pytest -q --disable-warnings` 检查：
+
+- 8 个 T013–T020 参数模块及 `tests/taskpilot/test_parameter_entry.py`。
+- `tests/taskpilot`。
+- `tests/taskpilot/test_github_tools.py tests/baseline/test_runtime.py tests/tools/test_browser_use_mcp.py`。
+- 全仓库 `--maxfail=1`，使用相同的 `-q --disable-warnings` 选项。
+
+T013–T021 定向矩阵 **107/107** 通过，TaskPilot **120/120** 通过，PR-02 本地回归 **26/26** 通过。全仓库测试在 **9 passed、1 failed** 后停止：`tests/sandbox/test_client.py::test_sandbox_creation` 预期 Python 3.10，实际 sandbox 为 3.12.14；未修改 sandbox 代码。
+
+**当时未验证（NOT VERIFIED）：**真实 MCP 连接、发现、Server 调用、断开、重连及参数 E2E 留待 T035/T038；默认 thinking 模式、模型自然产生非法/缺失工具参数尚未证明；无关 sandbox 断言阻塞后，仓库全套测试尚未完整验证。

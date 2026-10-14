@@ -1,131 +1,54 @@
-# T065 — Core final benchmark dataset v1.0.0
+# T065 — Core 最终评测数据集 v1.0.0
 
-> Historical dataset-freeze record. The final three-group results were produced
-> later and are published in the [Core MVP Benchmark](BENCHMARK.md).
+> 本文是历史数据冻结记录。后续三组正式结果见 [Core MVP 评测报告](BENCHMARK.md)。
 
-This is a **frozen dataset and scoring contract**, not a benchmark result. No
-original OpenManus, full-tools, or TaskPilot benchmark run has been performed
-for this holdout. The T029 experiment and T030 evaluation results remain
-routing-stage evidence only.
+本文记录**冻结数据和评分契约**，不是评测结果。在此时点尚未执行本留出集上的原始 OpenManus、全量工具或 TaskPilot 评测；T029/T030 只属于路由阶段证据。
 
-## Artifacts and split
+## 文件与数据划分
 
-- [Holdout](../eval/datasets/core_benchmark_v1_holdout.json): 21 new tasks,
-  `taskpilot_core_final` v1.0.0, `independent_holdout`.
-- [JSON Schema](../eval/datasets/core_benchmark_v1.schema.json): required
-  fields, types, enumerations and one schema for all eight categories.
-- [Source catalog](../eval/datasets/core_benchmark_v1_sources.json): captured
-  2026-10-11 UTC, immutable GitHub commit and file blob IDs, mutable Issue
-  title/body hash and `updated_at`, five Local Tool schema hashes, actual MCP
-  stdio discovery for v1 and v2.
-- [Scoring contract](../eval/datasets/core_benchmark_v1_scoring.json): frozen
-  before runs; its SHA-256 is referenced by the holdout.
-- [Manual label review](T065_BENCHMARK_REVIEW.json): one review decision per
-  sample, performed by the implementing agent; it is not an independent
-  external review.
+- [留出集](../eval/datasets/core_benchmark_v1_holdout.json)：21 条新任务，`taskpilot_core_final` v1.0.0，角色为 `independent_holdout`。
+- [JSON Schema](../eval/datasets/core_benchmark_v1.schema.json)：统一定义八类任务的必需字段、类型和枚举。
+- [来源目录](../eval/datasets/core_benchmark_v1_sources.json)：2026-10-11 UTC 采集，固定 GitHub commit/blob，记录可变 Issue 标题/正文 hash 与 `updated_at`、5 个 Local 工具 Schema hash，以及真实 stdio MCP v1/v2 发现结果。
+- [评分契约](../eval/datasets/core_benchmark_v1_scoring.json)：运行前冻结，留出集引用其 SHA-256。
+- [标注复核](T065_BENCHMARK_REVIEW.json)：逐样本判断由实施 Agent 完成，不是独立外部审阅。
 
-The holdout records the exact SHA-256, version and role of T028's 28
-`routing_v1_experiment` samples (used to choose K) and 12
-`routing_v1_evaluation` samples (used in T030). Those 40 are **provenance**, not
-new holdout samples. The new tasks use `encode/httpx`, `pydantic/pydantic`,
-`Textualize/rich`, and a disposable read-only MCP server. T028 used other
-repositories; exact task prompts and repository IDs do not overlap. Do not
-retune K, rewrite labels, or select cases after seeing results. A change
-requires a new dataset/scoring version and a recorded reason.
+留出集记录此前 T028 的 28 条 `routing_v1_experiment`（用于选择 K）和 12 条 `routing_v1_evaluation`（用于 T030）的 SHA-256、版本与用途。这 40 条只是**来源记录**，不计新留出样本。新任务使用 `encode/httpx`、`pydantic/pydantic`、`Textualize/rich` 及临时只读 MCP Server；T028 使用其他仓库，准确任务提示和仓库 ID 无重叠。不得看过结果后重调 K、重写标签或筛选样本；变更须新增数据/评分版本并说明原因。
 
-| Category | Samples |
+| 类别 | 样本数 |
 | --- | ---: |
-| Repository Understanding | 2 |
-| Issue Investigation | 2 |
-| Issue → Code | 2 |
-| Missing/Invalid Parameters | 4 |
-| Semantic Routing | 2 |
-| Real MCP | 3 |
-| Failure/Timeout/Retry | 4 |
-| Multi-step Investigation | 2 |
+| 仓库理解 | 2 |
+| Issue 调查 | 2 |
+| Issue → 源码 | 2 |
+| 缺失/非法参数 | 4 |
+| 语义路由 | 2 |
+| 真实 MCP | 3 |
+| 失败/超时/重试 | 4 |
+| 多步调查 | 2 |
 
-Each sample states the task, confirmed repository/ref or MCP context, tool
-profile, exact step, acceptable public tool names (possibly multiple),
-critical slot values and their source, expected action/dispatch/attempt/status,
-business evidence, failure conditions and unsupported conditions. A
-`controlled_tool_call` or `controlled_fault` is marked explicitly. These are
-validation and reliability probes, **not** evidence that the model naturally
-omitted a parameter or an external service spontaneously failed. No-match and
-clarification steps have `selection_eligible=false`.
+每条记录任务、确认的仓库/ref 或 MCP 上下文、工具组合、准确步骤、多值可接受公开工具名、关键参数值与来源、预期动作/执行次数/尝试次数/状态、业务证据、失败和不支持条件。`controlled_tool_call` / `controlled_fault` 显式标明；这是校验和可靠性探针，**不证明模型自然漏参或外部服务自然故障**。无匹配和澄清步骤设 `selection_eligible=false`。
 
-## Source stability and tool profiles
+## 来源稳定性与工具组合
 
-GitHub file evidence must be read at the catalog's 40-character commit SHA;
-the recorded blob SHA is checked before scoring. Issue endpoints are mutable
-even when the repository ref is pinned. The captured `updated_at` and body
-SHA-256 define the Issue snapshot. If either drifts, mark the affected sample
-stale/`NOT VERIFIED` and report it; do not silently use the new body or change
-the gold label. A future recapture requires a new version. Code search is a
-discovery call against GitHub's live index, not a pinned content source; final
-code evidence must come from a file read at the pinned commit. Its
-authentication requirement is a preflight capability condition.
+GitHub 文件证据必须读取目录中固定的 40 位 commit SHA，并在评分前核对 blob SHA。即使仓库 ref 固定，Issue 端点仍可变；`updated_at` 与正文 SHA-256 定义快照。发生漂移时标记受影响样本过期/`NOT VERIFIED` 并报告，不静默使用新正文或改标签；重新采集需要新版本。代码搜索是 GitHub 实时索引发现调用，不是固定内容来源，最终代码证据须来自固定提交的文件读取；认证是预检能力条件。
 
-The Local profile is the current five GitHub read tools with their original
-`BaseTool.parameters` schema hashes. The MCP profiles use the actual public
-tool names, original names and `inputSchema` discovered through FastMCP 1.5.0
-stdio, with the fixture source SHA-256 and `TASKPILOT_MCP_VARIANT` v1/v2.
-The fixture is a real disposable server, not a mock response. The nominal
-control tool `terminate` is outside the business tool pool; forced
-clarification runs in the execution layer. Original OpenManus may not support
-all profiles. Predeclare and report that limitation per baseline rather than
-pretending the tools existed.
+Local 组合为当前 5 个 GitHub 读取工具及原始 `BaseTool.parameters` hash。MCP 组合采用 FastMCP 1.5.0 stdio 真实发现的公开名、原名和 `inputSchema`，记录服务源码 SHA-256 与 `TASKPILOT_MCP_VARIANT` v1/v2。测试服务是真实临时进程，不是 Mock 响应。`terminate` 独立于业务工具池，强制澄清发生在执行层。原始 OpenManus 可能不支持所有组合，必须事先声明并逐基线报告，不能假装具备工具。
 
-## Frozen scoring interpretation
+## 冻结评分解释
 
-The JSON scoring contract is authoritative. Candidate recall and final Tool
-Selection Accuracy use supported, attempted `selection_eligible=true`
-`expected_action=tool` **steps** as denominator. A selected tool is correct
-if it matches **any** acceptable label. Wrong or absent selection counts as
-incorrect. Clarification, rejection and no-match do not enter that
-denominator; their safety and task outcomes are assessed separately.
+JSON 评分契约为准。候选召回率与最终工具选择准确率以支持、已尝试、`selection_eligible=true` 且 `expected_action=tool` 的**步骤**为分母。命中任一可接受标签即工具可接受；错误或没有选择为错误。澄清、拒绝、无匹配不进入该分母，其安全和任务结果另评。
 
-Task Success Rate uses supported, attempted **tasks** as denominator,
-including failures and `NOT VERIFIED` as non-success. All specified business
-evidence for the task must be independently verified against actual Tool,
-HTTP, MCP, Trace and cited output. `terminate(success)` is only an Agent
-declaration. Negative tasks succeed only when their expected safe behavior
-and evidence hold. A predeclared unsupported case is excluded from the
-comparable denominator and counted separately; an unattempted case is also
-reported, never silently dropped. Comparison between baselines must show both
-the common supported subset and per-baseline coverage.
+任务成功率以支持且已尝试的**任务**为分母，failure 和 NOT VERIFIED 作为非成功保留。全部指定业务证据必须能与真实 Tool、HTTP、MCP、Trace 和引用回答独立核对，`terminate(success)` 只是 Agent 声明。负向任务仅在预期安全行为和证据满足时成功。事先声明 unsupported 的用例不进入可比分母，单独计数；未尝试项也须报告。比较时展示共同支持子集与各自能力覆盖。
 
-Slot precision/recall/F1 use critical `(name, normalized value)` pairs on
-supported attempted steps. Explicit `missing` slots before reply and
-`invalid` supplied values are excluded from the value-pair gold set; safe
-clarification or rejection and zero dispatch are scored as execution
-conditions. The slot's provenance is checked separately. Query gold labels
-contain identifying terms; case-insensitive matching accepts them in any
-order with additional informative terms, and actual relevance still requires
-source evidence.
-Undefined precision/recall is `NOT_APPLICABLE` with raw TP/FP/FN counts,
-not an invented zero or one.
+参数 precision/recall/F1 使用支持、已尝试步骤的关键 `(name, normalized value)` 对。回复前明确 `missing` 和输入 `invalid` 值不进入值对标准集合；安全澄清/拒绝及零执行按执行条件计。来源另行核对。查询标准包含标识词，忽略大小写、顺序任意、允许有信息量的额外词；相关性仍需要来源证据。无法定义的 precision/recall 为 `NOT_APPLICABLE`，保留 TP/FP/FN，不造零或一。
 
-Only provider-reported input/output/total usage is measured usage. Missing
-fields are `unknown`, and estimates are kept separate. Report each LLM call
-once, including paid failed/retried calls when usage exists. End-to-end
-latency runs from accepted request to terminal status **and cleanup**, using
-a monotonic clock. It includes LLM, embedding, Tool, retry/backoff, failures,
-timeouts, cancellation and human clarification wait. Component timers may
-overlap, so they are not simply summed into an artificial end-to-end total.
+只有 Provider 返回的 input/output/total usage 是实测用量；缺失为 `unknown`，估计单列。每次 LLM 调用只计一次，包括有 usage 的付费失败/重试。端到端时间用单调时钟从受理到终态**及清理**，包括 LLM、Embedding、工具、重试/退避、失败、超时、取消和澄清等待。阶段计时可能重叠，不能简单相加。
 
-## Pre-run checks and limitations
+## 运行前检查与限制
 
-Run the isolated validation before any benchmark:
+评测前的隔离检查命令：
 
 ```bash
 .venv/bin/python -m pytest -q tests/taskpilot/test_final_benchmark_dataset.py
 ```
 
-This validates references/hashes, Local schemas and live stdio discovery;
-it does **not** execute benchmark tasks. At benchmark time, additionally
-record the TaskPilot revision, baseline revision, model/config, K, tool pool,
-timeouts, fixed runner version, real GitHub/MCP responses and every failed
-attempt. If sources or capabilities differ, apply the frozen status rules.
-The controlled 503 case needs a runner capable of injecting only the first
-response, then issuing a real pinned GitHub read. That runner and all three
-formal baseline runs remain **NOT VERIFIED** until later tasks.
+它检查引用/hash、Local Schema 与真实 stdio 发现，**不执行评测任务**。正式运行还须记录 TaskPilot/基线 revision、模型/配置、K、工具池、超时、脚本版本、真实响应及所有失败尝试；来源/能力变化按冻结状态规则处理。受控 503 要求脚本仅注入第一次响应，随后执行真实固定 GitHub 读取。在本文历史时点，该脚本及三组正式运行尚为 **NOT VERIFIED**，留待后续任务。

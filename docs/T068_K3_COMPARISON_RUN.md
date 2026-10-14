@@ -1,162 +1,58 @@
-# T068 — TaskPilot K=3 comparison run
+# T068 — TaskPilot K=3 对照运行
 
-> Historical raw-run record. T069–T071 scoring was completed later; see the
-> [final Benchmark](BENCHMARK.md) for current aggregate results and limits.
+> 本文为历史原始运行记录。T069–T071 后续才完成评分；当前汇总和限制见[正式评测](BENCHMARK.md)。
 
-This is the **raw K=3 execution group** over the unchanged
-[T065 v1.0.0 holdout](../eval/datasets/core_benchmark_v1_holdout.json). It is
-separate from the [original OpenManus T066 baseline](T066_ORIGINAL_OPENMANUS.md)
-and the [same-tool-pool T067 full-tools group](T067_FULL_TOOL_BASELINE.md).
-The [frozen scoring contract](../eval/datasets/core_benchmark_v1_scoring.json)
-was not changed. T069–T071 formal Accuracy, Task Success Rate, slot, token and
-latency comparisons have **not** been calculated.
+这是未改动的 [T065 v1.0.0 留出集](../eval/datasets/core_benchmark_v1_holdout.json)上的 **K=3 原始执行组**，与[原始 OpenManus T066](T066_ORIGINAL_OPENMANUS.md)、[同工具池全量组 T067](T067_FULL_TOOL_BASELINE.md)分开。[冻结评分契约](../eval/datasets/core_benchmark_v1_scoring.json)未改变，当时尚未计算正式准确率、任务成功率、参数、Token 和延迟对照。
 
-## Pinned execution contract
+## 固定执行契约
 
-- Product application tree: `c9c64263f7070141bab3dfb9d7df6a8aa7871bb3`,
-  identical to T067. The T068 checkout HEAD was
-  `d65e303a10375802dcb1b0cfa11bab525177a3a2`; the difference from T067
-  HEAD consists of the already committed T067 evaluator, tests and evidence,
-  not changes to `app/`.
-- Real provider: `deepseek-flash` at `api.deepseek.com`, temperature `0`,
-  `max_tokens=1024`, thinking disabled. Provider revision: **NOT AVAILABLE**.
-  Python 3.12.13, MCP SDK 1.5.0 and HTTPX 0.28.1 match T067's environment.
-- Profiles: the same five GitHub read-only Local Tools or the same five real
-  stdio MCP fixture tools for v1/v2, plus `terminate`. The exact current Tool
-  names and schema hashes match T067 for **21/21 cases**. Each case has its
-  own Agent, LLM client, Memory, Repository Context, ToolCollection and Trace.
-- Budget and execution policy: 8 steps, 180-second Agent deadline, 45-second
-  model request timeout, 20-second GitHub HTTP timeout, 5-second MCP connect
-  and Agent cleanup, 2-second MCP cleanup. `core-017` alone has the frozen
-  50 ms MCP tool deadline. The same task text/hash, confirmed repo/ref,
-  Observation normalization, controlled reply, 503 injection and validation/
-  dispatch boundary as T067 are checked before and after the run.
-- **Only candidate filtering changes:** `routing_top_k=3` and the existing
-  `SemanticToolRetriever`/`InMemoryToolIndex` are enabled for actual model
-  turns. The pinned local embedding backend is
-  `sentence-transformers/paraphrase-MiniLM-L3-v2` at revision
-  `4ca70771034acceecb2e72475f72050fcdde4ddc`, vector version
-  `tool-metadata-json-v1/cosine-v1/mean-pool-128-v1`. One in-memory index and
-  embedding backend are shared sequentially across isolated case Agents; the
-  first natural case includes model load/index build cost. Tool-pool switches
-  invalidate and rebuild the index. Every routing event records its exact
-  metadata fingerprint and model/vector version.
-- Frozen source snapshot was checked before this run: **8/8 Issue**
-  body/update markers and **11/11 pinned file** blob hashes matched T065.
-  Source-check HTTP traffic is separate from case execution traffic.
+- 产品应用树：`c9c64263f7070141bab3dfb9d7df6a8aa7871bb3`，与 T067 相同。T068 HEAD 为 `d65e303a10375802dcb1b0cfa11bab525177a3a2`；与 T067 HEAD 的差异仅是已提交的评测脚本、测试和证据，不含 `app/` 改动。
+- 真实 Provider：`api.deepseek.com` 的 `deepseek-flash`，temperature `0`、`max_tokens=1024`、关闭 thinking；revision 为 **NOT AVAILABLE**。Python 3.12.13、MCP SDK 1.5.0、HTTPX 0.28.1 与 T067 一致。
+- 工具组合：相同的 5 个 GitHub 只读 Local 工具，或 v1/v2 的 5 个真实 stdio 测试工具，加 `terminate`。**21/21** 条名称与 Schema hash 均匹配 T067；每条有独立 Agent、LLM 客户端、Memory、仓库上下文、ToolCollection 和 Trace。
+- 预算：8 步、Agent 180 秒、模型请求 45 秒、GitHub HTTP 20 秒、MCP 连接及 Agent 清理 5 秒、MCP 清理 2 秒；仅 `core-017` 使用冻结的 50 ms 工具截止时间。运行前后核对相同任务文字/hash、仓库/ref、Observation 归一化、受控回复、503 注入与校验/执行边界。
+- **仅改变候选筛选：**真实模型回合启用 `routing_top_k=3` 及已有 `SemanticToolRetriever` / `InMemoryToolIndex`。本地模型为 `sentence-transformers/paraphrase-MiniLM-L3-v2`，revision `4ca70771034acceecb2e72475f72050fcdde4ddc`，向量版本 `tool-metadata-json-v1/cosine-v1/mean-pool-128-v1`。隔离 Agent 按顺序共享一个内存索引和后端，首次自然任务包含加载/建索引成本；工具池切换会重建索引，事件保留准确元数据指纹和模型/向量版本。
+- 运行前来源复核：**8/8 Issue** 正文/更新时间及 **11/11 固定文件** blob hash 匹配 T065；来源核对 HTTP 与任务流量分开。
 
-## Actual 21-case run
+## 实际 21 条运行
 
-All **21/21 holdout cases** were attempted: 12 natural tasks through the real
-provider and nine explicitly controlled parameter/fault cases through the
-actual TaskPilot execution boundary. There were no preflight unsupported
-cases. The [per-sample evidence review](../eval/results/t068_k3_review.json)
-records **18 success and 3 NOT VERIFIED** against the frozen case criteria.
-Expected safe rejection, MCP failure, timeout and GitHub 404 behavior count
-as success only for their corresponding safety cases. This is a disposition
-count, not a formal benchmark rate or a claim of K=3 improvement.
+**21/21** 条均执行，包含 12 条真实 Provider 自然任务及 9 条经实际执行边界的受控参数/故障用例，无预检不支持项。[逐条证据复核](../eval/results/t068_k3_review.json)为 **18 success、3 NOT VERIFIED**。安全拒绝、MCP 失败、超时、GitHub 404 只有在对应安全用例中满足预期才算成功；该计数不是正式评测率或 K=3 优势证明。
 
-All **48/48 actual LLM Tool Calling requests** sent three business schemas
-and `terminate`, and each has a corresponding routing event with candidate
-identities, similarity scores, index version, selected Tool names/call IDs
-and K business/total. The complete ToolCollection remained available to
-validation and dispatch. There were 48 query embeddings and four actual
-index rebuilds as the sequential run moved between GitHub, MCP v1, MCP v2
-and GitHub profiles. Provider usage, every embedding phase and elapsed time,
-Trace, raw failures and cleanup are preserved per case. All 21 Traces
-validated; all 21 resource cleanups completed. The nine controlled cases
-made **no LLM request or semantic retrieval** and are labelled
-`NO_LLM_TOOL_CALL`; their correct execution is not claimed as autonomous
-model selection.
+**48/48 次实际 LLM 工具调用请求**均发送 3 个业务 Schema 和 `terminate`，各有候选身份、相似度、索引版本、选中名称/ID、业务及总 K 的路由事件；校验与执行仍使用完整 ToolCollection。顺序跨 GitHub、MCP v1、MCP v2 再到 GitHub，共 48 次查询 Embedding、4 次索引重建。逐任务保留 Provider usage、Embedding 阶段/耗时、Trace、失败与清理；21 条 Trace 校验通过、21 次清理完成。9 条受控用例**不调用 LLM 或语义检索**，标为 `NO_LLM_TOOL_CALL`，不冒充模型自主选择。
 
-Real GitHub REST, real FastMCP stdio and boundary behavior are visible in the
-[raw run](../eval/results/t068_k3_v1.jsonl):
+[原始运行](../eval/results/t068_k3_v1.jsonl)中的真实行为：
 
-- `core-007`, `008`, `014`: zero Tool/server dispatch before the frozen
-  clarification reply; the existing merge/revalidation path kept the original
-  `tool_call_id` and then dispatched the original call exactly once.
-  `core-009/010` rejected malformed JSON/boolean `issue_number` with zero
-  GitHub requests.
-- `core-013/015`: the model chose a real MCP echo tool from K=3 candidates;
-  each produced one real stdio server dispatch and the expected echo value.
-  `core-016`: actual MCP `isError=true` became failure without retry.
-  `core-017`: the slow server was dispatched once; client timeout was recorded
-  as `unknown`, with bounded cleanup and no claimed remote cancellation.
-- `core-018`: real pinned GitHub 404, one attempt, permanent failure.
-  `core-019`: first 503 was **controlled**, second attempt was a genuine
-  GitHub 200 under the same Tool call. The case HTTP audit contains 49 200,
-  seven 403, one real 404 and one controlled 503; the 403s remain failures.
-- `core-012`: low-similarity business candidates were exposed, but the model
-  chose `terminate` and made no business dispatch or environment disclosure.
-  The existing Top-K implementation has no threshold that rejects every
-  positive-score weak match; this run does not claim such a feature.
+- `core-007/008/014`：冻结回复前零 Tool/Server 执行，已有合并/重校验保留原 `tool_call_id`，之后原调用恰好执行一次。`core-009/010` 拒绝畸形 JSON/布尔型 `issue_number`，零 GitHub 请求。
+- `core-013/015`：模型从 K=3 中选择真实 MCP echo，各一次 Server 执行并返回预期值。`core-016` 的真实 `isError=true` 成为失败，无重试。`core-017` 慢 Server 执行一次，客户端超时记 `unknown`，有界清理，不声称远端取消。
+- `core-018`：真实固定 GitHub 404，一次尝试、永久失败。`core-019`：首个 503 为**受控**，第二次是同调用下真实 GitHub 200。HTTP 审计共 49 次 200、7 次 403、1 次真实 404、1 次受控 503；403 保留为失败。
+- `core-012`：虽暴露低相似度业务候选，模型选择 `terminate`，无业务执行或环境披露。现有 Top-K 不含拒绝全部正分弱匹配的阈值，不能声称具备此功能。
 
-The retained non-success rows are `core-005`, `core-006` and `core-020`.
-`core-005` exhausted eight steps: `rich/cells.py` was truncated before the
-relevant loop and Code Search returned 403. `core-006` fetched its Issue but
-three Code Search calls returned 403 and no pinned validator file was read.
-`core-020` read the real Issue and pinned `rich/ansi.py`; its final answer
-explained the parsing path but omitted a full pinned code URL and referred to
-Issue comments without direct comment citations, so the frozen answer-citation
-criterion remains NOT VERIFIED. `core-011` reached the step cap and had one
-failed `terminate` attempt before a second terminate; its scored routing
-events and cited pinned code/test evidence are retained, so the case evidence
-review still marks it successful. Extra Tool calls, 403s, and failed attempts
-were not removed to favor K=3.
+保留的非成功为 `core-005/006/020`：`005` 在 `rich/cells.py` 被截断于关键循环之前、Code Search 403 后耗尽八步；`006` 获取 Issue，但三次 Code Search 403，未读取固定 validator 文件；`020` 读取真实 Issue 和固定 `rich/ansi.py`，最终解释解析路径，但缺完整固定代码 URL，且引用评论无直接评论链接，因此冻结引用要求为 NOT VERIFIED。
 
-## Three-group integrity and reproduction
+`core-011` 达到步数上限，第一次 `terminate` 失败后再次终止；仍保留有分数的路由事件及固定源码/测试引用，故原始证据复核记成功。额外调用、403 与失败尝试未为美化 K=3 而删除。
 
-- [T066 original OpenManus raw 21 rows](../eval/results/t066_original_openmanus_v1.jsonl)
-  and [its review](../eval/results/t066_original_openmanus_review.json):
-  12 supported attempts, nine unsupported, different upstream Tool pool.
-- [T067 full-tools raw manifest + 21 rows](../eval/results/t067_full_tools_v1.jsonl)
-  and [its review](../eval/results/t067_full_tools_review.json):
-  same TaskPilot application tree/profile/budget, semantic filter disabled.
-- [T068 K=3 raw manifest + 21 rows](../eval/results/t068_k3_v1.jsonl),
-  [five-case real preflight](../eval/results/t068_k3_preflight.jsonl),
-  [per-sample review](../eval/results/t068_k3_review.json),
-  [runner](../eval/t068_k3_baseline.py), and
-  [integrity tests](../tests/taskpilot/test_t068_k3_baseline.py).
+## 三组完整性与复现
 
-All three groups contain the same 21 frozen sample IDs. T067/T068 use the
-same application tree, environment, model/sampling settings, Tool profiles,
-task hashes, contexts, controlled injection inputs, normalization and
-budgets; only the semantic candidate filter and its embedding/index cost
-differ. T066 is an original-upstream product baseline with a different Tool
-pool and budget and must not be interpreted as a Top-K causal comparison.
-The T068 manifest pins its runner hash, T067 manifest hash, source/fixture
-hashes, model/vector version and observed environment. Every case row retains
-actual tool calls, routing events, provider usage, embedding attempts,
-elapsed time, Trace and cleanup. The raw JSONL was written incrementally;
-failed and NOT VERIFIED cases were not discarded.
+- [T066 原始 21 行](../eval/results/t066_original_openmanus_v1.jsonl)及[复核](../eval/results/t066_original_openmanus_review.json)：12 条支持并尝试，9 条不支持，工具池不同。
+- [T067 manifest 与 21 行](../eval/results/t067_full_tools_v1.jsonl)及[复核](../eval/results/t067_full_tools_review.json)：相同 TaskPilot 应用树/工具组合/预算，关闭语义筛选。
+- [T068 manifest 与 21 行](../eval/results/t068_k3_v1.jsonl)、[五条真实预检](../eval/results/t068_k3_preflight.jsonl)、[逐条复核](../eval/results/t068_k3_review.json)、[脚本](../eval/t068_k3_baseline.py)及[完整性测试](../tests/taskpilot/test_t068_k3_baseline.py)。
 
-To run an independent repetition from a configured checkout, with valid
-provider credentials supplied only through the existing secret mechanism:
+三组均含相同 21 个冻结 ID。T067/T068 的应用树、环境、模型/采样、工具组合、任务 hash、上下文、受控输入、归一化和预算一致，仅语义筛选及 Embedding/索引成本不同。T066 工具池和预算不同，是原始上游产品基线，不能当作 Top-K 因果对照。
+
+T068 manifest 固定脚本 hash、T067 manifest hash、来源/服务 hash、模型/向量版本及实测环境。逐行保留调用、路由、usage、Embedding 尝试、耗时、Trace 和清理；JSONL 增量写入，失败及 NOT VERIFIED 不丢弃。
+
+独立复跑需配置好的检出环境，通过现有凭据机制提供有效配置，并使用新路径：
 
 ```bash
 .venv/bin/python -m eval.t068_k3_baseline \
   --output /path/to/new/t068_k3.jsonl
 ```
 
-The runner creates output exclusively, validates the unchanged T065 and
-T067 contracts, rechecks live GitHub source markers, and rejects a changed
-Tool schema, model setting, application tree, budget or execution environment
-before recording cases. Use a new output path for every repetition.
+脚本排他创建文件，检查未改变的 T065/T067 契约和真实 GitHub 来源标记；工具 Schema、模型、应用树、预算或环境变化时，在记录任务前拒绝执行。
 
-## Remaining limits
+## 剩余限制
 
-- Only one complete 21-case K=3 run was performed, plus a five-case preflight.
-  Statistical repeatability and the provider's unreported model revision are
-  **NOT VERIFIED**. GitHub Code Search rate limits changed between T067 and
-  T068; raw HTTP statuses show the resulting environmental difference.
-- `core-005`, `006` and `020` are **NOT VERIFIED** as described above. Do not
-  convert Agent finish declarations into verified business success.
-- Natural model omission and a live human clarification wait remain
-  **NOT VERIFIED** by the controlled boundary cases. The real Tool execution
-  and clarification merge/revalidation paths were exercised.
-- The T068 index is in memory and shared only within this sequential run;
-  other scheduling/order patterns and embedding cold-download behavior were
-  not benchmarked here. No K choice was retuned after viewing Holdout results.
-- T066 differs in original Tool capability and budget. Common-subset scoring
-  and formal Accuracy/Success/Token/Latency comparison are reserved for
-  T069–T071, not inferred from these raw disposition counts.
+- 仅一次完整 21 条 K=3 运行与五条预检；统计可重复性和未报告的 Provider revision 为 **NOT VERIFIED**。T067/T068 之间 Code Search 限流变化，原始 HTTP 状态保留其影响。
+- `core-005/006/020` 为 **NOT VERIFIED**，Agent 完成声明不能转换成业务成功。
+- 受控边界用例不能证明模型自然漏参或真人等待；真实工具和澄清合并/重校验路径已执行。
+- 内存索引仅在本次顺序运行内共享，未评测其他调度/顺序及 Embedding 冷下载；查看 Holdout 结果后未重调 K。
+- T066 能力和预算不同；公共子集评分及正式准确率/成功率/成本对照留待 T069–T071，不能从原始处置计数推断。

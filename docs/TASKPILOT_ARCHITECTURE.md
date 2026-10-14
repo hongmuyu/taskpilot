@@ -34,7 +34,7 @@ flowchart TD
 - `BaseTool.metadata` 是现有 `name`、`description`、`parameters` 的实时视图，并附 `capabilities`、`examples`、`source` 与未启用的 risk 占位信息；没有第二套 Tool schema 或 Registry。Local 身份为 `local:<name>`；MCP 保留 server ID 与原始工具名，即使公开给模型的名称经过清洗。
 - `ToolCollection` 是完整执行集合。Top-K 只改变**当前回合发送给 LLM 的 schema 列表**，不修改 Registry、工具权限或 dispatch 目标。多个模型 tool calls 按当前 `act()` 实现逐个处理，各自保留原 call ID 与 pending 状态。
 
-## Semantic routing 与模型决策
+## 语义路由与模型决策
 
 [`SemanticToolRetriever`](../app/taskpilot/semantic_tool_retrieval.py)以原始用户任务为锚，附加任务开始后最近一个有内容的 Tool Observation；不会只拿 `next_step_prompt` 查询。[`InMemoryToolIndex`](../app/taskpilot/tool_embedding_index.py)以实时 Tool Metadata 建索引，使用固定 `sentence-transformers/paraphrase-MiniLM-L3-v2` revision `4ca70771034acceecb2e72475f72050fcdde4ddc` 的 CPU 向量。工具增删、metadata/schema 变化会使索引重建；索引不持久化，也不依赖向量服务。
 

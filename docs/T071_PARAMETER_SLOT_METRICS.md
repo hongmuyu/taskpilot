@@ -1,133 +1,45 @@
-# T071 — Parameter / Slot metrics
+# T071 — 参数与 Slot 指标
 
-This report recomputes only parameter metrics from the frozen Core holdout
-v1.0.0 and the committed T066–T068 runs. It does not rerun a model or change
-T069/T070. Reproduce with:
+本文只从冻结 Core Holdout v1.0.0 和已提交的 T066–T068 记录复算参数指标，不重新调用模型，不改变 T069/T070。复现命令：
 
 ```bash
 .venv/bin/python -m eval.t071_slot_metrics --check
 .venv/bin/python -m pytest -q tests/taskpilot/test_t071_slot_metrics.py
 ```
 
-The [scorer](../eval/t071_slot_metrics.py) checks the frozen dataset and
-scoring hashes, the three 21-row source groups, selected upstream MCP retest
-pointers, and unique sample IDs. The [result](../eval/results/t071_slot_metrics_v1.json)
-contains every gold step, its critical slot value and declared source, the
-observed critical arguments (including rejected input) and channel, TP/FP/FN, and a raw file/sample/turn
-reference. Selected source file hashes are included. An Assistant finish status
-does not enter these metrics.
+[评分脚本](../eval/t071_slot_metrics.py)校验冻结数据/规则 hash、三组各 21 行来源、选定的上游 MCP 复测指针和唯一 ID。[结果](../eval/results/t071_slot_metrics_v1.json)包含每个标准步骤、关键参数与声明来源、实际关键参数（含被拒输入）及通道、TP/FP/FN、原始文件/样本/回合引用和来源 hash。Assistant 完成状态不进入指标。
 
-## Scoring contract
+## 评分契约
 
-- The unit is a distinct critical `(field, normalized value)` pair on a
-  supported, typed, attempted `tool` step. A matching pair is TP; an emitted
-  pair absent from the frozen gold is FP; an unmatched gold pair is FN. A wrong
-  value for a gold field is both FP and FN. Parallel calls may provide a gold
-  field once; two queries satisfying the frozen identifier-term rule do not
-  create a false FP merely because their extra terms differ.
-- `repository` is compared case-insensitively; pinned `ref`, repository path
-  and MCP text are exact; an integer cannot be a Python `bool`. A search query
-  must contain all frozen identifier terms, in any order, and may contain
-  informative extra terms. No schema validity or Tool success substitutes for
-  this comparison.
-- Precision is TP/(TP+FP), recall TP/(TP+FN), and F1 is their harmonic mean.
-  A zero denominator produces `null` (`NOT APPLICABLE`), with raw counts kept.
-  `clarify`, `reject`, and `no_match` steps do not enter value-pair denominators;
-  missing values become eligible after the frozen scripted reply. The
-  zero-gold `core-016` Tool step has no value-pair denominator.
-- `natural_resolved` includes explicit model arguments plus `owner/repo/ref`
-  already bound to the Tool from confirmed Repository Context. This measures
-  parameters available at the execution boundary, including context reuse.
-  `natural_model_explicit` restricts its gold denominator to `task` and
-  `observation` fields and counts only model-emitted arguments. These two
-  results must not be conflated. Confirmed Context values are **available to**
-  the Tool; this is not a claim that every GitHub endpoint uses `ref` in HTTP.
-- `controlled_resolved` counts the nine zero-LLM TaskPilot cases separately.
-  In particular, `core-007/008/014` use frozen scripted replies, not model
-  extraction or unscripted human answers. The result records the matched
-  channels: `confirmed_context`, `model_tool_call`, `controlled_injection`, or
-  `scripted_user_reply`. A value match does not reveal the model's cognitive
-  source; channel provenance is the auditable claim.
+- 计量单位是支持、具类型、已尝试 `tool` 步骤中的去重关键 `(field, normalized value)` 对。匹配为 TP，输出但不在冻结标准中为 FP，标准值未匹配为 FN；标准字段值错误同时产生 FP 与 FN。并行调用可贡献一次标准字段；两条查询都满足冻结标识词规则时，不因额外词不同制造 FP。
+- `repository` 忽略大小写；固定 `ref`、路径和 MCP 文本精确匹配；整数不能是 Python `bool`。查询必须包含全部冻结标识词，顺序任意，可加有信息量的词。Schema 合法或工具成功不能替代值比较。
+- Precision=TP/(TP+FP)，Recall=TP/(TP+FN)，F1 为二者调和平均。零分母记 `null`（NOT APPLICABLE）并保留原计数。`clarify/reject/no_match` 不进入值对分母；缺值在冻结脚本回复后才可评分。零标准字段的 `core-016` 无值对分母。
+- `natural_resolved` 包含模型显式参数及已确认仓库上下文绑定的 `owner/repo/ref`，衡量执行边界可用参数，包含上下文复用。`natural_model_explicit` 只以 `task/observation` 字段为标准分母，仅计模型输出。两者不可混淆。上下文值对工具可用，不代表所有 GitHub HTTP 端点都使用 `ref`。
+- `controlled_resolved` 单列 9 条零 LLM TaskPilot 用例；`core-007/008/014` 为冻结脚本回复，不是模型抽取或真人自由回复。通道包括 `confirmed_context`、`model_tool_call`、`controlled_injection`、`scripted_user_reply`。匹配值不能揭示模型认知来源，可审计的是通道来源。
 
-## Results and denominators
+## 结果与分母
 
-**Original OpenManus:** 21 rows, 12 supported and 9 unsupported. Nine supported
-GitHub investigations used unstructured `python_execute` code, which has no
-comparable typed critical-slot interface; one supported MCP failure has zero
-gold fields. Its **two typed MCP natural steps** have TP=3, FP=0, FN=0,
-Precision=1.000, Recall=1.000, F1=1.000. This narrow subset must not be used
-as an overall comparison with TaskPilot's GitHub plus MCP pool. Missing-field,
-clarification and parameter-error denominators are zero / NOT APPLICABLE.
+**原始 OpenManus：**21 行，12 supported、9 unsupported。9 条 GitHub 调查使用无结构 `python_execute`，没有可比的强类型关键参数接口；1 条 MCP 失败没有标准值字段。仅 **2 个自然 MCP 类型化步骤**贡献 TP/FP/FN=**3/0/0**，Precision/Recall/F1=**1.000/1.000/1.000**。不能把该窄子集与 TaskPilot 的 GitHub+MCP 整体比较；缺参、澄清及参数错误分母为零/NOT APPLICABLE。
 
-**TaskPilot Full-tools:** 12 natural tasks, 9 controlled zero-LLM tasks, no
-unsupported rows. Natural resolved: **16 steps**, TP=41, FP=10, FN=4;
-Precision=0.804, Recall=0.911, F1=0.854. Natural model-explicit extraction:
-17 task/Observation gold fields, TP=13, FP=10, FN=4; Precision=0.565,
-Recall=0.765, F1=0.650. Controlled resolved: **6 value-bearing steps**,
-TP=14, FP=0, FN=0. All typed resolved combined: TP=55, FP=10, FN=4;
-Precision=0.846, Recall=0.932, F1=0.887. The combined figure includes
-scripted control and is **not** an autonomous model result.
+**TaskPilot 全量工具：**12 自然任务、9 零 LLM 受控任务，无 unsupported。自然解析后 **16 步**，TP/FP/FN=**41/10/4**，P/R/F1=**0.804/0.911/0.854**。模型显式抽取以 17 个任务/Observation 标准字段计，**13/10/4**，P/R/F1=**0.565/0.765/0.650**。受控解析后 **6 个含值步骤**为 **14/0/0**。全部类型化解析值合计 **55/10/4**，P/R/F1=**0.846/0.932/0.887**；合计包含脚本控制，**不是模型自主结果**。
 
-**TaskPilot K=3:** same 12 natural and 9 controlled tasks. Natural resolved:
-**16 steps**, TP=40, FP=12, FN=5; Precision=0.769, Recall=0.889,
-F1=0.825. Natural model-explicit extraction: 17 task/Observation gold fields,
-TP=12, FP=12, FN=5; Precision=0.500, Recall=0.706, F1=0.585.
-Controlled resolved: **6 value-bearing steps**, TP=14, FP=0, FN=0.
-All typed resolved: TP=54, FP=12, FN=5; Precision=0.818, Recall=0.915,
-F1=0.864. K=3 is lower than Full-tools on these single-run slot metrics;
-no overall improvement or statistical significance follows from 21 tasks.
+**TaskPilot K=3：**同样 12 自然、9 受控。自然解析后 **16 步**为 **40/12/5**，P/R/F1=**0.769/0.889/0.825**。模型显式的 17 个字段为 **12/12/5**，P/R/F1=**0.500/0.706/0.585**。受控 **6 个含值步骤**为 **14/0/0**。全部类型化解析值为 **54/12/5**，P/R/F1=**0.818/0.915/0.864**。这次参数指标 K=3 低于全量组，21 条单次任务不能证明总体改善或显著性。
 
-Critical-field accuracy (matched gold fields / gold fields) is 3/3 for the
-typed upstream subset; Full-tools natural resolved **41/45**, model-explicit
-**13/17**, controlled **14/14**; K=3 natural resolved **40/45**,
-model-explicit **12/17**, controlled **14/14**. Strict step accuracy requiring
-all gold fields and no extra critical pair is 2/2 upstream typed,
-9/16 Full-tools natural and 7/16 K=3 natural. The full per-step values are in
-the result JSON rather than omitted from the aggregate.
+关键字段准确率（匹配标准字段/标准字段）：上游类型化子集 **3/3**；全量自然解析后 **41/45**、模型显式 **13/17**、受控 **14/14**；K=3 自然解析后 **40/45**、模型显式 **12/17**、受控 **14/14**。要求全标准字段且无额外关键值对的严格步骤准确率为：上游 **2/2**，全量自然 **9/16**，K=3 自然 **7/16**。逐步值完整保留在 JSON。
 
-## Missing fields, clarification, errors, and guesses
+## 缺参、澄清、错误与猜测
 
-For each TaskPilot group, `core-007/008/014` detects **3/3** frozen missing
-fields with no extra field and **3/3** zero dispatch before reply. All **3/3**
-scripted replies merge, revalidate and produce exactly one Tool execution with
-the original `tool_call_id` preserved. `core-009` malformed JSON and
-`core-010` boolean-as-integer are recognized as the expected parameter-error
-type **2/2**, each with zero Tool dispatch. Original OpenManus did not support
-these five controlled boundary cases, so no zero score is imputed.
+各 TaskPilot 组的 `core-007/008/014` 均检测 **3/3** 冻结缺失字段，无额外字段，回复前 **3/3** 零执行；**3/3** 脚本回复合并、重校验并按原 `tool_call_id` 恰好执行一次。`core-009` 畸形 JSON、`core-010` 以 bool 冒充整数均识别为预期错误，**2/2**，均零执行。上游不支持这五条受控边界用例，不补造零分。
 
-There are **0 confirmed wrong values on a frozen gold field** in either
-TaskPilot natural group or its controlled group. Full-tools has 10 and K=3 has
-12 FP pairs on natural steps, primarily extra search queries or a tool for a
-later step (for example `core-006/020/021`). An extra pair is a scoring FP,
-but its lack of a *basis* cannot be proven solely by absence from this step's
-gold: some terms appear in the task or live Observation. Accordingly the
-confirmed unsupported-value count is zero and a broader unsupported-guess
-count is **NOT VERIFIED**, rather than claiming all FP pairs were guesses.
+两组自然及受控数据均观察到 **0 个已确认标准字段错误值**。自然步骤全量有 10 个、K=3 有 12 个 FP，主要是额外查询或后续步骤工具（例如 `core-006/020/021`）。额外值对是评分 FP，但不能仅因它不在当前步骤标准中就认定没有依据；部分词来自任务或真实 Observation。因此已确认无依据值计数为零，更广泛的无依据猜测数量为 **NOT VERIFIED**，不把全部 FP 称为猜测。
 
-## Manual audit and limits
+## 人工抽查与限制
 
-- `core-001/003` compare task path/issue number and confirmed repo/ref against
-  actual call arguments plus the recorded context. `core-013/015` compare MCP
-  text/suffix in the selected upstream retest and both TaskPilot runs.
-- `core-007/008/014` inspect `run.pending_missing_fields`, scripted reply
-  source, validation pending→success, clarification requested→merged, one Tool
-  execution, and the original Tool message ID. `core-009/010` inspect raw
-  injected input and validation failure with no execution.
-- `core-005/006/020/021` retain missed path/query fields and extra calls as
-  FP/FN even when other parts of the investigation succeeded. Failure and
-  NOT VERIFIED task outcomes were not removed from applicable slot steps.
-- The holdout has **no natural multi-round parameter correction** and no
-  unscripted human reply. A deterministic wrong→correct value scorer test is
-  not evidence of a real correction run. Both are **NOT VERIFIED**. A model's
-  precise use of task versus Observation text is likewise unobservable from
-  matching values alone.
+- `core-001/003` 对比任务路径/Issue 编号、已确认仓库/ref 与实际参数/上下文；`core-013/015` 对比选定上游复测与两组 MCP 的 text/suffix。
+- `core-007/008/014` 检查 `run.pending_missing_fields`、脚本回复来源、validation pending→success、clarification requested→merged、一次执行及原 Tool 消息 ID；`core-009/010` 检查注入原输入与零执行的校验失败。
+- `core-005/006/020/021` 即使部分调查成功，遗漏路径/查询与额外调用仍记 FP/FN；失败或 NOT VERIFIED 任务不从可评分步骤剔除。
+- 留出集**没有自然多轮参数修正**、没有真人自由回复。确定性 wrong→correct 评分测试不是真实修正运行证据，两者均为 **NOT VERIFIED**。仅凭值匹配也无法观察模型具体使用任务还是 Observation。
 
-## Regression-count reconciliation
+## 回归数量核对
 
-The T070 commit added nine tests and removed none. Before T071, a fresh
-`tests/taskpilot` collection returned **359** tests; adding T071's eight tests
-raises it to **367**. The earlier reported **363** and **359 passed** used
-commands not retained in the frozen benchmark evidence, so the exact four-test
-selection difference cannot be reconstructed as a historical fact. Current
-verification explicitly runs the entire TaskPilot suite plus baseline and
-Browser MCP tests; no T070 test was deleted or excluded by T071.
+T070 提交新增 9 个测试、未删除测试。T071 前重新收集 `tests/taskpilot` 得 **359** 项，增加 T071 的 8 项后为 **367**。更早的 **363** 与 **359 passed** 未将所用命令保存在冻结证据中，无法重建四项差异为历史事实。后续验证明确使用完整 TaskPilot 加 baseline/Browser MCP 范围；T071 未删除或排除 T070 测试。

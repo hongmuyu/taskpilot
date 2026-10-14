@@ -1,85 +1,33 @@
-# T066 — original OpenManus baseline
+# T066 — 原始 OpenManus 基线
 
-This is a **raw product baseline**, not the T069–T071 scored comparison. The
-frozen [T065 holdout](../eval/datasets/core_benchmark_v1_holdout.json) and
-[scoring contract](../eval/datasets/core_benchmark_v1_scoring.json) were not
-changed. All 21 samples have an entry in the
-[per-sample review](../eval/results/t066_original_openmanus_review.json).
+这是**原始产品运行基线**，不是 T069–T071 的正式评分对照。[T065 冻结集](../eval/datasets/core_benchmark_v1_holdout.json)和[评分契约](../eval/datasets/core_benchmark_v1_scoring.json)未改变；[逐样本复核](../eval/results/t066_original_openmanus_review.json)包含全部 21 条任务。
 
-## Pinned environment and inputs
+## 固定环境与输入
 
-- Upstream checkout: detached, unmodified
-  `3309bf4e416fb1c74b008f3e86494439a31bad53` in an independent worktree.
-  The runner rejects another HEAD or tracked changes.
-- Runtime: Linux Docker, `taskpilot-service:pr08c-nocache` dependency image,
-  Python 3.12.14, MCP SDK 1.5.0, OpenAI SDK 1.66.5; the entire upstream source tree is bind-mounted read-only
-  over `/srv/taskpilot`. The image provides locked dependencies, **not**
-  TaskPilot Agent or Tool code. Original OpenManus default Manus assembly is
-  `ask_human`, `python_execute`, `str_replace_editor`, `terminate`. A read-only
-  FastMCP stdio fixture is attached for the MCP cases using upstream
-  `Manus.connect_mcp_server`; then five `mcp_fixture_*` tools appear. There are
-  no TaskPilot GitHub Tools, semantic routing, validator, or reliability
-  wrapper in the execution path.
-- Model: the existing `deepseek-flash` configuration, `temperature=0`,
-  `max_tokens=1024`, non-thinking request mode. The provider's model revision
-  was not reported. A local one-use proxy injects the real key into provider
-  requests; the container receives only a disposable proxy token. Raw
-  requests/responses and keys are not saved. Provider-reported usage and HTTP
-  status are saved for every request.
-- Budget: one fresh Agent and container per sample, `max_steps=6`, 90-second
-  Agent budget, 120-second container budget; same frozen task and confirmed
-  repository/ref context in each prompt. One common instruction prohibits
-  writes and credential inspection. Container root and upstream mount are
-  read-only; capabilities are dropped; only bounded `/tmp` and logs tmpfs are
-  writable. Browser Use is disabled because its separate key is unavailable.
-  The host's existing `tiktoken` cache is mounted read-only to avoid a cold
-  download during import. The Python tool itself has an upstream five-second
-  limit, which explains several observed timeouts.
-- T065 source snapshot was checked after the runs: 8/8 Issue body and update
-  markers, 11/11 pinned file blob hashes still matched. The actual runtime's
-  GitHub reads did not use TaskPilot's authenticated GitHub adapter.
+- 上游源码：独立 worktree、detached HEAD、未修改的 `3309bf4e416fb1c74b008f3e86494439a31bad53`；执行脚本拒绝其他 HEAD 或已跟踪文件改动。
+- 运行环境：Linux Docker、`taskpilot-service:pr08c-nocache` 依赖镜像、Python 3.12.14、MCP SDK 1.5.0、OpenAI SDK 1.66.5。完整上游源码只读挂载到 `/srv/taskpilot`；镜像只提供锁定依赖，**不提供 TaskPilot Agent/Tool 代码**。原始 Manus 默认装配 `ask_human`、`python_execute`、`str_replace_editor`、`terminate`。MCP 用例通过上游 `Manus.connect_mcp_server` 接入真实只读 FastMCP stdio 测试服务，随后出现 5 个 `mcp_fixture_*` 工具。执行路径无 TaskPilot GitHub 工具、语义路由、校验器或可靠性封装。
+- 模型：已有 `deepseek-flash` 配置，`temperature=0`、`max_tokens=1024`、关闭 thinking；提供方未报告 revision。一次性本地代理向 Provider 请求注入真实密钥，容器只收到一次性代理 Token；不保存原始请求/响应或密钥，每次请求保留 Provider usage 和 HTTP 状态。
+- 预算：每样本新 Agent 和容器，`max_steps=6`、Agent 90 秒、容器 120 秒。提示使用相同冻结任务与已确认仓库/ref，并统一禁止写入和查看凭据。容器根目录与源码挂载只读，移除 capabilities，仅有受限 `/tmp` 与日志 tmpfs 可写。因无独立密钥，禁用 Browser Use；已有 `tiktoken` 缓存只读挂载以避免导入时冷下载。上游 Python 工具有 5 秒限制，解释了部分超时。
+- 运行后核对 T065 来源：8/8 Issue 正文与更新时间、11/11 固定文件 blob hash 仍匹配。基线实际 GitHub 读取没有使用 TaskPilot 的认证适配器。
 
-## Run and review
+## 运行与复核
 
-The first run contains all 21 rows: 12 preflight supported, 9 unsupported.
-Nine supported GitHub cases ran through the real provider; three MCP cases
-initially failed during fixture attachment. The first MCP retest failed because
-the worker redirected stdio into an object without a file descriptor. Both
-setup failures are preserved. After redirecting to `/dev/null`, the final MCP
-retest ran all three via the real provider and real stdio transport.
+首次运行保留 21 行：12 条预检支持、9 条不支持。9 条 GitHub 任务调用真实 Provider；3 条 MCP 任务最初在接入测试服务时失败。首次 MCP 复测因 worker 将 stdio 重定向到没有文件描述符的对象而失败；两轮初始化失败均保留。改为重定向 `/dev/null` 后，最终 MCP 复测通过真实 Provider 与 stdio 执行全部三条。
 
-The reviewed outcome is **4 supported success, 8 supported failure, 9
-unsupported**. This is a count of case dispositions, not a final benchmark
-metric. Successful cases are `core-001` (pinned README), `core-003` (Issue
-#895), `core-013` (v1 MCP echo), and `core-015` (v2 MCP echo). `core-002`,
-`004`–`006`, `018`, `020`, and `021` ended without required business evidence;
-most exhausted the six-step budget. `core-016` reached the fixture once and
-the server returned `isError=true`, but upstream `MCPClientTool` converted
-that to an output string without failure status. The Agent then called
-`terminate(success)`. The frozen failure criterion requires status and
-Observation evidence, so this case is a failure despite the final prose
-acknowledging the controlled error. An independent real MCP SDK check also
-observed `isError=true` and one server dispatch.
+复核计数为 **4 条 supported success、8 条 supported failure、9 条 unsupported**，这是处置结果数，不是最终评测指标。成功任务为 `core-001`（固定 README）、`core-003`（Issue #895）、`core-013`（v1 MCP echo）、`core-015`（v2 MCP echo）。`core-002`、`004`–`006`、`018`、`020`、`021` 缺少要求的业务证据，多数耗尽六步预算。
 
-Unsupported cases are `core-007`–`012`, `014`, `017`, `019`. Each has an
-individual capability or safety reason in the review. In particular,
-`core-012` could expose process environment through original Python execution
-and was intentionally not dispatched. Unsupported rows have zero provider and
-tool calls. No GitHub tool was secretly added to make these cases run.
+`core-016` 调用测试服务一次，Server 返回 `isError=true`，但上游 `MCPClientTool` 转成无失败状态的输出字符串，Agent 随后 `terminate(success)`。冻结失败标准要求状态与 Observation 证据，因此即使最终文字提到受控错误仍记失败。独立真实 MCP SDK 检查也观察到 `isError=true` 和一次 Server 执行。
 
-Raw evidence, including failed attempts, per-request provider usage and HTTP
-status, tool-call IDs/arguments, truncated observations, MCP server audit,
-elapsed time, environment, and cleanup:
+不支持项为 `core-007`–`012`、`014`、`017`、`019`，复核逐条记录能力/安全原因。其中 `core-012` 可能经原始 Python 执行暴露进程环境，因此有意不执行。不支持行均为零 Provider/Tool 调用；没有为使其运行而额外装配 GitHub 工具。
 
-- [Initial 21 rows](../eval/results/t066_original_openmanus_v1.jsonl)
-- [First MCP retest, setup failures](../eval/results/t066_original_openmanus_mcp_retest.jsonl)
-- [Final MCP retest](../eval/results/t066_original_openmanus_mcp_retest_2.jsonl)
-- [Reviewed case index](../eval/results/t066_original_openmanus_review.json)
+原始证据包含失败尝试、逐请求 usage/HTTP 状态、调用 ID/参数、截断 Observation、MCP Server 审计、耗时、环境和清理：
 
-To reproduce, check out the pinned upstream commit independently, create empty
-`config/config.toml` and `config/mcp.json` mountpoints and `logs/` there,
-prepare the pinned Docker dependency image and a local ignored provider
-config, then run:
+- [首次 21 行记录](../eval/results/t066_original_openmanus_v1.jsonl)
+- [首次 MCP 复测及初始化失败](../eval/results/t066_original_openmanus_mcp_retest.jsonl)
+- [最终 MCP 复测](../eval/results/t066_original_openmanus_mcp_retest_2.jsonl)
+- [逐样本复核索引](../eval/results/t066_original_openmanus_review.json)
+
+复现时独立检出固定上游提交，在其中创建空的 `config/config.toml`、`config/mcp.json` 挂载点及 `logs/`，准备固定依赖镜像与被 Git 忽略的本地 Provider 配置，然后运行：
 
 ```bash
 .venv/bin/python -m eval.t066_original_openmanus \
@@ -90,21 +38,12 @@ config, then run:
 .venv/bin/python -m eval.t066_review_results
 ```
 
-The runner creates output exclusively; a rerun needs a new path. The raw
-files listed above are the actual first run and two MCP retests, not
-postprocessed simulated results. The review script only indexes those rows and
-records a separate human evidence judgment. It does not calculate final Tool
-Selection Accuracy, Task Success Rate, slot scores, or comparative costs.
+路径占位符需替换为实际位置；脚本以排他方式创建输出，复跑需新路径。上述文件是真实首跑与两次复测，不是模拟结果。复核脚本只索引记录并保存独立的人工证据判断，不计算最终工具选择、任务成功、参数或成本指标。
 
-## Remaining limits
+## 剩余限制
 
-- Provider model revision: **NOT VERIFIED** (not exposed in these responses).
-- Original OpenManus with a pristine upstream dependency image rather than the
-  pinned TaskPilot dependency image: **NOT VERIFIED**. The mounted source and
-  original Agent/Tool assembly are pinned and verified.
-- A fully clean `tiktoken` cache download in this restricted network:
-  **NOT VERIFIED**; the existing tokenizer cache was mounted read-only.
-- Original baseline's GitHub error/status handling for cases that never
-  reached the intended endpoint, including the intended 404: **NOT VERIFIED**.
-- Browser Use and unsafe environment-disclosure actions were not enabled.
-  They do not count as successful or attempted tasks.
+- Provider 模型 revision：**NOT VERIFIED**，响应未提供。
+- 使用纯上游依赖镜像而非 TaskPilot 固定依赖镜像：**NOT VERIFIED**；源码与原始 Agent/Tool 装配已固定核对。
+- 在受限网络中从空缓存下载 `tiktoken`：**NOT VERIFIED**；实际挂载已有缓存。
+- 未到达目标端点的 GitHub 错误/状态处理，包括预期 404：**NOT VERIFIED**。
+- Browser Use 与不安全的环境披露操作未启用，不计为成功或已尝试任务。

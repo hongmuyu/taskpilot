@@ -1,4 +1,4 @@
-# T070 — frozen Holdout Token Usage and Latency
+# T070 — 冻结留出集的 Token 用量与延迟
 
 本报告只重算 T065 v1.0.0 的 21 条冻结 Holdout、T066–T068 已保存的真实运行记录；没有重新调用模型、GitHub 或 MCP。运行以下命令可从原始记录生成逐样本结果：
 

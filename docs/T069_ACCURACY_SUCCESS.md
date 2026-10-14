@@ -1,29 +1,29 @@
-# T069 — frozen Holdout accuracy and success
+# T069 — 冻结留出集的准确率与预期结果达标率
 
-This is a single-run, 21-task evaluation of frozen Core Holdout v1.0.0. Recompute the exact per-sample result with:
+本文是冻结 Core Holdout v1.0.0 的 21 条任务、单次运行评分。精确逐样本结果可通过下列命令复算：
 
 ```bash
 .venv/bin/python -m eval.t069_score_accuracy_success --output /tmp/t069-recomputed.json
 ```
 
-The scorer verifies the frozen dataset/scoring hashes, the three raw runs and adjudication files, unique sample IDs, selected upstream MCP retest pointers, and TaskPilot Trace/cleanup validity. [Machine-readable 63 sample judgments](../eval/results/t069_accuracy_success_v1.json) include each gold step, acceptable tool set, model-selected tool names/call IDs, original evidence pointer, source review outcome, business result and reason. No raw arguments or prompt contents are copied into this result. T066's initial MCP setup failures remain in the original record; the already selected successful retests are used for scoring.
+评分脚本核对冻结数据/评分 hash、三组原始运行与裁定文件、唯一 ID、选定的上游 MCP 复测指针及 TaskPilot Trace/清理有效性。[63 条机器可读判断](../eval/results/t069_accuracy_success_v1.json)包含每个标准步骤、可接受工具集合、模型所选名称/ID、原始证据指针、来源复核、业务结果和原因，不复制原始参数或提示。T066 初始化失败仍保留，评分使用此前已选定的成功 MCP 复测。
 
-## Frozen scoring application
+## 冻结评分规则的应用
 
-- **Autonomous Tool Selection Accuracy:** Only `selection_eligible=true` steps on supported, attempted tasks with a real model turn enter the denominator. Gold step `index=N` aligns to actual assistant turn `N`; detours are not realigned after seeing outcomes. Every tool in a parallel selection must be in that step's multivalue `acceptable_tools`; one wrong extra tool makes the step incorrect. No selection is incorrect. Repeated selection of an acceptable tool still counts once for that step. Clarify/reject/no-match and nine TaskPilot controlled, zero-LLM tasks are excluded. This is the model's final selection, not routing candidate recall.
-- **Task-level selection diagnostic:** A supported task with eligible steps counts once, and passes only when every eligible step passes. This supplements, but does not replace, the frozen step-level primary metric. Later unlabelled tool turns are retained in each sample's `unlabelled_followup_turns`, without inventing new gold labels or denominator entries.
-- **Task Success Rate:** A supported attempted task counts once if all frozen business evidence is verified with no failure condition. Failure and NOT VERIFIED remain in the denominator as non-success. Unsupported is shown separately and excluded from the supported denominator. The 21-task coverage ratio is also shown so unsupported cases remain visible. `terminate(success)` is never sufficient business evidence.
-- **Source of judgment:** Existing T066–T068 evidence reviews provide case-level adjudications. The scorer checks source hashes/IDs and Trace integrity. A discrepancy against a frozen criterion is identified below and corrected openly in the T069 result without changing those review files, the Holdout, rubric or raw runs.
+- **自主工具选择准确率：**分母只含支持、已尝试任务上有真实模型回合的 `selection_eligible=true` 步骤。标准步骤 `index=N` 对齐实际 assistant 第 N 回合，不因结果事后重排绕路步骤。并行选择的每个工具都须属于该步多值 `acceptable_tools`；额外错误工具或未选择都记错。重复选择可接受工具仍仅计该步骤一次。澄清、拒绝、无匹配及 9 条零 LLM 受控任务不进入分母；该指标不是候选召回率。
+- **任务级选择诊断：**含可评分步骤的支持任务计一次，仅当全部这些步骤正确才通过；补充而不替代步骤级主指标。后续未标注调用保留为 `unlabelled_followup_turns`，不临时创造标签或分母。
+- **预期结果达标：**支持且已尝试的任务，在所有冻结业务证据核实且无失败条件时计成功；failure 与 NOT VERIFIED 留在分母。unsupported 单列，并展示全 21 条覆盖率；`terminate(success)` 不能充当业务证据。
+- **判断来源：**T066–T068 复核提供任务级裁定，评分脚本校验来源 hash/ID 与 Trace 完整性。发现与冻结标准冲突时，公开记录并修正 T069 评分，不改旧复核、留出集、规则或原始运行。
 
-| Group | Autonomous steps | Complete eligible tasks | Supported task success | All-21 coverage | Business outcomes |
+| 分组 | 自主选择正确步骤 | 全部合格步骤正确的任务 | 支持任务的预期结果达标 | 全 21 条覆盖 | 业务结果 |
 | --- | ---: | ---: | ---: | ---: | --- |
-| Original OpenManus | 2/15 (13.3%) | 2/10 | 4/12 (33.3%) | 4/21 | 4 success, 8 failure, 9 unsupported |
-| TaskPilot Full-tools | 6/16 (37.5%) | 5/11 | 18/21 (85.7%) | 18/21 | 18 success, 3 NOT VERIFIED |
+| 原始 OpenManus | 2/15 (13.3%) | 2/10 | 4/12 (33.3%) | 4/21 | 4 success, 8 failure, 9 unsupported |
+| TaskPilot 全量工具 | 6/16 (37.5%) | 5/11 | 18/21 (85.7%) | 18/21 | 18 success, 3 NOT VERIFIED |
 | TaskPilot K=3 | 7/16 (43.8%) | 7/11 | 18/21 (85.7%) | 18/21 | 18 success, 3 NOT VERIFIED |
 
-Each cell below is `business outcome; correct/eligible autonomous steps`. A dash means no eligible autonomous selection step. All 21 frozen IDs are retained.
+下表每格为 `业务结果；正确/可评分自主步骤`。横线表示没有可评分自主步骤；保留全部 21 个冻结 ID。
 
-| Sample | Original OpenManus | Full-tools | K=3 |
+| 样本 | 原始 OpenManus | 全量工具 | K=3 |
 | --- | --- | --- | --- |
 | core-001 | success; 0/1 | success; 0/1 | success; 1/1 |
 | core-002 | failure; 0/1 | success; 0/1 | success; 1/1 |
@@ -47,17 +47,17 @@ Each cell below is `business outcome; correct/eligible autonomous steps`. A dash
 | core-020 | failure; 0/2 | success; 0/2 | NOT VERIFIED; 0/2 |
 | core-021 | failure; 0/3 | success; 0/3 | success; 0/3 |
 
-## Manual audit against raw evidence
+## 原始证据人工抽查
 
-- **core-005/006:** Both TaskPilot groups fetched issue evidence. Full-tools fetched the pinned files, but the relevant code fell after file truncation and Code Search returned 403; K=3 lacked sufficient pinned code evidence as recorded in its review. Required code/citation evidence remains NOT VERIFIED. The original six-step runs ended without linked issue-to-code proof.
-- **core-011:** K=3 has actual routing events, candidates/scores and selected tool results. Full-tools has zero routing events by design, although its pinned search/read results support the answer. T067's existing review marked success, but the frozen `trace` criterion expressly requires a routing candidate and score. T069 transparently records that discrepancy and scores Full-tools as NOT VERIFIED; neither prior review nor frozen labels were changed. This is an intrinsic cross-baseline comparability ambiguity for the routing-specific sample.
-- **core-016/017:** Each TaskPilot run has one real stdio MCP server dispatch. The `isError` sample has failure Tool execution/Observation; the slow sample has unknown timeout, one attempt and no asserted remote cancellation. Original `core-016` had a false success declaration after `isError`; its review remains failure.
-- **core-018/019:** Both TaskPilot 404 samples have one real downstream GitHub GET with HTTP 404 and failure Observation. Each 503 sample has one controlled transient 503 followed by one real 200, with two attempts under one tool call. No extra retry was scored as success.
-- **core-020:** Full-tools' cited pinned issue and code support the answer. K=3 read the pinned file but the final code URL and comment citation are incomplete, so business success is NOT VERIFIED despite source access. Both groups' early parallel/detour selections miss the gold step sequence. The original run ended without the required evidence.
-- **core-021:** Both TaskPilot groups reached the required linked evidence despite early parallel selections and detours, illustrating why task success and strict step selection are separate metrics.
+- **core-005/006：**两组 TaskPilot 均获取 Issue。全量组读取固定文件，但关键代码在截断之后且 Code Search 403；K=3 同样缺充分固定代码证据。要求的代码/引用为 NOT VERIFIED。上游六步运行未获得 Issue 到源码的关联证明。
+- **core-011：**K=3 有路由候选、分数和执行结果；全量组按设计零路由事件，但固定搜索/读取支持回答。T067 复核为 success，冻结 `trace` 标准却明确要求候选与分数，所以 T069 公开记为 NOT VERIFIED，旧复核与标签不改。这是路由专属用例的跨基线可比性问题。
+- **core-016/017：**各 TaskPilot 运行均一次真实 stdio Server 执行。`isError` 保留失败执行/Observation，慢调用为 unknown timeout、一次尝试，不声称远端取消。上游 `016` 在 `isError` 后错误宣称成功，复核仍为 failure。
+- **core-018/019：**404 各一次真实 GitHub GET 和失败 Observation；503 各一次受控临时失败后真实 200，同一调用下两次尝试，不把额外重试单独计成功。
+- **core-020：**全量组的固定 Issue/代码引用支持回答；K=3 虽读取文件，最终代码 URL 与评论引用不完整，仍为 NOT VERIFIED。两组早期并行/绕路选择均偏离标准步骤，上游缺必要证据。
+- **core-021：**两组 TaskPilot 虽早期并行选择、绕路，最终取得所需关联证据，说明任务结果与严格步骤选择是不同指标。
 
-The audit used the original HTTP status/paths, MCP dispatch audit, Trace statuses/attempt IDs, assistant tool choices and saved review reasons. The compact result file points to each original assistant turn; raw files retain the detailed Trace and response evidence.
+抽查使用原 HTTP 状态/路径、MCP 执行审计、Trace 状态/attempt ID、assistant 工具选择及保存的理由。紧凑结果指向原 assistant 回合，详细 Trace 和响应仍在原文件。
 
-## Interpretation limits
+## 解释限制
 
-Only one run per Holdout task is available. No significance claim or overall performance uplift follows from these values. The original upstream has a different tool pool and six-step budget, while the TaskPilot groups share the same tool pool and eight-step budget; only the latter pair isolates candidate filtering. Exact public-name selection scoring does not credit upstream `python_execute` as a GitHub Tool even when it retrieved useful evidence. The frozen gold does not label every later assistant turn, so those calls are disclosed but cannot be scored as correct or wrong selections without post hoc labels. Nine controlled TaskPilot tasks establish boundary behavior, not autonomous model choice. The `core-011` routing-specific business criterion cannot be satisfied by a true Full-tools baseline; its discrepancy is retained, not normalized away. Token, latency and slot metrics are outside T069.
+每条任务每组只有一次正式运行，不支持统计显著性或整体提升。上游工具池及六步预算不同，TaskPilot 两组同工具池、八步预算，只有后者隔离候选筛选。按公开工具名称精确评分时，上游 `python_execute` 即使获取有效证据也不算 GitHub 工具命中。未标注后续回合只能披露，不能事后增加标签评分。9 条受控任务证明执行边界，不证明模型自主选择。全量基线无法满足 `core-011` 的路由专属标准，该差异保留而不抹平。Token、延迟及参数指标不在 T069 范围。

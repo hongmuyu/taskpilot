@@ -1,4 +1,4 @@
-# T062 — Reproducible local deployment
+# T062 — 本地可复现部署验收记录
 
 本轮从 `codex/pr-08c-t059` 的干净 checkout（`c3f82b697ea9832c04154390f4608d1154528842`）验证 Docker 构建和真实 HTTP 使用。checkout 没有 `.venv`、本地 `config.toml` 或模型缓存；模型配置来自 checkout 外的 Git ignored 文件，只读挂载。服务只绑定 `127.0.0.1`，保留现有只读 GitHub Tool；这不是公网部署。
 
@@ -9,7 +9,7 @@
 - 模型配置键名为 `llm.model`、`llm.base_url`、`llm.api_key`，实际模型为 `deepseek-flash`；Provider revision 不可用。镜像不包含配置文件、Key 或宿主 `.venv`。缺少配置时容器明确退出。
 - embedding 为 `sentence-transformers/paraphrase-MiniLM-L3-v2`，revision `4ca70771034acceecb2e72475f72050fcdde4ddc`。新 Docker 卷在预热前确认不存在，创建后为空；同镜像临时容器冷下载耗时 65.06 秒，无网络离线复用耗时 7.21 秒，输出 384 维向量。
 
-## 从干净 checkout 启动
+## 从干净检出目录启动
 
 先按 [使用指南](USAGE.md#本地配置) 准备**外部**模型配置文件，不要提交或粘贴 Key。以下示例使用独立 Compose project 和本机端口；`TASKPILOT_MODEL_CONFIG` 必须是已存在配置文件的绝对路径。
 

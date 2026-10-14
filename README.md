@@ -1,33 +1,114 @@
-# TaskPilot
+# 🔎 TaskPilot
 
-TaskPilot 是基于 [OpenManus](https://github.com/FoundationAgents/OpenManus) 二次开发的只读 GitHub 仓库调查 Agent。它根据任务和最新工具结果调查仓库、Issue 与源码，并保留可追溯的调用、失败及评测证据。当前交付的是供本机或受限环境使用的 **Core MVP**。
+TaskPilot 是基于 [OpenManus](https://github.com/FoundationAgents/OpenManus) 二次开发的只读 GitHub 仓库调查 Agent。输入仓库和自然语言任务后，它根据工具结果逐步调查仓库、Issue 与源码，输出带来源的结论。当前交付的是供本机或受限环境使用的 **Core MVP**。
 
-## Demo
+> 💡 **从这里开始：**先运行命令行版本；需要接口时再启动 API 或 Docker 服务。项目目前没有聊天网页，`/docs` 是 API 调试页面。
 
-试着问：**“调查 OpenManus #1427 中的 MCP 错误，并定位相关源码。”** 已记录的[真实 Issue → Code 调查](docs/PR03_PARAMETER_E2E.md)依次使用 Issue、Code Search 和文件读取，最终引用 Issue 与源码。这里链接的是历史真实运行证据，不是在线演示服务。
+想先体验：按下面四步操作。准备 Fork 后二次开发：先点 GitHub 页面右上角 **Fork**，克隆自己的仓库，然后按相同步骤安装；开发分支、同步源仓库和代码入口见[开发指南](docs/DEVELOPMENT.md)。
 
-## Features
+## ✨ 已实现能力
 
-- **动态仓库调查：**五个 GitHub REST 只读工具，覆盖仓库概览、Issue 搜索与详情、代码搜索、文件读取；工具顺序由模型结合 Observation 决定。
-- **执行前参数保护：**复用工具原有 schema；缺参进入澄清，回复合并后重新校验，保留原 `tool_call_id`。已确认的仓库与 ref 可在当前任务中复用。
-- **语义工具选择：**服务默认用内存 embedding 检索最多 3 个业务工具，必要控制工具另行保留；完整工具集合继续负责真实执行。CLI 默认使用完整工具 schema。
-- **可靠执行与追踪：**有界超时、仅对明确幂等的读取重试、MCP `isError` 状态保留，以及关联 LLM、路由、工具和成本的 Trace 1.1。
-- **两种入口：**CLI 和进程内 FastAPI；服务提供任务查询、取消及非阻塞缺参回复。通用 MCP 客户端已用真实 stdio Server 验证，但专用 GitHub 入口不会自动连接 MCP Server。
+- **🧭 动态调查：**5 个 GitHub REST 只读工具，覆盖仓库概览、Issue 搜索与详情、代码搜索、文件读取；由模型结合工具结果决定下一步。
+- **🛡️ 参数校验与澄清：**执行前校验工具参数，缺参时等待补充，沿用原 `tool_call_id` 合并回复并重新校验；已确认的仓库和 ref 可在任务内复用。
+- **🎯 语义工具选择：**API 服务默认通过内存 Embedding 检索最多 3 个业务工具，并保留必要控制工具；命令行默认提供全量工具 Schema。
+- **🔍 可靠执行与追踪：**有界超时、幂等读取重试、MCP `isError` 状态传递，以及关联模型、路由、工具和成本的结构化 Trace。
+- **📦 服务与部署：**提供命令行、FastAPI 和 Docker 入口，支持任务查询、取消与非阻塞缺参回复。通用 MCP 客户端已验证真实 stdio Server；GitHub 专用入口不自动连接 MCP Server。
 
-## Quick Start
+## 第一步：准备环境
 
-需要 Python 3.12、`uv`、可用的模型 API 和网络；以下命令在 Linux amd64 上验证。请在本地填写被 Git 忽略的配置文件中的 `[llm].model`、`base_url`、`api_key`，不要提交凭据。
+以下命令使用 **Linux / Ubuntu 的 Bash**；已验收的 Docker 平台为 Linux amd64。需要 Git、curl、Python 3.12，以及支持工具调用的 OpenAI-compatible Chat Completions 模型 API。模型 API 需要你自己的可用账号和额度。
+
+Ubuntu 尚未安装基础工具时：
+
+```bash
+sudo apt-get update
+sudo apt-get install -y git curl ca-certificates libgomp1
+```
+
+如果没有 `uv`，先安装并加载路径；已经安装则跳过：
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh -o /tmp/taskpilot-install-uv.sh
+sh /tmp/taskpilot-install-uv.sh
+source "$HOME/.local/bin/env"
+uv --version
+```
+
+只体验原项目时：
 
 ```bash
 git clone https://github.com/hongmuyu/taskpilot.git
 cd taskpilot
-uv venv --python 3.12
+```
+
+已经 Fork 时，改用自己 Fork 页面的 **Code → HTTPS** 地址：
+
+```bash
+read -rp '请粘贴自己 Fork 仓库的 HTTPS 克隆地址: ' TASKPILOT_FORK_URL
+git clone "$TASKPILOT_FORK_URL" taskpilot
+cd taskpilot
+```
+
+上面两种克隆方式选一种即可。
+
+**已经有项目时，直接进入现有项目根目录，不要再嵌套克隆。** 后面的命令都在包含 `taskpilot.py` 的目录执行。
+
+安装 Python 和项目依赖：
+
+```bash
+uv python install 3.12
+uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python --torch-backend cpu -r requirements-service.lock.txt
-cp config/config.example-baseline.toml config/config.toml
+```
+
+依赖包含 CPU 版 PyTorch，首次下载可能较慢。使用项目的 `requirements-service.lock.txt`；根目录 `requirements.txt`、`setup.py`、`main.py` 和 `Dockerfile` 是保留的上游入口，不是这里的 TaskPilot 启动方式。若已有可用 `.venv`，跳过创建环境这一步。
+
+## 第二步：填写模型配置
+
+首次创建配置，已有文件时保留原内容：
+
+```bash
+if [ ! -f config/config.toml ]; then
+  cp config/config.example-baseline.toml config/config.toml
+fi
 chmod 600 config/config.toml
 ```
 
-在本机编辑 `config/config.toml` 后运行：
+用编辑器打开 `config/config.toml`，填写下面三个必需值。**占位符必须替换，直接复制后无法调用模型。**
+
+```toml
+[llm]
+model = "替换为提供方实际支持工具调用的模型 ID"
+base_url = "https://替换为提供方的API地址/v1"
+api_key = "替换为你自己的模型API密钥"
+max_tokens = 1024
+temperature = 0.0
+api_type = "openai"
+
+[sandbox]
+use_sandbox = false
+
+[daytona]
+daytona_api_key = "unused-local-baseline"
+```
+
+- `model` 使用提供方给出的准确模型 ID，不是网页产品名称。
+- `base_url` 使用 Chat Completions 的 API 基础地址，不填网页聊天地址，也不拼接 `/chat/completions`；是否带 `/v1` 以提供方为准。
+- `api_key` 是对应模型平台的密钥，不能用 GitHub Token 替代。配置直接读取 TOML，**不支持 `${ENV_VAR}` 插值，也不会自动加载 `.env`**。
+- 保留 `[daytona]` 占位段，这是继承的配置要求；本入口不需要注册或启动 Daytona。
+- 配置文件已被 Git 忽略，不要提交或粘贴密钥，也不要把真实密钥写进命令参数或截图。
+
+公开仓库概览、Issue 和文件读取通常可以不带 GitHub Token，受 GitHub 限流约束。**代码搜索需要有相应访问权限的 GitHub Token。** 如需使用，在准备启动程序的同一 Bash 终端输入：
+
+```bash
+read -rsp '请输入 GitHub Token（输入不回显）: ' GITHUB_TOKEN
+echo
+export GITHUB_TOKEN
+```
+
+## 第三步：运行一次命令行调查
+
+先用不依赖代码搜索、也不需要下载 Embedding 模型的简单任务：
 
 ```bash
 OPENMANUS_DISABLE_BROWSER_USE=1 .venv/bin/python taskpilot.py \
@@ -35,44 +116,92 @@ OPENMANUS_DISABLE_BROWSER_USE=1 .venv/bin/python taskpilot.py \
   --prompt "读取 README.md，说明这个仓库的用途并给出来源。"
 ```
 
-## Installation
+`--repository` 填 `owner/repo`，不是完整 URL；可用 `--ref <分支、标签或提交SHA>` 固定源码版本。省略仓库时会在终端询问；缺少工具必需参数时按提示补充。
 
-本地安装使用固定的服务依赖锁文件；根目录 `setup.py` / `requirements.txt` 仍属上游 OpenManus 打包入口，不用于安装 TaskPilot 服务。模型配置只从 `config/config.toml` 读取，不对 `${ENV_VAR}` 做插值。公开仓库的常规读取可无 GitHub token；Code Search 需要以环境变量 `GITHUB_TOKEN` 安全注入只读凭据。Docker 固定 Python 3.12.14，首次启动会下载并缓存 embedding 模型；冷启动、离线预热与代理限制见[Docker 指南](docs/T059_DOCKER.md)。
+正常运行会看到工具执行记录及调查结果。确认结果确实包含读取到的仓库信息和来源；单独看到 `terminate(success)` 只能说明 Agent 声明结束。模型鉴权、网络或工具失败时，先看下方排错说明。
 
-## Usage
+更完整的历史示例是“调查 OpenManus #1427 中的 MCP 错误，并定位相关源码”，见[真实 Issue → 源码调查记录](docs/PR03_PARAMETER_E2E.md)。该记录不是在线演示服务。
 
-CLI 可指定 `--ref <branch-or-tag-or-commit>`；省略 `--repository` 时会询问。启动本机服务：
+## 第四步：按需启动 API 服务
 
-```bash
-OPENMANUS_DISABLE_BROWSER_USE=1 .venv/bin/python -m uvicorn app.taskpilot.service:app --host 127.0.0.1 --port 8000
-```
-
-在另一终端检查服务：
+**终端 A**：在项目根目录启动服务，保持终端运行。若要代码搜索，先在这个终端设置 `GITHUB_TOKEN`。
 
 ```bash
-curl --fail http://127.0.0.1:8000/health
+OPENMANUS_DISABLE_BROWSER_USE=1 .venv/bin/python -m uvicorn \
+  app.taskpilot.service:app --host 127.0.0.1 --port 8000
 ```
 
-API 提供 `POST /tasks`、`GET /tasks/{task_id}`、`DELETE /tasks/{task_id}` 和按 `tool_call_id` 回复的澄清接口。请求、响应、Docker Compose 命令和状态语义见[使用指南](docs/USAGE.md)。服务状态保存在进程内存中，重启后旧任务无法恢复；`terminate(success)` 不代表答案已独立验证。
+**终端 B**：在同一项目根目录检查服务并提交任务。以下示例自动取出返回的任务 ID：
 
-## Architecture
+```bash
+curl --fail --silent --show-error http://127.0.0.1:8000/health
 
-TaskPilot 复用 OpenManus 的 Agent Loop 和 ToolCollection。在每一步，Agent 根据任务与最新 Observation 选择工具；路由只改变本回合发送给模型的 schema，执行仍经过参数校验、澄清、超时/重试和 Trace。[架构文档](docs/TASKPILOT_ARCHITECTURE.md)解释完整调用链与 MCP 边界。
+TASK_RESPONSE=$(curl --fail --silent --show-error http://127.0.0.1:8000/tasks \
+  -H 'Content-Type: application/json' \
+  -d '{"repository":"FoundationAgents/OpenManus","task":"读取 README.md，说明仓库用途并给出来源。"}')
+TASK_ID=$(printf '%s' "$TASK_RESPONSE" | .venv/bin/python -c 'import json,sys; print(json.load(sys.stdin)["task_id"])')
+printf '任务 ID：%s\n' "$TASK_ID"
+curl --fail --silent --show-error "http://127.0.0.1:8000/tasks/$TASK_ID"
+```
 
-## Benchmark
+首次调用服务的任务会加载固定的 Embedding 模型，需要访问 Hugging Face，可能比 CLI 慢。`/health` 可访问不代表模型 API 或 Embedding 已就绪。重复执行最后一条查询命令查看进度，或打开 [API 调试页面](http://127.0.0.1:8000/docs)。
 
-固定的 **21 条独立 Holdout** 每组各选定一条正式评分记录；上游 MCP 初始化复测和后续可复现性复跑另行保留，不混入该分母。自主模型工具选择正确步数为原始 OpenManus **2/15**、TaskPilot 全量工具 **6/16**、K=3 **7/16**。冻结预期结果达标为上游 **4/12 supported**（另有 **9/21 unsupported**）、两组 TaskPilot 均 **18/21**；两组正向调查均为 **8/11**。18/21 包含安全拒绝与故障正确处理，不能当作正向业务成功率。
+- `queued` / `running`：等待或执行中，稍后再查。
+- `clarification_pending`：需要补参数，按[使用指南](docs/USAGE.md#缺参回复与取消)回复。
+- `finished`：执行已结束，查看 `result`、`execution_status` 和来源证据；`business_outcome=not_verified` 表示没有独立验证答案正确性。
+- `failed` / `cancelled`：查看响应和终端错误。任务状态只保存在内存，重启后旧任务 ID 失效。
 
-同工具池对照中，K=3 的 Provider token 总量较全量工具低，但 **9/21** 条任务更慢；单次小样本不支持整体提升或统计显著性结论。完整的 Slot、Token、Latency、失败、限制及可复算入口见[正式 Benchmark](docs/BENCHMARK.md)。
+本地停止服务：在终端 A 按 `Ctrl+C`。如果 8000 端口占用，将启动命令改为 `--port 18000`，所有请求及浏览器地址也对应改为 18000。
 
-## Documentation
+## 🐳 使用 Docker 部署
 
-从[公开文档索引](docs/INDEX.md)进入[使用指南](docs/USAGE.md)、[架构](docs/TASKPILOT_ARCHITECTURE.md)、[部署验收](docs/T062_DEPLOYMENT.md)、[测试](docs/TESTING.md)和[Benchmark](docs/BENCHMARK.md)。这些公开入口在 `core-mvp-v1` 冻结后整理，应从后续 `main` 阅读；冻结 Tag 保留原始源码与证据。原始脱敏运行记录、评分脚本及冻结数据保留在 `eval/`；真实 GitHub/MCP/Docker 证据链接也在文档索引中。
+Docker 路径无需宿主 Python 或 `.venv`，但仍须先获取源码、填写 `config/config.toml`，并安装 Docker Engine 与 Compose。完整前置条件、模型预热、代理和 Token 配置见[中文 Docker 部署指南](docs/T059_DOCKER.md)。
 
-## Acknowledgements
+```bash
+export TASKPILOT_MODEL_CONFIG="$PWD/config/config.toml"
+docker compose -f compose.taskpilot.yaml build
+docker compose -f compose.taskpilot.yaml up -d --no-build
+docker compose -f compose.taskpilot.yaml ps
+docker compose -f compose.taskpilot.yaml logs --tail=50 -f service
+```
 
-TaskPilot 基于 [FoundationAgents/OpenManus](https://github.com/FoundationAgents/OpenManus) 的源码与祖先历史开发，固定上游基线为 [`3309bf4`](https://github.com/FoundationAgents/OpenManus/commit/3309bf4e416fb1c74b008f3e86494439a31bad53)。感谢 OpenManus 原作者及贡献者；上游项目的完整介绍和多语言说明请见其[官方仓库](https://github.com/FoundationAgents/OpenManus)。本仓库保留的上游组件指南不代表 TaskPilot 专用入口已交付这些能力。
+首次启动会下载 Embedding 模型；等日志显示 Uvicorn 已启动后，在另一终端访问 `http://127.0.0.1:8000/health` 和 `/docs`。日志跟随界面按 `Ctrl+C` 只退出日志，不停止容器。停止服务：
 
-## License
+```bash
+docker compose -f compose.taskpilot.yaml down
+```
 
-本项目保留上游的 [MIT License](LICENSE)，TaskPilot 的二次开发内容在此基础上提供。
+Compose 默认仅绑定本机，默认不传入 GitHub Token。远程服务器通过 SSH 隧道访问，步骤见部署指南；当前 API 没有认证，不适合直接暴露到公网。
+
+## 🧰 常见问题
+
+- **`uv: command not found`：**完成 uv 安装并执行 `source "$HOME/.local/bin/env"`，或重新打开终端。
+- **找不到 `.venv/bin/python` / `ModuleNotFoundError`：**确认位于项目根目录，并按第一步创建环境、安装锁定依赖；不要改用系统 `python` 混跑。
+- **提示缺少 `daytona_api_key`：**在 `config/config.toml` 中保留上面的 `[daytona]` 占位段。
+- **模型返回 401、404 或不支持工具调用：**核对模型平台、API 基础地址、模型 ID、额度及工具调用支持；不是修改 GitHub Token。
+- **GitHub 返回 401/403：**检查 Token 权限、有效性和限流。CLI/API 读取启动进程的环境；Docker 需要显式传入，见部署指南。
+- **服务健康但首个任务失败，或容器提示 `embedding model unavailable`：**检查 Hugging Face 下载网络/缓存。离线启动需要提前缓存完整模型，不能只设置 `HF_HUB_OFFLINE=1`。
+- **`Address already in use`：**本地改 `--port`；Docker 启动前 `export TASKPILOT_PORT=18000`，请求也改为新端口。
+- **TLS、代理或连接超时：**分别排查模型 API、GitHub API、Hugging Face。宿主机的 `127.0.0.1` 代理不能直接被默认 Docker bridge 访问，处理步骤见部署指南。
+
+## 📊 架构与评测
+
+TaskPilot 复用 OpenManus 的 Agent Loop 和 ToolCollection。每步按任务与最新工具结果选择工具；Top-K 只改变发送给模型的 Schema，执行仍经过参数校验、澄清、超时/重试和 Trace。见[中文架构文档](docs/TASKPILOT_ARCHITECTURE.md)。
+
+冻结的 **21 条独立留出任务（Holdout）** 中，每组每条任务选定一条正式评分记录，初始化复测与后续复跑另计。自主模型选工具正确步数：原始 OpenManus **2/15**、TaskPilot 全量工具 **6/16**、K=3 **7/16**。冻结预期结果达标：上游 **4/12 supported**，另有 **9/21 unsupported**；两组 TaskPilot 均 **18/21**，其中正向调查均 **8/11**。18/21 包含安全拒绝和故障正确处理，不能当作正向业务成功率。
+
+同工具池对照中 K=3 的 Provider Token 总量较低，但 **9/21** 条任务更慢；单次小样本不支持整体提升或统计显著性结论。完整口径见[中文评测报告](docs/BENCHMARK.md)。
+
+## 📚 文档导航
+
+- [使用指南：配置、CLI、HTTP 请求和澄清](docs/USAGE.md)
+- [部署指南：Docker、模型缓存、代理与远程访问](docs/T059_DOCKER.md)
+- [开发指南：目录、环境、修改流程和验证命令](docs/DEVELOPMENT.md)
+- [测试范围与真实集成证据](docs/TESTING.md)
+- [架构说明](docs/TASKPILOT_ARCHITECTURE.md) · [评测报告](docs/BENCHMARK.md) · [全部文档](docs/INDEX.md)
+
+公开使用文档应从当前 `main` 阅读；`core-mvp-v1` 标签保留冻结的源码与原始证据。`eval/` 中保存脱敏运行记录、数据和评分脚本。
+
+## 📜 上游来源与许可证
+
+本项目基于 [FoundationAgents/OpenManus](https://github.com/FoundationAgents/OpenManus)，固定上游基线为 [`3309bf4`](https://github.com/FoundationAgents/OpenManus/commit/3309bf4e416fb1c74b008f3e86494439a31bad53)，保留其祖先历史和 [MIT 许可证](LICENSE)。上游组件指南不代表 TaskPilot 专用入口已交付这些能力。
