@@ -1,22 +1,22 @@
 # 🔎 TaskPilot
 
-TaskPilot 是基于 [OpenManus](https://github.com/FoundationAgents/OpenManus) 二次开发的只读 GitHub 仓库调查 Agent。输入仓库和自然语言任务后，它根据工具结果逐步调查仓库、Issue 与源码，输出带来源的结论。当前交付的是供本机或受限环境使用的 **Core MVP**。
+TaskPilot 是基于 [OpenManus](https://github.com/FoundationAgents/OpenManus) 二次开发的只读 GitHub 仓库调查 Agent。输入仓库和自然语言任务后，它根据工具结果逐步调查仓库、Issue 与源码，输出带来源的结论。当前交付的是供本机或受限环境使用的 Core MVP。
 
-> 💡 **从这里开始：**先运行命令行版本；需要接口时再启动 API 或 Docker 服务。项目目前没有聊天网页，`/docs` 是 API 调试页面。
+> 💡 从这里开始：先运行命令行版本；需要接口时再启动 API 或 Docker 服务。项目目前没有聊天网页，`/docs` 是 API 调试页面。
 
-想先体验：按下面四步操作。准备 Fork 后二次开发：先点 GitHub 页面右上角 **Fork**，克隆自己的仓库，然后按相同步骤安装；开发分支、同步源仓库和代码入口见[开发指南](docs/DEVELOPMENT.md)。
+想先体验：按下面四步操作。准备 Fork 后二次开发：先点 GitHub 页面右上角 Fork，克隆自己的仓库，然后按相同步骤安装；开发分支、同步源仓库和代码入口见[开发指南](docs/DEVELOPMENT.md)。
 
 ## ✨ 已实现能力
 
-- **🧭 动态调查：**5 个 GitHub REST 只读工具，覆盖仓库概览、Issue 搜索与详情、代码搜索、文件读取；由模型结合工具结果决定下一步。
-- **🛡️ 参数校验与澄清：**执行前校验工具参数，缺参时等待补充，沿用原 `tool_call_id` 合并回复并重新校验；已确认的仓库和 ref 可在任务内复用。
-- **🎯 语义工具选择：**API 服务默认通过内存 Embedding 检索最多 3 个业务工具，并保留必要控制工具；命令行默认提供全量工具 Schema。
-- **🔍 可靠执行与追踪：**有界超时、幂等读取重试、MCP `isError` 状态传递，以及关联模型、路由、工具和成本的结构化 Trace。
-- **📦 服务与部署：**提供命令行、FastAPI 和 Docker 入口，支持任务查询、取消与非阻塞缺参回复。通用 MCP 客户端已验证真实 stdio Server；GitHub 专用入口不自动连接 MCP Server。
+- 🧭 动态调查：5 个 GitHub REST 只读工具，覆盖仓库概览、Issue 搜索与详情、代码搜索、文件读取；由模型结合工具结果决定下一步。
+- 🛡️ 参数校验与澄清：执行前校验工具参数，缺参时等待补充，沿用原 `tool_call_id` 合并回复并重新校验；已确认的仓库和 ref 可在任务内复用。
+- 🎯 语义工具选择：API 服务默认通过内存 Embedding 检索最多 3 个业务工具，并保留必要控制工具；命令行默认提供全量工具 Schema。
+- 🔍 可靠执行与追踪：有界超时、幂等读取重试、MCP `isError` 状态传递，以及关联模型、路由、工具和成本的结构化 Trace。
+- 📦 服务与部署：提供命令行、FastAPI 和 Docker 入口，支持任务查询、取消与非阻塞缺参回复。通用 MCP 客户端已验证真实 stdio Server；GitHub 专用入口不自动连接 MCP Server。
 
 ## 第一步：准备环境
 
-以下命令使用 **Linux / Ubuntu 的 Bash**；已验收的 Docker 平台为 Linux amd64。需要 Git、curl、Python 3.12，以及支持工具调用的 OpenAI-compatible Chat Completions 模型 API。模型 API 需要你自己的可用账号和额度。
+以下命令使用 Linux / Ubuntu 的 Bash；已验收的 Docker 平台为 Linux amd64。需要 Git、curl、Python 3.12，以及支持工具调用的 OpenAI-compatible Chat Completions 模型 API。模型 API 需要你自己的可用账号和额度。
 
 Ubuntu 尚未安装基础工具时：
 
@@ -41,7 +41,7 @@ git clone https://github.com/hongmuyu/taskpilot.git
 cd taskpilot
 ```
 
-已经 Fork 时，改用自己 Fork 页面的 **Code → HTTPS** 地址：
+已经 Fork 时，改用自己 Fork 页面的 Code → HTTPS 地址：
 
 ```bash
 read -rp '请粘贴自己 Fork 仓库的 HTTPS 克隆地址: ' TASKPILOT_FORK_URL
@@ -51,7 +51,7 @@ cd taskpilot
 
 上面两种克隆方式选一种即可。
 
-**已经有项目时，直接进入现有项目根目录，不要再嵌套克隆。** 后面的命令都在包含 `taskpilot.py` 的目录执行。
+已经有项目时，直接进入现有项目根目录，不要再嵌套克隆。 后面的命令都在包含 `taskpilot.py` 的目录执行。
 
 安装 Python 和项目依赖：
 
@@ -74,7 +74,7 @@ fi
 chmod 600 config/config.toml
 ```
 
-用编辑器打开 `config/config.toml`，填写下面三个必需值。**占位符必须替换，直接复制后无法调用模型。**
+用编辑器打开 `config/config.toml`，填写下面三个必需值。占位符必须替换，直接复制后无法调用模型。
 
 ```toml
 [llm]
@@ -94,11 +94,11 @@ daytona_api_key = "unused-local-baseline"
 
 - `model` 使用提供方给出的准确模型 ID，不是网页产品名称。
 - `base_url` 使用 Chat Completions 的 API 基础地址，不填网页聊天地址，也不拼接 `/chat/completions`；是否带 `/v1` 以提供方为准。
-- `api_key` 是对应模型平台的密钥，不能用 GitHub Token 替代。配置直接读取 TOML，**不支持 `${ENV_VAR}` 插值，也不会自动加载 `.env`**。
+- `api_key` 是对应模型平台的密钥，不能用 GitHub Token 替代。配置直接读取 TOML，不支持 `${ENV_VAR}` 插值，也不会自动加载 `.env`。
 - 保留 `[daytona]` 占位段，这是继承的配置要求；本入口不需要注册或启动 Daytona。
 - 配置文件已被 Git 忽略，不要提交或粘贴密钥，也不要把真实密钥写进命令参数或截图。
 
-公开仓库概览、Issue 和文件读取通常可以不带 GitHub Token，受 GitHub 限流约束。**代码搜索需要有相应访问权限的 GitHub Token。** 如需使用，在准备启动程序的同一 Bash 终端输入：
+公开仓库概览、Issue 和文件读取通常可以不带 GitHub Token，受 GitHub 限流约束。代码搜索需要有相应访问权限的 GitHub Token。 如需使用，在准备启动程序的同一 Bash 终端输入：
 
 ```bash
 read -rsp '请输入 GitHub Token（输入不回显）: ' GITHUB_TOKEN
@@ -124,14 +124,14 @@ OPENMANUS_DISABLE_BROWSER_USE=1 .venv/bin/python taskpilot.py \
 
 ## 第四步：按需启动 API 服务
 
-**终端 A**：在项目根目录启动服务，保持终端运行。若要代码搜索，先在这个终端设置 `GITHUB_TOKEN`。
+终端 A：在项目根目录启动服务，保持终端运行。若要代码搜索，先在这个终端设置 `GITHUB_TOKEN`。
 
 ```bash
 OPENMANUS_DISABLE_BROWSER_USE=1 .venv/bin/python -m uvicorn \
   app.taskpilot.service:app --host 127.0.0.1 --port 8000
 ```
 
-**终端 B**：在同一项目根目录检查服务并提交任务。以下示例自动取出返回的任务 ID：
+终端 B：在同一项目根目录检查服务并提交任务。以下示例自动取出返回的任务 ID：
 
 ```bash
 curl --fail --silent --show-error http://127.0.0.1:8000/health
@@ -175,22 +175,22 @@ Compose 默认仅绑定本机，默认不传入 GitHub Token。远程服务器�
 
 ## 🧰 常见问题
 
-- **`uv: command not found`：**完成 uv 安装并执行 `source "$HOME/.local/bin/env"`，或重新打开终端。
-- **找不到 `.venv/bin/python` / `ModuleNotFoundError`：**确认位于项目根目录，并按第一步创建环境、安装锁定依赖；不要改用系统 `python` 混跑。
-- **提示缺少 `daytona_api_key`：**在 `config/config.toml` 中保留上面的 `[daytona]` 占位段。
-- **模型返回 401、404 或不支持工具调用：**核对模型平台、API 基础地址、模型 ID、额度及工具调用支持；不是修改 GitHub Token。
-- **GitHub 返回 401/403：**检查 Token 权限、有效性和限流。CLI/API 读取启动进程的环境；Docker 需要显式传入，见部署指南。
-- **服务健康但首个任务失败，或容器提示 `embedding model unavailable`：**检查 Hugging Face 下载网络/缓存。离线启动需要提前缓存完整模型，不能只设置 `HF_HUB_OFFLINE=1`。
-- **`Address already in use`：**本地改 `--port`；Docker 启动前 `export TASKPILOT_PORT=18000`，请求也改为新端口。
-- **TLS、代理或连接超时：**分别排查模型 API、GitHub API、Hugging Face。宿主机的 `127.0.0.1` 代理不能直接被默认 Docker bridge 访问，处理步骤见部署指南。
+- `uv: command not found`：完成 uv 安装并执行 `source "$HOME/.local/bin/env"`，或重新打开终端。
+- 找不到 `.venv/bin/python` / `ModuleNotFoundError`：确认位于项目根目录，并按第一步创建环境、安装锁定依赖；不要改用系统 `python` 混跑。
+- 提示缺少 `daytona_api_key`：在 `config/config.toml` 中保留上面的 `[daytona]` 占位段。
+- 模型返回 401、404 或不支持工具调用：核对模型平台、API 基础地址、模型 ID、额度及工具调用支持；不是修改 GitHub Token。
+- GitHub 返回 401/403：检查 Token 权限、有效性和限流。CLI/API 读取启动进程的环境；Docker 需要显式传入，见部署指南。
+- 服务健康但首个任务失败，或容器提示 `embedding model unavailable`：检查 Hugging Face 下载网络/缓存。离线启动需要提前缓存完整模型，不能只设置 `HF_HUB_OFFLINE=1`。
+- `Address already in use`：本地改 `--port`；Docker 启动前 `export TASKPILOT_PORT=18000`，请求也改为新端口。
+- TLS、代理或连接超时：分别排查模型 API、GitHub API、Hugging Face。宿主机的 `127.0.0.1` 代理不能直接被默认 Docker bridge 访问，处理步骤见部署指南。
 
 ## 📊 架构与评测
 
 TaskPilot 复用 OpenManus 的 Agent Loop 和 ToolCollection。每步按任务与最新工具结果选择工具；Top-K 只改变发送给模型的 Schema，执行仍经过参数校验、澄清、超时/重试和 Trace。见[中文架构文档](docs/TASKPILOT_ARCHITECTURE.md)。
 
-冻结的 **21 条独立留出任务（Holdout）** 中，每组每条任务选定一条正式评分记录，初始化复测与后续复跑另计。自主模型选工具正确步数：原始 OpenManus **2/15**、TaskPilot 全量工具 **6/16**、K=3 **7/16**。冻结预期结果达标：上游 **4/12 supported**，另有 **9/21 unsupported**；两组 TaskPilot 均 **18/21**，其中正向调查均 **8/11**。18/21 包含安全拒绝和故障正确处理，不能当作正向业务成功率。
+冻结的 21 条独立留出任务（Holdout） 中，每组每条任务选定一条正式评分记录，初始化复测与后续复跑另计。自主模型选工具正确步数：原始 OpenManus 2/15、TaskPilot 全量工具 6/16、K=3 7/16。冻结预期结果达标：上游 4/12 supported，另有 9/21 unsupported；两组 TaskPilot 均 18/21，其中正向调查均 8/11。18/21 包含安全拒绝和故障正确处理，不能当作正向业务成功率。
 
-同工具池对照中 K=3 的 Provider Token 总量较低，但 **9/21** 条任务更慢；单次小样本不支持整体提升或统计显著性结论。完整口径见[中文评测报告](docs/BENCHMARK.md)。
+同工具池对照中 K=3 的 Provider Token 总量较低，但 9/21 条任务更慢；单次小样本不支持整体提升或统计显著性结论。完整口径见[中文评测报告](docs/BENCHMARK.md)。
 
 ## 📚 文档导航
 
