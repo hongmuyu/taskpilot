@@ -1,24 +1,24 @@
 # Runtime imports for the read-only FastAPI service, constrained by the
 # existing repository baseline lock when compiling requirements-service.lock.txt.
 fastapi~=0.115.11
-uvicorn~=0.34.0
+uvicorn~=0.54.0
 pydantic~=2.10.6
 httpx>=0.27.0
 openai~=1.66.3
-tenacity~=9.0.0
+tenacity~=9.2.1
 tiktoken~=0.9.0
-boto3~=1.37.18
-docker~=7.1.0
+boto3~=1.43.114
+docker~=7.2.0
 loguru~=0.7.3
-structlog>=24.1.0,<26.0.0
+structlog>=26.1.0,<27.0.0
 jsonschema~=4.26.0
 mcp~=1.5.0
 numpy
 torch
 transformers
-huggingface-hub~=0.29.2
-requests~=2.32.3
-beautifulsoup4~=4.13.3
+huggingface-hub~=2.2.0
+requests~=2.34.2
+beautifulsoup4~=4.15.0
 googlesearch-python~=1.3.0
 baidusearch~=1.0.3
-duckduckgo-search~=7.5.3
+duckduckgo-search~=8.1.1
