@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Check README uniqueness
         run: |
           readmes="$(git ls-files | grep -Ei '(^|/)readme([^/]*)$')"
@@ -22,7 +22,7 @@ jobs:
             exit 1
           fi
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install pre-commit and tools
